@@ -36,8 +36,8 @@ public class Robot extends TimedRobot {
   private final MotorControllerGroup m_leftSide = new MotorControllerGroup(leftBack, leftFront);
   private final MotorControllerGroup m_rightSide = new MotorControllerGroup(rightBack, rightFront);
   private final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftSide, m_rightSide);
-  private final CANSparkMax leftintake = new CANSparkMax(0,MotorType.kBrushless);
-  private final CANSparkMax rightintake = new CANSparkMax(0,MotorType.kBrushless);
+  private final CANSparkMax leftintake = new CANSparkMax(6,MotorType.kBrushless);
+  private final CANSparkMax rightintake = new CANSparkMax(7,MotorType.kBrushless);
   private final MotorControllerGroup intake = new MotorControllerGroup(leftintake, rightintake);
 
   private final Timer timer = new Timer();
@@ -106,7 +106,11 @@ public class Robot extends TimedRobot {
    }
 
    if (m_stick.getRawButton(3) == true) {
-    intake.set(kDefaultPeriod);
+    rightintake.set(-1);
+    leftintake.set(1);
+   } else {
+    leftintake.set(0);
+    rightintake.set(0);
    }
   }
 }
