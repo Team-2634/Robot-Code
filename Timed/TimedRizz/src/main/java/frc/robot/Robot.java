@@ -37,8 +37,8 @@ public class Robot extends TimedRobot {
   private final MotorControllerGroup m_leftSide = new MotorControllerGroup(leftBack, leftFront);
   private final MotorControllerGroup m_rightSide = new MotorControllerGroup(rightBack, rightFront);
   private final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftSide, m_rightSide);
-  private final CANSparkMax leftintake = new CANSparkMax(2,MotorType.kBrushless);
-  private final CANSparkMax rightintake = new CANSparkMax(7,MotorType.kBrushless);
+  private final CANSparkMax leftintake = new CANSparkMax(2, MotorType.kBrushless);
+  private final CANSparkMax rightintake = new CANSparkMax(7, MotorType.kBrushless);
   private final MotorControllerGroup intake = new MotorControllerGroup(leftintake, rightintake);
 
   private final Timer timer = new Timer();
@@ -48,23 +48,23 @@ public class Robot extends TimedRobot {
   private final Compressor compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
   private final double Scale = 250, offset = -25;
   private final AnalogPotentiometer potentiometer = new AnalogPotentiometer(0, Scale, offset);
-   
-  private AHRS navx;
-  
 
-public Robot() {
-  try{
-       navx = new AHRS( SPI.Port.kMXP);
-    } catch(Exception e){
+  private AHRS navx;
+
+  public Robot() {
+    try {
+      navx = new AHRS(SPI.Port.kMXP);
+    } catch (Exception e) {
       System.out.println(e.getMessage());
     }
-}
+  }
+
   @Override
   public void robotInit() {
     double psi = potentiometer.get();
     if (psi <= 119) {
       compressor.enableDigital();
-    }else if (psi > 119) {
+    } else if (psi > 119) {
       compressor.disable();
     }
 
@@ -73,9 +73,10 @@ public Robot() {
   @Override
   public void autonomousInit() {
     navx.reset();
-    timer.reset();  
+    timer.reset();
     timer.start();
-      }
+  }
+
   @Override
    
   public void autonomousPeriodic() {
@@ -107,25 +108,26 @@ public Robot() {
   } */
   
   RobotAngle currentPitch = getPitch(robotPitch);
-
+  double fastLean = 0.60;
+  double slowLean = 0.40;
   if (currentPitch == RobotAngle.Balanced) {
     m_robotDrive.arcadeDrive(0,0);
   }
-  if (currentPitch == RobotAngle.Forward){
-    m_robotDrive.arcadeDrive(0, 0.25);
+  else if (currentPitch == RobotAngle.Forward){
+    m_robotDrive.arcadeDrive(0, fastLean);
   }
-  if (currentPitch == RobotAngle.leaningForward) {
-    m_robotDrive.arcadeDrive(0, 0.10);
+  else if (currentPitch == RobotAngle.leaningForward) {
+    m_robotDrive.arcadeDrive(0, slowLean);
   }
-  if (currentPitch == RobotAngle.Backward);{
-    m_robotDrive.arcadeDrive(0, -0.25);
+  else if (currentPitch == RobotAngle.Backward){
+    m_robotDrive.arcadeDrive(0, -fastLean);
   }
-  if (currentPitch == RobotAngle.leaningBackward);{
-    m_robotDrive.arcadeDrive(0, -0.10);
+  else if (currentPitch == RobotAngle.leaningBackward){
+    m_robotDrive.arcadeDrive(0, -slowLean);
   }
-  } 
-  
-  enum RobotAngle{
+  }
+
+  enum RobotAngle {
     Forward,
     leaningForward,
     Balanced,
@@ -134,33 +136,29 @@ public Robot() {
     unset
   }
 
-  //0.7 1.5 -0.25 nuet
-  //16  back
-  //-13.25 front
+  // 0.7 1.5 -0.25 nuet
+  // 16 back
+  // -13.25 front
 
-  double tolerance =1;  
-  double back =17;
-  double forwardLean =-14;
+  double tolerance = 2;
+  double tiltBack = 17;
+  double tiltFwd = -14;
   double bal = 0;
 
-  public RobotAngle getPitch(double robotPitch){
+  public RobotAngle getPitch(double robotPitch) {
     RobotAngle result = RobotAngle.unset;
-    if(robotPitch == bal) {
+    if (Math.abs(robotPitch) < tolerance) {
       result = RobotAngle.Balanced;
-    }
-    if(robotPitch == back) {
+    } else if (robotPitch > tiltBack) {
       result = RobotAngle.Backward;
-    }
-    if(robotPitch <= back) {
+    } else if (robotPitch < tiltBack && robotPitch > tolerance) {
       result = RobotAngle.leaningBackward;
-    }
-    if(robotPitch >= forwardLean) {
+    } else if (robotPitch > tiltFwd && robotPitch < -tolerance) {
       result = RobotAngle.leaningForward;
-    }
-    if(robotPitch == forwardLean) {
+    } else if (robotPitch < tiltFwd) {
       result = RobotAngle.Forward;
     }
-    System.out.println(result);
+    SmartDashboard.putString("Robot Pitch", result.toString());
     return result;
   }
 
@@ -170,27 +168,27 @@ public Robot() {
     SmartDashboard.putData(navx);
     SmartDashboard.putNumber("NAVXANGLE", pItch);
 
-  leftFront.setNeutralMode(NeutralMode.Brake);
-  leftBack.setNeutralMode(NeutralMode.Brake);
-  rightFront.setNeutralMode(NeutralMode.Brake);
-  rightBack.setNeutralMode(NeutralMode.Brake);
-  m_robotDrive.arcadeDrive(m_stick.getRawAxis(4)*0.8, m_stick.getRawAxis(1)*0.8);
+    leftFront.setNeutralMode(NeutralMode.Brake);
+    leftBack.setNeutralMode(NeutralMode.Brake);
+    rightFront.setNeutralMode(NeutralMode.Brake);
+    rightBack.setNeutralMode(NeutralMode.Brake);
+    m_robotDrive.arcadeDrive(m_stick.getRawAxis(4) * 0.8, m_stick.getRawAxis(1) * 0.8);
 
-   if (m_stick.getRawButton(1) == true) {
-    dSolenoidLeft.set(Value.kForward);
-   }else if (m_stick.getRawButton(2) == true) {
-    dSolenoidLeft.set(Value.kReverse);
-   }
+    if (m_stick.getRawButton(1) == true) {
+      dSolenoidLeft.set(Value.kForward);
+    } else if (m_stick.getRawButton(2) == true) {
+      dSolenoidLeft.set(Value.kReverse);
+    }
 
-   if (m_stick.getRawButton(6) == true) {
-    rightintake.set(-1);
-    leftintake.set(1);
-   } else if (m_stick.getRawButton(5) == true){
-    leftintake.set(-1);
-    rightintake.set(1);
-   } else {
-    leftintake.set(0);
-    rightintake.set(0);
-   }
+    if (m_stick.getRawButton(6) == true) {
+      rightintake.set(-1);
+      leftintake.set(1);
+    } else if (m_stick.getRawButton(5) == true) {
+      leftintake.set(-1);
+      rightintake.set(1);
+    } else {
+      leftintake.set(0);
+      rightintake.set(0);
+    }
   }
 }
