@@ -2,6 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
+//NRE POWER SDGSDKHFSD!!!!!!!!!!!!!!!!!!
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -48,7 +49,8 @@ public class Robot extends TimedRobot {
   private final double Scale = 250, offset = -25;
   private final AnalogPotentiometer potentiometer = new AnalogPotentiometer(0, Scale, offset);
    
-private AHRS navx;
+  private AHRS navx;
+  
 
 public Robot() {
   try{
@@ -77,10 +79,10 @@ public Robot() {
   @Override
    
   public void autonomousPeriodic() {
-    double randomStuff = navx.getPitch();
+    double robotPitch = navx.getPitch();
     m_robotDrive.isSafetyEnabled();
     SmartDashboard.putData(navx);
-    SmartDashboard.putNumber("NAVXANGLE", randomStuff);
+    SmartDashboard.putNumber("NAVXANGLE", robotPitch);
 
     leftFront.setNeutralMode(NeutralMode.Brake);
     leftBack.setNeutralMode(NeutralMode.Brake);
@@ -103,21 +105,70 @@ public Robot() {
   } else {
     m_robotDrive.arcadeDrive(0, 0);
   } */
+  
+  RobotAngle currentPitch = getPitch(robotPitch);
 
-  if (randomStuff < 0) {
-    m_robotDrive.arcadeDrive(0, -0.50);
-  } else if (randomStuff > 0) {
-    m_robotDrive.arcadeDrive(0, 0.50);
-  } else {
-    m_robotDrive.arcadeDrive(0, 0);
+  if (currentPitch == RobotAngle.Balanced) {
+    m_robotDrive.arcadeDrive(0,0);
+  }
+  if (currentPitch == RobotAngle.Forward){
+    m_robotDrive.arcadeDrive(0, 0.25);
+  }
+  if (currentPitch == RobotAngle.leaningForward) {
+    m_robotDrive.arcadeDrive(0, 0.10);
+  }
+  if (currentPitch == RobotAngle.Backward);{
+    m_robotDrive.arcadeDrive(0, -0.25);
+  }
+  if (currentPitch == RobotAngle.leaningBackward);{
+    m_robotDrive.arcadeDrive(0, -0.10);
   }
   } 
   
+  enum RobotAngle{
+    Forward,
+    leaningForward,
+    Balanced,
+    leaningBackward,
+    Backward,
+    unset
+  }
+
+  //0.7 1.5 -0.25 nuet
+  //16  back
+  //-13.25 front
+
+  double tolerance =1;  
+  double back =17;
+  double forwardLean =-14;
+  double bal = 0;
+
+  public RobotAngle getPitch(double robotPitch){
+    RobotAngle result = RobotAngle.unset;
+    if(robotPitch == bal) {
+      result = RobotAngle.Balanced;
+    }
+    if(robotPitch == back) {
+      result = RobotAngle.Backward;
+    }
+    if(robotPitch <= back) {
+      result = RobotAngle.leaningBackward;
+    }
+    if(robotPitch >= forwardLean) {
+      result = RobotAngle.leaningForward;
+    }
+    if(robotPitch == forwardLean) {
+      result = RobotAngle.Forward;
+    }
+    System.out.println(result);
+    return result;
+  }
+
   @Override
   public void teleopPeriodic() {
-    double randomStuff = navx.getPitch();
+    double pItch = navx.getPitch();
     SmartDashboard.putData(navx);
-    SmartDashboard.putNumber("NAVXANGLE", randomStuff);
+    SmartDashboard.putNumber("NAVXANGLE", pItch);
 
   leftFront.setNeutralMode(NeutralMode.Brake);
   leftBack.setNeutralMode(NeutralMode.Brake);
@@ -131,9 +182,12 @@ public Robot() {
     dSolenoidLeft.set(Value.kReverse);
    }
 
-   if (m_stick.getRawButton(3) == true) {
+   if (m_stick.getRawButton(6) == true) {
     rightintake.set(-1);
     leftintake.set(1);
+   } else if (m_stick.getRawButton(5) == true){
+    leftintake.set(-1);
+    rightintake.set(1);
    } else {
     leftintake.set(0);
     rightintake.set(0);
