@@ -17,14 +17,14 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-
-
-
+import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.SPI;
 
 public class Robot extends TimedRobot {
 
@@ -36,7 +36,7 @@ public class Robot extends TimedRobot {
   private final MotorControllerGroup m_leftSide = new MotorControllerGroup(leftBack, leftFront);
   private final MotorControllerGroup m_rightSide = new MotorControllerGroup(rightBack, rightFront);
   private final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftSide, m_rightSide);
-  private final CANSparkMax leftintake = new CANSparkMax(6,MotorType.kBrushless);
+  private final CANSparkMax leftintake = new CANSparkMax(2,MotorType.kBrushless);
   private final CANSparkMax rightintake = new CANSparkMax(7,MotorType.kBrushless);
   private final MotorControllerGroup intake = new MotorControllerGroup(leftintake, rightintake);
 
@@ -47,8 +47,16 @@ public class Robot extends TimedRobot {
   private final Compressor compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
   private final double Scale = 250, offset = -25;
   private final AnalogPotentiometer potentiometer = new AnalogPotentiometer(0, Scale, offset);
+   
+private AHRS navx;
 
-
+public Robot() {
+  try{
+       navx = new AHRS( SPI.Port.kMXP);
+    } catch(Exception e){
+      System.out.println(e.getMessage());
+    }
+}
   @Override
   public void robotInit() {
     double psi = potentiometer.get();
@@ -62,12 +70,17 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    navx.reset();
     timer.reset();  
     timer.start();
       }
   @Override
    
   public void autonomousPeriodic() {
+    double randomStuff = navx.getPitch();
+    m_robotDrive.isSafetyEnabled();
+    SmartDashboard.putData(navx);
+    SmartDashboard.putNumber("NAVXANGLE", randomStuff);
 
     leftFront.setNeutralMode(NeutralMode.Brake);
     leftBack.setNeutralMode(NeutralMode.Brake);
@@ -76,6 +89,8 @@ public class Robot extends TimedRobot {
 
     double time = timer.get();
 
+
+/*
   if (time > 0 && time < 4 ) { 
     m_robotDrive.arcadeDrive(0, -0.50);
 
@@ -87,11 +102,22 @@ public class Robot extends TimedRobot {
 
   } else {
     m_robotDrive.arcadeDrive(0, 0);
+  } */
+
+  if (randomStuff < 0) {
+    m_robotDrive.arcadeDrive(0, -0.50);
+  } else if (randomStuff > 0) {
+    m_robotDrive.arcadeDrive(0, 0.50);
+  } else {
+    m_robotDrive.arcadeDrive(0, 0);
   }
   } 
   
   @Override
   public void teleopPeriodic() {
+    double randomStuff = navx.getPitch();
+    SmartDashboard.putData(navx);
+    SmartDashboard.putNumber("NAVXANGLE", randomStuff);
 
   leftFront.setNeutralMode(NeutralMode.Brake);
   leftBack.setNeutralMode(NeutralMode.Brake);
