@@ -2,7 +2,8 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-//NRE POWER SDGSDKHFSD!!!!!!!!!!!!!!!!!!
+//NRE POWER SDGSDKHFSD!!!!!!!!!!!!!!!!!!/
+// 2048
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -48,7 +49,7 @@ public class Robot extends TimedRobot {
   private final double Scale = 250, offset = -25;
   private final AnalogPotentiometer potentiometer = new AnalogPotentiometer(0, Scale, offset);
 
-  private AHRS navx;
+  private AHRS navx;  
 
   public Robot() {
       
@@ -108,8 +109,8 @@ public class Robot extends TimedRobot {
   } */
   
   RobotAngle currentPitch = getPitch(robotPitch);
-  double fastLean = 0.60;
-  double slowLean = 0.40;
+  double fastLean = 0.40;
+  double slowLean = 0.20;
   if (currentPitch == RobotAngle.Balanced) {
     m_robotDrive.arcadeDrive(0,0);
   }
@@ -141,8 +142,8 @@ public class Robot extends TimedRobot {
   // -13.25 front
 
   double tolerance = 2;
-  double tiltBack = 17;
-  double tiltFwd = -14;
+  double tiltBack = 15;
+  double tiltFwd = -12;
   double bal = 0;
 
   public RobotAngle getPitch(double robotPitch) {
