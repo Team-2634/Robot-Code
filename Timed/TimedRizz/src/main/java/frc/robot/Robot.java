@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -52,6 +51,7 @@ public class Robot extends TimedRobot {
   private AHRS navx;
 
   public Robot() {
+      
     try {
       navx = new AHRS(SPI.Port.kMXP);
     } catch (Exception e) {
@@ -164,9 +164,13 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+    double l_speed = m_leftSide.get();
+    double r_speed = m_rightSide.get();
     double pItch = navx.getPitch();
     SmartDashboard.putData(navx);
     SmartDashboard.putNumber("NAVXANGLE", pItch);
+    SmartDashboard.putNumber("Speed Left", l_speed);
+    SmartDashboard.putNumber("SPeed Right", r_speed);
 
     leftFront.setNeutralMode(NeutralMode.Brake);
     leftBack.setNeutralMode(NeutralMode.Brake);
