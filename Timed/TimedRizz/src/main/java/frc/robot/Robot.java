@@ -3,12 +3,13 @@
 // the WPILib BSD license file in the root directory of this project.
 
 //NRE POWER SDGSDKHFSD!!!!!!!!!!!!!!!!!!/
-// 2048
+// 2048 CPR for talons
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -29,23 +30,32 @@ import edu.wpi.first.wpilibj.SPI;
 
 public class Robot extends TimedRobot {
 
+
+  private WPI_TalonFX left_front;
+
   boolean True = true;
   private final WPI_TalonFX leftFront = new WPI_TalonFX(1);
   private final WPI_TalonFX leftBack = new WPI_TalonFX(2);
   private final WPI_TalonFX rightFront = new WPI_TalonFX(3);
   private final WPI_TalonFX rightBack = new WPI_TalonFX(4);
+
   private final MotorControllerGroup m_leftSide = new MotorControllerGroup(leftBack, leftFront);
   private final MotorControllerGroup m_rightSide = new MotorControllerGroup(rightBack, rightFront);
+
   private final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftSide, m_rightSide);
+
   private final CANSparkMax leftintake = new CANSparkMax(2, MotorType.kBrushless);
   private final CANSparkMax rightintake = new CANSparkMax(7, MotorType.kBrushless);
+
   private final MotorControllerGroup intake = new MotorControllerGroup(leftintake, rightintake);
 
   private final Timer timer = new Timer();
+
   private final XboxController m_stick = new XboxController(0);
 
   private final DoubleSolenoid dSolenoidLeft = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
   private final Compressor compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
+  
   private final double Scale = 250, offset = -25;
   private final AnalogPotentiometer potentiometer = new AnalogPotentiometer(0, Scale, offset);
 
@@ -58,6 +68,9 @@ public class Robot extends TimedRobot {
     } catch (Exception e) {
       System.out.println(e.getMessage());
     }
+  }
+  public Robot(int left) {
+
   }
 
   @Override
@@ -82,7 +95,9 @@ public class Robot extends TimedRobot {
    
   public void autonomousPeriodic() {
     double robotPitch = navx.getPitch();
+    
     m_robotDrive.isSafetyEnabled();
+
     SmartDashboard.putData(navx);
     SmartDashboard.putNumber("NAVXANGLE", robotPitch);
 
