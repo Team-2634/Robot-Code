@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -13,5 +16,10 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+    public final CANSparkMax leftFrontMax = new CANSparkMax(11, MotorType.kBrushless);
+    public final CANSparkMax rightFrontMax = new CANSparkMax(6, MotorType.kBrushless);
+    public final CANSparkMax leftBackMax = new CANSparkMax(5, MotorType.kBrushless);
+    public final CANSparkMax rightBackMax = new CANSparkMax(8, MotorType.kBrushless);
     
 }

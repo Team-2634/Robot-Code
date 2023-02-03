@@ -6,10 +6,11 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.DriveTrain;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.DriveTrain;
+import frc.robot.commands.arcadeDriveCom;
+
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -18,11 +19,14 @@ import edu.wpi.first.wpilibj2.command.Command;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class FrunkRobotContainer {
-  // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final DriveTrain Frunk_DriveTrain = new DriveTrain(null, null, null, null);
-  private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
+  
+  // The robot's subsystems and commands are defined here...
+  final Constants cont = new Constants();
+  private final DriveTrain Frunk_DriveTrain = new DriveTrain(cont.leftFrontMax, cont.rightFrontMax, cont.leftBackMax, cont.rightBackMax);
+  private final DriveTrain.arcadeDrive m_robotDrive = new DriveTrain();
+  private final XboxController m_Xstick = new XboxController(0);
+  private final arcadeDriveCom m_arcadeDcom = new arcadeDriveCom(m_robotDrive, m_Xstick);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public FrunkRobotContainer() {
     // Configure the button bindings
@@ -41,9 +45,9 @@ public class FrunkRobotContainer {
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
-   */
+   
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     return m_autoCommand;
-  }
+  }*/
 }

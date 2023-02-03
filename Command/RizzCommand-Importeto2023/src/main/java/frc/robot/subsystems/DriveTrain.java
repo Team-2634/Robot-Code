@@ -12,21 +12,14 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 
-public class Frunk_DriveTrain extends PIDSubsystem {
+public class DriveTrain extends PIDSubsystem {
   /** Creates a new Frunk_DriveTrain. */
-  private MotorControllerGroup m_leftSide;
-  private MotorControllerGroup m_rightSide;
   private DifferentialDrive m_robotDrive;
 
-  public Frunk_DriveTrain(MotorController leftFront, MotorController rightFront, MotorController leftBack, MotorController rightBack) {
+  public DriveTrain(MotorController leftFront, MotorController rightFront, MotorController leftBack, MotorController rightBack) {
     super(
         // The PIDController used by the subsystem
         new PIDController(0, 0, 0));
-
-    m_leftSide = new MotorControllerGroup(leftFront, leftBack);
-    m_rightSide = new MotorControllerGroup(rightFront, rightBack);
-
-    m_robotDrive = new DifferentialDrive(m_leftSide, m_rightSide);
   }
 
   public void arcadeDrive(double xSpeed, double zRotation) {
