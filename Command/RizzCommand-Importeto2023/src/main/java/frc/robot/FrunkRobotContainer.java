@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.commands.arcadeDriveCom;
@@ -25,7 +24,6 @@ public class FrunkRobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public FrunkRobotContainer() {
     // Configure the button bindings
-    configureButtonBindings();
     m_robotArcadeDrive.setDefaultCommand(arcadeDrivingCom);
   }
 
@@ -34,7 +32,7 @@ public class FrunkRobotContainer {
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
+   
   private void configureButtonBindings() {}
 
   /**
