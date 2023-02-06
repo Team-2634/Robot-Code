@@ -18,19 +18,14 @@ public class Robot extends TimedRobot {
 
   private Command m_autonomousCommand;
 
-  private FrunkRobotContainer frunkContainer = new FrunkRobotContainer();
+  private FrunkRobotContainer frunkContainer;
   //private RizzlerRobotContainer rizzlerContainer;
   //private LFRobotContainer lordfaarquad;
 
-  /**
-   * This function is run when the robot is first started up and should be used for anyS
-   * initialization code.
-   */
   @Override
   public void robotInit() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
-    //frunk = new RobotContainer();
+    frunkContainer = new FrunkRobotContainer();
+    // rizzlerContainer = new rizzlerRobotContainer();
   }
 
   /**
