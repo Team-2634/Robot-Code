@@ -6,11 +6,8 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.commands.arcadeDriveCom;
-
-
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -19,14 +16,12 @@ import frc.robot.commands.arcadeDriveCom;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class FrunkRobotContainer {
-
-  
   // The robot's subsystems and commands are defined here...
-  final Constants cont = new Constants();
+  final Constants cont = new Constants();  
   private final DriveTrain Frunk_DriveTrain = new DriveTrain(cont.leftFrontMax, cont.rightFrontMax, cont.leftBackMax, cont.rightBackMax);
-  private final DriveTrain.arcadeDrive m_robotDrive = new DriveTrain();
-  private final XboxController m_Xstick = new XboxController(0);
-  private final arcadeDriveCom m_arcadeDcom = new arcadeDriveCom(m_robotDrive, m_Xstick);
+  private final DriveTrain.arcadeDriveSubClass m_robotArcadeDrive = Frunk_DriveTrain.new arcadeDriveSubClass();
+  private final arcadeDriveCom arcadeDrivingCom = new arcadeDriveCom(cont.m_Xstick, m_robotArcadeDrive);
+  
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public FrunkRobotContainer() {
     // Configure the button bindings
