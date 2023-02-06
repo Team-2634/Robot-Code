@@ -18,7 +18,6 @@ public class arcadeDriveCom extends CommandBase {
     m_Xstick = Xstick;
     m_robotDrive = robotDrive;
   }
-
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {}

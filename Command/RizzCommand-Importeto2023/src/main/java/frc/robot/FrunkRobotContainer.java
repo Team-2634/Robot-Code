@@ -26,6 +26,7 @@ public class FrunkRobotContainer {
   public FrunkRobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+    m_robotArcadeDrive.setDefaultCommand(arcadeDrivingCom);
   }
 
   /**

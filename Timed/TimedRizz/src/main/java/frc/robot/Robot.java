@@ -30,9 +30,6 @@ import edu.wpi.first.wpilibj.SPI;
 
 public class Robot extends TimedRobot {
 
-
-  private WPI_TalonFX left_front;
-
   boolean True = true;
   private final WPI_TalonFX leftFront = new WPI_TalonFX(1);
   private final WPI_TalonFX leftBack = new WPI_TalonFX(2);

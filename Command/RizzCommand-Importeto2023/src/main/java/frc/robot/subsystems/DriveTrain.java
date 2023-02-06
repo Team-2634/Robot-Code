@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
+import frc.robot.commands.arcadeDriveCom;
 
 public class DriveTrain extends PIDSubsystem {
   /** Creates a new Frunk_DriveTrain. */
@@ -47,6 +48,9 @@ public class DriveTrain extends PIDSubsystem {
   public class arcadeDriveSubClass {
     public void arcadeDriveSub(double xSpeed, double zRotation) {
       m_robotDrive.arcadeDrive(xSpeed, zRotation);
+    }
+
+    public void setDefaultCommand(arcadeDriveCom arcadeDrivingCom) {
     }
   }
 }
