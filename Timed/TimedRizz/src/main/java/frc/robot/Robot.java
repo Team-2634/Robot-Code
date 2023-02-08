@@ -50,13 +50,16 @@ public class Robot extends TimedRobot {
 
   private final XboxController m_stick = new XboxController(0);
 
-  private final DoubleSolenoid dSolenoidLeft = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
+  private final DoubleSolenoid dSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
   private final Compressor compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
   
   private final double Scale = 250, offset = -25;
   private final AnalogPotentiometer potentiometer = new AnalogPotentiometer(0, Scale, offset);
 
   private AHRS navx;  
+  
+ public Value DSstatus;
+ public boolean DSbool;
 
   public Robot() {
       
@@ -65,10 +68,9 @@ public class Robot extends TimedRobot {
     } catch (Exception e) {
       System.out.println(e.getMessage());
     }
+    SmartDashboard.putBoolean("Solenoid Status(open = true): ", DSbool);
   }
-  public Robot(int left) {
 
-  }
 
   @Override
   public void robotInit() {
@@ -78,7 +80,6 @@ public class Robot extends TimedRobot {
     } else if (psi > 119) {
       compressor.disable();
     }
-
   }
 
   @Override
@@ -103,7 +104,6 @@ public class Robot extends TimedRobot {
     rightFront.setNeutralMode(NeutralMode.Brake);
     rightBack.setNeutralMode(NeutralMode.Brake);
 
-    double time = timer.get();
 
 
 /*
@@ -175,8 +175,55 @@ public class Robot extends TimedRobot {
     return result;
   }
 
+@Override
+public void teleopInit() {
+  timer.reset();
+  timer.start();
+}
+
   @Override
-  public void teleopPeriodic() {
+  public void teleopPeriodic() {    
+    double time = timer.get();
+    DSstatus = dSolenoid.get();
+       
+    /*
+     * if time >= 15 sec
+     * get dsol state
+     * switch 
+     * then switch back
+     * reset the timer
+     */
+  if(time >= 15){
+    if(DSstatus==Value.kReverse){
+      dSolenoid.set(Value.kForward);
+      dSolenoid.set(Value.kReverse);
+    }else if(DSstatus==Value.kForward){
+      dSolenoid.set(Value.kReverse);
+      dSolenoid.set(Value.kForward);
+    }
+    timer.reset();
+  }
+
+  //if ^^^^^^^^^^^^ no work try dis below \/
+    /*
+  if (DSstatus == Value.kForward ) {
+    DSbool = true;
+  } else if (DSstatus == Value.kReverse ) {
+    DSbool = false;
+  }
+
+if(time >= 15){
+  if (DSbool = true){
+    dSolenoid.set(Value.kReverse);
+    dSolenoid.set(Value.kForward);
+  } else if (DSbool = false) {
+    dSolenoid.set(Value.kForward);
+    dSolenoid.set(Value.kReverse);
+  }
+  timer.reset();
+}
+*/
+    
     double l_speed = m_leftSide.get();
     double r_speed = m_rightSide.get();
     double pItch = navx.getPitch();
@@ -192,9 +239,9 @@ public class Robot extends TimedRobot {
     m_robotDrive.arcadeDrive(m_stick.getRawAxis(4) * 0.8, m_stick.getRawAxis(1) * 0.8);
 
     if (m_stick.getRawButton(1) == true) {
-      dSolenoidLeft.set(Value.kForward);
+      dSolenoid.set(Value.kForward);
     } else if (m_stick.getRawButton(2) == true) {
-      dSolenoidLeft.set(Value.kReverse);
+      dSolenoid.set(Value.kReverse);
     }
 
     if (m_stick.getRawButton(6) == true) {
