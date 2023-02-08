@@ -1,9 +1,4 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
-
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -24,10 +19,10 @@ public class DriveTrain extends PIDSubsystem {
         // The PIDController used by the subsystem
         new PIDController(0, 0, 0));
 
-        m_leftSide = new MotorControllerGroup(leftFront, leftBack);
-        m_rightSide = new MotorControllerGroup(rightFront, rightBack);
+    m_leftSide = new MotorControllerGroup(leftFront, leftBack);
+    m_rightSide = new MotorControllerGroup(rightFront, rightBack);
     
-        m_robotDrive = new DifferentialDrive(m_leftSide, m_rightSide);
+    m_robotDrive = new DifferentialDrive(m_leftSide, m_rightSide);
   }
 
   @Override

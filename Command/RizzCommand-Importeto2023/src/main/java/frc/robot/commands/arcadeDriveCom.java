@@ -28,11 +28,6 @@ public class arcadeDriveCom extends CommandBase {
     m_robotDrive.arcadeDriveSub(m_Xstick.getRawAxis(4)*0.8, m_Xstick.getRawAxis(1)*0.8);
   }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {}
-
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;

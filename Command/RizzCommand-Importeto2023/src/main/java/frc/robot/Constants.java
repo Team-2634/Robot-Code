@@ -7,7 +7,7 @@ package frc.robot;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.XboxController;
-//import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -28,12 +28,17 @@ public final class Constants {
     public final CANSparkMax rightBackMax = new CANSparkMax(8, MotorType.kBrushless);
     
 // rizzler ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    /* 
+    
     public final WPI_TalonFX leftFrontFX = new WPI_TalonFX(1);
     public final WPI_TalonFX rightFrontFX = new WPI_TalonFX(2);
     public final WPI_TalonFX leftBackFX = new WPI_TalonFX(3);
     public final WPI_TalonFX rightBackFX = new WPI_TalonFX(4);
-    */
+    
 // LF ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     // for Lord F we wait till robotics room: okie dokie
+   /* 
+    public final CANSparkMax leftFrontMax = new CANSparkMax(11, MotorType.kBrushless);
+    public final CANSparkMax rightFrontMax = new CANSparkMax(6, MotorType.kBrushless);
+    public final CANSparkMax leftBackMax = new CANSparkMax(5, MotorType.kBrushless);
+    public final CANSparkMax rightBackMax = new CANSparkMax(8, MotorType.kBrushless);
+    */
 }
