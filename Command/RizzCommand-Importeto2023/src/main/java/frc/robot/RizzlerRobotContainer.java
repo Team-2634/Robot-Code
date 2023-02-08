@@ -8,11 +8,12 @@ public class RizzlerRobotContainer {
   final Constants cont = new Constants();  
   private final DriveTrain Rizzler_DriveTrain = new DriveTrain(cont.leftFrontFX, cont.rightFrontFX, cont.leftBackFX, cont.rightBackFX);
   private final DriveTrain.arcadeDriveSubClass m_robotArcadeDrive = Rizzler_DriveTrain.new arcadeDriveSubClass();
-  private final arcadeDriveCom arcadeDrivingCom = new arcadeDriveCom(cont.m_Xstick, m_robotArcadeDrive);
+  private final arcadeDriveCom arcadeDrivingCom = new arcadeDriveCom(m_robotArcadeDrive, cont.m_Xstick);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RizzlerRobotContainer() {
-    // Configure the button bindings
-    m_robotArcadeDrive.setDefaultCommand(arcadeDrivingCom);
+    //here we need to set the arcade drive command as the default drive
+    // m_robotArcadeDrive.setDefaultCommand(arcadeDrivingCom);
+    // the quick fix for the error ^^^^ will add to the DriveTrain Subsystem the drvin command
   }
 }
