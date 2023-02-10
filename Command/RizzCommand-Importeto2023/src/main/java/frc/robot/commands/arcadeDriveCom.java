@@ -11,20 +11,22 @@ public class arcadeDriveCom extends CommandBase {
   public arcadeDriveCom(DriveTrain.arcadeDriveSubClass robotDrive, XboxController Xstick) {
     m_Xstick = Xstick;
     m_robotDrive = robotDrive;
-    //we need to add the requierments of: 
-   //addRequirements(m_robotDrive);
-   // HERE BE ERRORS^^^^^^^
+    // we need to add the requierments of:
+    addRequirements(m_robotDrive);
+    // HERE BE ERRORS^^^^^^^
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+  }
 
   @Override
   public void execute() {
-    m_robotDrive.arcadeDriveSub(m_Xstick.getRawAxis(4)*0.8, m_Xstick.getRawAxis(1)*0.8);
-    //here is where we say take input of XboxController
-    //the Id of the controller will always be 0, 
-    //there is a constant creating for it but here we are just passing in a controller and will set the id/constants in the Container
+    m_robotDrive.arcadeDriveSub(m_Xstick.getRawAxis(4) * 0.8, m_Xstick.getRawAxis(1) * 0.8);
+    // here is where we say take input of XboxController
+    // the Id of the controller will always be 0,
+    // there is a constant creating for it but here we are just passing in a
+    // controller and will set the id/constants in the Container
   }
 
   @Override

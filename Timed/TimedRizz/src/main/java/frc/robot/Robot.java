@@ -1,13 +1,7 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
-
-//NRE POWER SDGSDKHFSD!!!!!!!!!!!!!!!!!!/
-// 2048 CPR for talons
 package frc.robot;
-
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Compressor;
@@ -18,55 +12,29 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
 import com.kauailabs.navx.frc.AHRS;
+import com.revrobotics.CANSparkMax.IdleMode;
+
 import edu.wpi.first.wpilibj.SPI;
 
 public class Robot extends TimedRobot {
-    /*
-     * private final WPI_TalonFX leftFront = new WPI_TalonFX(1);
-     * private final WPI_TalonFX leftBack = new WPI_TalonFX(2);
-     * private final WPI_TalonFX rightFront = new WPI_TalonFX(3);
-     * private final WPI_TalonFX rightBack = new WPI_TalonFX(4);
-     */
-    private final CANSparkMax leftFront = new CANSparkMax(10, MotorType.kBrushless);
-    private final CANSparkMax leftBack = new CANSparkMax(18, MotorType.kBrushless);
-    private final CANSparkMax rightFront = new CANSparkMax(17, MotorType.kBrushless);
-    private final CANSparkMax rightBack = new CANSparkMax(4, MotorType.kBrushless);
 
-    private final MotorControllerGroup m_leftSide = new MotorControllerGroup(leftBack, leftFront);
-    private final MotorControllerGroup m_rightSide = new MotorControllerGroup(rightBack, rightFront);
-
-    private final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftSide, m_rightSide);
-
-    // private final CANSparkMax leftIntake = new CANSparkMax(2,
-    // MotorType.kBrushless);
-    // private final CANSparkMax rightIntake = new CANSparkMax(7,
-    // MotorType.kBrushless);
-
-    // private final MotorControllerGroup intakeMotors = new
-    // MotorControllerGroup(leftIntake, rightIntake);
-
+    private final Constants cont = new Constants();
+    private final DifferentialDrive m_robotDrive = new DifferentialDrive(cont.m_leftSide, cont.m_rightSide);
     private final Timer timer = new Timer();
-
     private final XboxController xbox = new XboxController(0);
-
     private final DoubleSolenoid dSolenoidShifter = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
     private final DoubleSolenoid dSolenoidCool = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3);
     private final Compressor compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
-
     private final double Scale = 250, offset = -25;
     private final AnalogPotentiometer potentiometer = new AnalogPotentiometer(0, Scale, offset);
 
     private AHRS navx;
 
     public Value coolingSolenoid;
+    boolean xButtonPressed = false;
+    double previousPitch = 0;
 
     public Robot() {
         m_robotDrive.isSafetyEnabled();
@@ -103,13 +71,11 @@ public class Robot extends TimedRobot {
          * rightBack.setNeutralMode(NeutralMode.Brake);
          */
 
-        leftFront.setIdleMode(IdleMode.kBrake);
-        leftBack.setIdleMode(IdleMode.kBrake);
-        rightFront.setIdleMode(IdleMode.kBrake);
-        rightBack.setIdleMode(IdleMode.kBrake);
+        cont.leftFront.setIdleMode(IdleMode.kBrake);
+        cont.leftBack.setIdleMode(IdleMode.kBrake);
+        cont.rightFront.setIdleMode(IdleMode.kBrake);
+        cont.rightBack.setIdleMode(IdleMode.kBrake);
     }
-
-    double previousPitch = 0;
 
     public void balanceRobot(double robotPitch) {
         
@@ -164,10 +130,6 @@ public class Robot extends TimedRobot {
         unset
     }
 
-    // 0.7 1.5 -0.25 nuet
-    // 16 back
-    // -13.25 front
-
     double tolerance = 2;
     double tiltBack = 15;
     double tiltFwd = -12;
@@ -200,10 +162,10 @@ public class Robot extends TimedRobot {
         timer.reset();
         timer.start();
         navx.reset();
-        m_leftSide.setInverted(false);
-        m_rightSide.setInverted(false);
+        cont.m_leftSide.setInverted(false);
+        cont.m_rightSide.setInverted(false);
     }
-
+/* 
     private void pulsePiston(double teleopTime) {
         int pulseFreq = 15;
         int pulseDuration = 1;
@@ -213,15 +175,15 @@ public class Robot extends TimedRobot {
             dSolenoidCool.set(Value.kReverse);
         }
     }
-
+*/
     @Override
     public void teleopPeriodic() {
         double teleopTime = timer.get();
 
         // pulsePiston(teleopTime);
 
-        double l_speed = m_leftSide.get();
-        double r_speed = m_rightSide.get();
+        double l_speed = cont.m_leftSide.get();
+        double r_speed = cont.m_rightSide.get();
         double pitchNavx = navx.getPitch();
         SmartDashboard.putData(navx);
         SmartDashboard.putNumber("NAVXANGLE", pitchNavx);
@@ -230,9 +192,7 @@ public class Robot extends TimedRobot {
 
         setMotorsNeutral();
 
-        m_robotDrive.arcadeDrive(xbox.getRawAxis(4) * 0.8, xbox.getRawAxis(1) * 0.8);
-        // deadzone
-        // if (xbox.getRaw)
+        m_robotDrive.arcadeDrive(-xbox.getRawAxis(4) * 0.8, xbox.getRawAxis(1) * 0.8);
 
         if (xbox.getAButton() == true) {
             dSolenoidShifter.set(Value.kForward);
@@ -273,6 +233,4 @@ public class Robot extends TimedRobot {
             navx.reset();
         }
     }
-
-    boolean xButtonPressed = false;
 }
