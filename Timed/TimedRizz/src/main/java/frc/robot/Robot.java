@@ -80,8 +80,8 @@ public class Robot extends TimedRobot {
     public void balanceRobot(double robotPitch) {
         
         RobotAngle currentPitchState = getPitchState(robotPitch);
-        double fastLeanSpeed = 0.40;
-        double slowLeanSpeed = 0.20;
+        double fastLeanSpeed = 0.25;
+        double slowLeanSpeed = 0.15;
 
         if (currentPitchState == RobotAngle.Balanced) {
             m_robotDrive.arcadeDrive(0, 0);
@@ -130,7 +130,7 @@ public class Robot extends TimedRobot {
         unset
     }
 
-    double tolerance = 2;
+    double tolerance = 4;
     double tiltBack = 15;
     double tiltFwd = -12;
     double bal = 0;
@@ -192,7 +192,7 @@ public class Robot extends TimedRobot {
 
         setMotorsNeutral();
 
-        m_robotDrive.arcadeDrive(-xbox.getRawAxis(4) * 0.8, xbox.getRawAxis(1) * 0.8);
+        m_robotDrive.arcadeDrive(xbox.getRawAxis(4) * 0.8, xbox.getRawAxis(1) * 0.8);
 
         if (xbox.getAButton() == true) {
             dSolenoidShifter.set(Value.kForward);
