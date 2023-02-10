@@ -130,7 +130,8 @@ public class Robot extends TimedRobot {
         unset
     }
 
-    double tolerance = 4;
+    double tolerance = 2;
+    double pitchOffset = 3;
     double tiltBack = 15;
     double tiltFwd = -12;
     double bal = 0;
@@ -138,19 +139,19 @@ public class Robot extends TimedRobot {
     public RobotAngle getPitchState(double robotPitch) {
         RobotAngle result = RobotAngle.unset;
 
-        if (Math.abs(robotPitch) < tolerance) {
+        if (Math.abs(robotPitch - pitchOffset)  < tolerance) {
             result = RobotAngle.Balanced;
 
-        } else if (robotPitch > tiltBack) {
+        } else if (robotPitch - pitchOffset > tiltBack) {
             result = RobotAngle.Backward;
 
-        } else if (robotPitch < tiltBack && robotPitch > tolerance) {
+        } else if (robotPitch - pitchOffset < tiltBack && robotPitch > tolerance) {
             result = RobotAngle.leaningBackward;
 
-        } else if (robotPitch > tiltFwd && robotPitch < -tolerance) {
+        } else if (robotPitch - pitchOffset > tiltFwd && robotPitch < -tolerance) {
             result = RobotAngle.leaningForward;
 
-        } else if (robotPitch < tiltFwd) {
+        } else if (robotPitch - pitchOffset < tiltFwd) {
             result = RobotAngle.Forward;
         }
         SmartDashboard.putString("Robot Pitch", result.toString());
