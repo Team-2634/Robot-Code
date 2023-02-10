@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj.SPI;
 
 public class Robot extends TimedRobot {
 
-    boolean True = true;
     private final WPI_TalonFX leftFront = new WPI_TalonFX(1);
     private final WPI_TalonFX leftBack = new WPI_TalonFX(2);
     private final WPI_TalonFX rightFront = new WPI_TalonFX(3);
@@ -40,10 +39,10 @@ public class Robot extends TimedRobot {
 
     private final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftSide, m_rightSide);
 
-    private final CANSparkMax leftintake = new CANSparkMax(2, MotorType.kBrushless);
-    private final CANSparkMax rightintake = new CANSparkMax(7, MotorType.kBrushless);
+    private final CANSparkMax leftIntake = new CANSparkMax(2, MotorType.kBrushless);
+    private final CANSparkMax rightIntake = new CANSparkMax(7, MotorType.kBrushless);
 
-    private final MotorControllerGroup intake = new MotorControllerGroup(leftintake, rightintake);
+    private final MotorControllerGroup intakeMotors = new MotorControllerGroup(leftIntake, rightIntake);
 
     private final Timer timer = new Timer();
 
@@ -59,24 +58,23 @@ public class Robot extends TimedRobot {
     private AHRS navx;
 
     public Value coolingSolenoid;
-    public boolean DSbool;
 
     public Robot() {
-
+        m_robotDrive.isSafetyEnabled();
         try {
             navx = new AHRS(SPI.Port.kMXP);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        SmartDashboard.putBoolean("Solenoid Status(open = true): ", DSbool);
     }
 
     @Override
     public void robotInit() {
-        double psi = potentiometer.get();
-        if (psi <= 119) {
+        double currentPsi = potentiometer.get();
+        int psiCap = 117;
+        if (currentPsi <= psiCap) {
             compressor.enableDigital();
-        } else if (psi > 119) {
+        } else if (currentPsi > 119 ) {
             compressor.disable();
         }
     }
@@ -88,50 +86,57 @@ public class Robot extends TimedRobot {
         timer.start();
     }
 
-    @Override
-
-    public void autonomousPeriodic() {
-        double robotPitch = navx.getPitch();
-
-        m_robotDrive.isSafetyEnabled();
-
-        SmartDashboard.putData(navx);
-        SmartDashboard.putNumber("NAVXANGLE", robotPitch);
-
+    public void setMotorsNeutral () {
         leftFront.setNeutralMode(NeutralMode.Brake);
         leftBack.setNeutralMode(NeutralMode.Brake);
         rightFront.setNeutralMode(NeutralMode.Brake);
         rightBack.setNeutralMode(NeutralMode.Brake);
+    }
 
-        /*
-         * if (time > 0 && time < 4 ) {
-         * m_robotDrive.arcadeDrive(0, -0.50);
-         * 
-         * } else if (time < 6 && time > 4) {
-         * m_robotDrive.arcadeDrive(0.5, 0);
-         * 
-         * } else if (time < 8 && time > 6) {
-         * m_robotDrive.arcadeDrive(0, -0.5);
-         * 
-         * } else {
-         * m_robotDrive.arcadeDrive(0, 0);
-         * }
-         */
+    public void balanceRobot() {
+        double robotPitch = navx.getPitch();
 
-        RobotAngle currentPitch = getPitch(robotPitch);
-        double fastLean = 0.40;
-        double slowLean = 0.20;
-        if (currentPitch == RobotAngle.Balanced) {
+        RobotAngle currentPitchState = getPitchState(robotPitch);
+        double fastLeanSpeed = 0.40;
+        double slowLeanSpeed = 0.20;
+
+        if (currentPitchState == RobotAngle.Balanced) {
             m_robotDrive.arcadeDrive(0, 0);
-        } else if (currentPitch == RobotAngle.Forward) {
-            m_robotDrive.arcadeDrive(0, fastLean);
-        } else if (currentPitch == RobotAngle.leaningForward) {
-            m_robotDrive.arcadeDrive(0, slowLean);
-        } else if (currentPitch == RobotAngle.Backward) {
-            m_robotDrive.arcadeDrive(0, -fastLean);
-        } else if (currentPitch == RobotAngle.leaningBackward) {
-            m_robotDrive.arcadeDrive(0, -slowLean);
+
+        } else if (currentPitchState == RobotAngle.Forward) {
+            m_robotDrive.arcadeDrive(0, fastLeanSpeed);
+
+        } else if (currentPitchState == RobotAngle.leaningForward) {
+            if (robotPitch > previousPitch) {
+                m_robotDrive.arcadeDrive(0, slowLeanSpeed);
+            } else if (robotPitch <= previousPitch){
+                m_robotDrive.arcadeDrive(0, 0);
+            }
+
+        } else if (currentPitchState == RobotAngle.Backward) {
+            m_robotDrive.arcadeDrive(0, -fastLeanSpeed);
+
+        } else if (currentPitchState == RobotAngle.leaningBackward) {
+            if (robotPitch < previousPitch) {
+                m_robotDrive.arcadeDrive(0, -slowLeanSpeed);
+            } else if (robotPitch >= previousPitch){
+                m_robotDrive.arcadeDrive(0, 0);
+            }        
         }
+        previousPitch = robotPitch;
+    }
+
+    double previousPitch = navx.getPitch();
+    @Override
+    public void autonomousPeriodic() {
+        double robotPitch = navx.getPitch();
+
+        SmartDashboard.putData(navx);
+        SmartDashboard.putNumber("NAVXANGLE", robotPitch);
+
+        setMotorsNeutral();
+
+        balanceRobot();
     }
 
     enum RobotAngle {
@@ -152,16 +157,21 @@ public class Robot extends TimedRobot {
     double tiltFwd = -12;
     double bal = 0;
 
-    public RobotAngle getPitch(double robotPitch) {
+    public RobotAngle getPitchState(double robotPitch) {
         RobotAngle result = RobotAngle.unset;
+
         if (Math.abs(robotPitch) < tolerance) {
             result = RobotAngle.Balanced;
+
         } else if (robotPitch > tiltBack) {
             result = RobotAngle.Backward;
+
         } else if (robotPitch < tiltBack && robotPitch > tolerance) {
             result = RobotAngle.leaningBackward;
+            
         } else if (robotPitch > tiltFwd && robotPitch < -tolerance) {
             result = RobotAngle.leaningForward;
+
         } else if (robotPitch < tiltFwd) {
             result = RobotAngle.Forward;
         }
@@ -178,7 +188,7 @@ public class Robot extends TimedRobot {
     private void pulsePiston(double teleopTime) {
         int pulseFreq = 15;
         int pulseDuration = 1;
-        if (timer.get() % pulseFreq < pulseDuration) {
+        if (teleopTime % pulseFreq < pulseDuration) {
             dSolenoidCool.set(Value.kForward);
         } else {
             dSolenoidCool.set(Value.kReverse);
@@ -189,7 +199,6 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         double teleopTime = timer.get();
         
-
         pulsePiston(teleopTime);
 
         double l_speed = m_leftSide.get();
@@ -200,11 +209,11 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("Speed Left", l_speed);
         SmartDashboard.putNumber("SPeed Right", r_speed);
 
-        leftFront.setNeutralMode(NeutralMode.Brake);
-        leftBack.setNeutralMode(NeutralMode.Brake);
-        rightFront.setNeutralMode(NeutralMode.Brake);
-        rightBack.setNeutralMode(NeutralMode.Brake);
+        setMotorsNeutral();
+
         m_robotDrive.arcadeDrive(xbox.getRawAxis(4) * 0.8, xbox.getRawAxis(1) * 0.8);
+// deadzone
+       // if (xbox.getRaw)
 
         if (xbox.getAButton() == true) {
             dSolenoidShifter.set(Value.kForward);
@@ -212,16 +221,36 @@ public class Robot extends TimedRobot {
             dSolenoidShifter.set(Value.kReverse);
         }
 
-        if (xbox.getRawButton(6) == true) {
-            rightintake.set(-1);
-            leftintake.set(1);
-        } else if (xbox.getRawButton(5) == true) {
-            leftintake.set(-1);
-            rightintake.set(1);
+        if (xbox.getRightBumper() == true) {
+            rightIntake.set(-1);
+            leftIntake.set(1);
+        } else if (xbox.getLeftBumper() == true) {
+            leftIntake.set(-1);
+            rightIntake.set(1);
         } else {
-            leftintake.set(0);
-            rightintake.set(0);
+            leftIntake.set(0);
+            rightIntake.set(0);
         }
-    }
+
+
+        if (xbox.getXButtonPressed() == true) {
+            xButtonPressed = !xButtonPressed;
+        }
+
+        double deadzone = 0.01;
+        if (xbox.getRawAxis(4) > deadzone || 
+            xbox.getRawAxis(4) < -deadzone && 
+            xbox.getRawAxis(1) > deadzone || 
+            xbox.getRawAxis(1) < -deadzone) 
+            {
+                xButtonPressed = false;
+        }
+
+        if(xButtonPressed == true){
+            balanceRobot();
+        }
+    }   
+
+    boolean xButtonPressed = false;
 
 }
