@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.kauailabs.navx.frc.AHRS;
+import com.revrobotics.SparkMaxAbsoluteEncoder;
+import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj.SPI;
@@ -36,6 +38,16 @@ public class Robot extends TimedRobot {
     boolean xButtonPressed = false;
     double previousPitch = 0;
 
+    
+  private static final int kEncoderTicksPerRev = 42;
+  private static final double kTargetDegrees = 90;
+  private static final double kSpeed = 0.05;
+  private double targetPosition;
+  SparkMaxAbsoluteEncoder encoderALF = cont.leftFront.getAbsoluteEncoder(Type.kDutyCycle);
+  SparkMaxAbsoluteEncoder encoderALB = cont.leftBack.getAbsoluteEncoder(Type.kDutyCycle);
+  SparkMaxAbsoluteEncoder encoderARF = cont.rightFront.getAbsoluteEncoder(Type.kDutyCycle);
+  SparkMaxAbsoluteEncoder encoderARB = cont.rightBack.getAbsoluteEncoder(Type.kDutyCycle);
+
     public Robot() {
         m_robotDrive.isSafetyEnabled();
         try {
@@ -54,6 +66,12 @@ public class Robot extends TimedRobot {
         } else if (currentPsi > 119) {
             compressor.disable();
         }
+
+        encoderALF.setPositionConversionFactor(360 / kEncoderTicksPerRev);
+        encoderALB.setPositionConversionFactor(360 / kEncoderTicksPerRev);
+        encoderARF.setPositionConversionFactor(360 / kEncoderTicksPerRev);
+        encoderARB.setPositionConversionFactor(360 / kEncoderTicksPerRev);
+        targetPosition = kTargetDegrees / 360.0;
     }
 
     @Override
@@ -229,7 +247,7 @@ public class Robot extends TimedRobot {
         if (xButtonPressed == true) {
             balanceRobot(pitchNavx);
         }
-        SmartDashboard.putBoolean("Balance mode: ", xButtonPressed);s
+        SmartDashboard.putBoolean("Balance mode: ", xButtonPressed);
         if (xbox.getYButton() == true) {
             navx.reset();
         }
