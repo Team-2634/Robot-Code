@@ -80,8 +80,8 @@ public class Robot extends TimedRobot {
     public void balanceRobot(double robotPitch) {
         
         RobotAngle currentPitchState = getPitchState(robotPitch);
-        double fastLeanSpeed = 0.25;
-        double slowLeanSpeed = 0.15;
+        double fastLeanSpeed = 0.30;
+        double slowLeanSpeed = 0.20;
 
         if (currentPitchState == RobotAngle.Balanced) {
             m_robotDrive.arcadeDrive(0, 0);
@@ -131,9 +131,9 @@ public class Robot extends TimedRobot {
     }
 
     double tolerance = 2;
-    double pitchOffset = 3;
-    double tiltBack = 15;
-    double tiltFwd = -12;
+    double pitchOffset = 0;
+    double tiltBack = 14;
+    double tiltFwd = -13;
     double bal = 0;
 
     public RobotAngle getPitchState(double robotPitch) {
@@ -163,8 +163,8 @@ public class Robot extends TimedRobot {
         timer.reset();
         timer.start();
         navx.reset();
-        cont.m_leftSide.setInverted(false);
-        cont.m_rightSide.setInverted(false);
+        cont.m_leftSide.setInverted(true);
+        cont.m_rightSide.setInverted(true);
     }
 /* 
     private void pulsePiston(double teleopTime) {
@@ -229,7 +229,7 @@ public class Robot extends TimedRobot {
         if (xButtonPressed == true) {
             balanceRobot(pitchNavx);
         }
-        SmartDashboard.putBoolean("Balance mode: ", xButtonPressed);
+        SmartDashboard.putBoolean("Balance mode: ", xButtonPressed);s
         if (xbox.getYButton() == true) {
             navx.reset();
         }

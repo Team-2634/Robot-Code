@@ -8,10 +8,10 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 public class Constants {
     // Frunk ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         
-        public final CANSparkMax leftFront = new CANSparkMax(11, MotorType.kBrushless);
-        public final CANSparkMax rightFront = new CANSparkMax(6, MotorType.kBrushless);
-        public final CANSparkMax leftBack = new CANSparkMax(5, MotorType.kBrushless);
-        public final CANSparkMax rightBack = new CANSparkMax(8, MotorType.kBrushless);
+        public final CANSparkMax leftFront = new CANSparkMax(17, MotorType.kBrushless);
+        public final CANSparkMax rightFront = new CANSparkMax(10, MotorType.kBrushless);
+        public final CANSparkMax leftBack = new CANSparkMax(4, MotorType.kBrushless);
+        public final CANSparkMax rightBack = new CANSparkMax(18, MotorType.kBrushless);
         
     // rizzler ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         /*
