@@ -4,6 +4,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
+import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -13,10 +14,9 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.kauailabs.navx.frc.AHRS;
-import com.revrobotics.SparkMaxAbsoluteEncoder;
-import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
-import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj.SPI;
 
@@ -38,17 +38,9 @@ public class Robot extends TimedRobot {
     boolean xButtonPressed = false;
     double previousPitch = 0;
 
-    
-  private static final int kEncoderTicksPerRev = 42;
-  private static final double kTargetDegrees = 90;
-  private static final double kSpeed = 0.05;
-  private double targetPosition;
-  SparkMaxAbsoluteEncoder encoderALF = cont.leftFront.getAbsoluteEncoder(Type.kDutyCycle);
-  SparkMaxAbsoluteEncoder encoderALB = cont.leftBack.getAbsoluteEncoder(Type.kDutyCycle);
-  SparkMaxAbsoluteEncoder encoderARF = cont.rightFront.getAbsoluteEncoder(Type.kDutyCycle);
-  SparkMaxAbsoluteEncoder encoderARB = cont.rightBack.getAbsoluteEncoder(Type.kDutyCycle);
-
     public Robot() {
+        cont.m_leftSide.setInverted(true);
+        cont.m_rightSide.setInverted(true);
         m_robotDrive.isSafetyEnabled();
         try {
             navx = new AHRS(SPI.Port.kMXP);
@@ -66,12 +58,6 @@ public class Robot extends TimedRobot {
         } else if (currentPsi > 119) {
             compressor.disable();
         }
-
-        encoderALF.setPositionConversionFactor(360 / kEncoderTicksPerRev);
-        encoderALB.setPositionConversionFactor(360 / kEncoderTicksPerRev);
-        encoderARF.setPositionConversionFactor(360 / kEncoderTicksPerRev);
-        encoderARB.setPositionConversionFactor(360 / kEncoderTicksPerRev);
-        targetPosition = kTargetDegrees / 360.0;
     }
 
     @Override
@@ -82,47 +68,55 @@ public class Robot extends TimedRobot {
     }
 
     public void setMotorsNeutral() {
-        /*
-         * leftFront.setNeutralMode(NeutralMode.Brake);
-         * leftBack.setNeutralMode(NeutralMode.Brake);
-         * rightFront.setNeutralMode(NeutralMode.Brake);
-         * rightBack.setNeutralMode(NeutralMode.Brake);
-         */
-
-        cont.leftFront.setIdleMode(IdleMode.kBrake);
+        
+         cont.leftFront.setNeutralMode(NeutralMode.Brake);
+         cont.leftBack.setNeutralMode(NeutralMode.Brake);
+         cont.rightFront.setNeutralMode(NeutralMode.Brake);
+         cont.rightBack.setNeutralMode(NeutralMode.Brake);
+        
+/*        cont.leftFront.setIdleMode(IdleMode.kBrake);
         cont.leftBack.setIdleMode(IdleMode.kBrake);
         cont.rightFront.setIdleMode(IdleMode.kBrake);
         cont.rightBack.setIdleMode(IdleMode.kBrake);
+         */
     }
 
     public void balanceRobot(double robotPitch) {
         
         RobotAngle currentPitchState = getPitchState(robotPitch);
-        double fastLeanSpeed = 0.30;
-        double slowLeanSpeed = 0.20;
+        double fastLeanSpeed = 0.35;
+        double slowLeanSpeed = 0.25;
 
         if (currentPitchState == RobotAngle.Balanced) {
             m_robotDrive.arcadeDrive(0, 0);
-
-        } else if (currentPitchState == RobotAngle.Forward) {
+        } 
+        if (currentPitchState == RobotAngle.Forward) {
             m_robotDrive.arcadeDrive(0, fastLeanSpeed);
 
-        } else if (currentPitchState == RobotAngle.leaningForward) {
-            if (robotPitch > previousPitch) {
+        } 
+        if (currentPitchState == RobotAngle.leaningForward) {
+            m_robotDrive.arcadeDrive(0, slowLeanSpeed);
+             /*if (robotPitch > previousPitch) {
                 m_robotDrive.arcadeDrive(0, slowLeanSpeed);
-            } else if (robotPitch <= previousPitch) {
+                
+            } 
+           else if (robotPitch <= previousPitch) {
                 m_robotDrive.arcadeDrive(0, 0);
-            }
+            }*/
 
-        } else if (currentPitchState == RobotAngle.Backward) {
+        }
+        if (currentPitchState == RobotAngle.Backward) {
             m_robotDrive.arcadeDrive(0, -fastLeanSpeed);
 
-        } else if (currentPitchState == RobotAngle.leaningBackward) {
-            if (robotPitch < previousPitch) {
+        }
+        if (currentPitchState == RobotAngle.leaningBackward) {
+            m_robotDrive.arcadeDrive(0, -slowLeanSpeed);
+           /*if (robotPitch < previousPitch) {
                 m_robotDrive.arcadeDrive(0, -slowLeanSpeed);
-            } else if (robotPitch >= previousPitch) {
+            } 
+            /*else if (robotPitch >= previousPitch) {
                 m_robotDrive.arcadeDrive(0, 0);
-            }
+            }*/
         }
         previousPitch = robotPitch;
     }
@@ -163,10 +157,10 @@ public class Robot extends TimedRobot {
         } else if (robotPitch - pitchOffset > tiltBack) {
             result = RobotAngle.Backward;
 
-        } else if (robotPitch - pitchOffset < tiltBack && robotPitch > tolerance) {
+        } else if (robotPitch - pitchOffset < tiltBack && robotPitch - pitchOffset > tolerance) {
             result = RobotAngle.leaningBackward;
 
-        } else if (robotPitch - pitchOffset > tiltFwd && robotPitch < -tolerance) {
+        } else if (robotPitch - pitchOffset > tiltFwd && robotPitch - pitchOffset < -tolerance) {
             result = RobotAngle.leaningForward;
 
         } else if (robotPitch - pitchOffset < tiltFwd) {
@@ -181,8 +175,6 @@ public class Robot extends TimedRobot {
         timer.reset();
         timer.start();
         navx.reset();
-        cont.m_leftSide.setInverted(true);
-        cont.m_rightSide.setInverted(true);
     }
 /* 
     private void pulsePiston(double teleopTime) {
@@ -205,7 +197,6 @@ public class Robot extends TimedRobot {
         double r_speed = cont.m_rightSide.get();
         double pitchNavx = navx.getPitch();
         SmartDashboard.putData(navx);
-        SmartDashboard.putNumber("NAVXANGLE", pitchNavx);
         SmartDashboard.putNumber("Speed Left", l_speed);
         SmartDashboard.putNumber("SPeed Right", r_speed);
 
@@ -248,8 +239,9 @@ public class Robot extends TimedRobot {
             balanceRobot(pitchNavx);
         }
         SmartDashboard.putBoolean("Balance mode: ", xButtonPressed);
-        if (xbox.getYButton() == true) {
-            navx.reset();
-        }
-    }
+
+        SmartDashboard.putNumber("NAVXANGLE Pitch", navx.getPitch());
+        SmartDashboard.putNumber("NAVXANGLE Yaw", navx.getYaw());
+        SmartDashboard.putNumber("NAVXANGLE Roll", navx.getRoll());
+    } 
 }

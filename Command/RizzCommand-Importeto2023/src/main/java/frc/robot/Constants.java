@@ -18,8 +18,8 @@ public final class Constants {
 // rizzler ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     public final WPI_TalonFX leftFrontFX = new WPI_TalonFX(1);
-    public final WPI_TalonFX rightFrontFX = new WPI_TalonFX(2);
-    public final WPI_TalonFX leftBackFX = new WPI_TalonFX(3);
+    public final WPI_TalonFX rightFrontFX = new WPI_TalonFX(3);
+    public final WPI_TalonFX leftBackFX = new WPI_TalonFX(2);
     public final WPI_TalonFX rightBackFX = new WPI_TalonFX(4);
     
 // LF ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
