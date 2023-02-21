@@ -19,6 +19,9 @@ public class Constants {
         public final WPI_TalonFX rightFront = new WPI_TalonFX(3);
         public final WPI_TalonFX leftBack = new WPI_TalonFX(2);
         public final WPI_TalonFX rightBack= new WPI_TalonFX(4); 
+
+        public final WPI_TalonFX topRIght= new WPI_TalonFX(6); 
+        public final WPI_TalonFX topLeft= new WPI_TalonFX(5); 
  
     // Lf and Rs sides motors~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public final MotorControllerGroup m_leftSide = new MotorControllerGroup(leftBack, leftFront);

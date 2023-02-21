@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -27,6 +28,7 @@ public class Robot extends TimedRobot {
 
     private final Constants cont = new Constants();
     private final DifferentialDrive m_robotDrive = new DifferentialDrive(cont.m_leftSide, cont.m_rightSide);
+    private final DifferentialDrive topsDrive = new DifferentialDrive(cont.topRIght, cont.topLeft);
     private final Timer timer = new Timer();
     private final XboxController xbox = new XboxController(0);
     private final DoubleSolenoid dSolenoidShifter = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
@@ -48,13 +50,13 @@ public class Robot extends TimedRobot {
     private final double kDriveTick2Feet = 1.0/128*6* Math.PI/12;
 
     public void encoderFunction() {
-        encoder.reset();
+      /*  encoder.reset();
         if (xbox.getYButton()) {
             setpoint = 10;
         }else if (xbox.getRightBumper()){
             setpoint = 0;
         }
-
+ */
         double sensorPosition = encoder.get()*kDriveTick2Feet;
         double error = setpoint - sensorPosition;
         double outputSpeed = kP * error;
@@ -223,6 +225,11 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         double teleopTime = timer.get();
 
+        if (xbox.getYButton() == true) {
+            topsDrive.tankDrive(1,1);
+        }else {
+            topsDrive.tankDrive(0,0);
+        }
         encoderFunction();
 
         // pulsePiston(teleopTime);
@@ -259,10 +266,10 @@ public class Robot extends TimedRobot {
         if (xbox.getXButtonPressed() == true) {
             xButtonPressed = !xButtonPressed;
         }
-
-        if (xbox.getYButtonPressed() == true){
+/*        if (xbox.getYButtonPressed() == true){
             yButtonPressed = !yButtonPressed;
         }
+         */
 
         double deadzone = 0.5;
         if (xbox.getRawAxis(4) > deadzone ||
