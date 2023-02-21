@@ -3,15 +3,18 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -36,7 +39,31 @@ public class Robot extends TimedRobot {
 
     public Value coolingSolenoid;
     boolean xButtonPressed = false;
+    boolean yButtonPressed = false;
     double previousPitch = 0;
+    double setpoint = 0;
+    final double kP = 0.5;
+
+    private Encoder encoder = new Encoder(0, 1, false, EncodingType.k4X);
+    private final double kDriveTick2Feet = 1.0/128*6* Math.PI/12;
+
+    public void encoderFunction() {
+        encoder.reset();
+        if (xbox.getYButton()) {
+            setpoint = 10;
+        }else if (xbox.getRightBumper()){
+            setpoint = 0;
+        }
+
+        double sensorPosition = encoder.get()*kDriveTick2Feet;
+        double error = setpoint - sensorPosition;
+        double outputSpeed = kP * error;
+
+        cont.leftBack.set(outputSpeed);
+        cont.leftFront.set(outputSpeed);
+        cont.rightBack.set(-outputSpeed);
+        cont.rightFront.set(-outputSpeed);
+    }
 
     public Robot() {
         cont.m_leftSide.setInverted(true);
@@ -47,6 +74,11 @@ public class Robot extends TimedRobot {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    @Override
+    public void robotPeriodic(){
+        SmartDashboard.putNumber("encoder value", encoder.get()*kDriveTick2Feet);
     }
 
     @Override
@@ -191,6 +223,8 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         double teleopTime = timer.get();
 
+        encoderFunction();
+
         // pulsePiston(teleopTime);
 
         double l_speed = cont.m_leftSide.get();
@@ -226,17 +260,26 @@ public class Robot extends TimedRobot {
             xButtonPressed = !xButtonPressed;
         }
 
+        if (xbox.getYButtonPressed() == true){
+            yButtonPressed = !yButtonPressed;
+        }
+
         double deadzone = 0.5;
         if (xbox.getRawAxis(4) > deadzone ||
                 xbox.getRawAxis(4) < -deadzone &&
-                        xbox.getRawAxis(1) > deadzone
-                ||
-                xbox.getRawAxis(1) < -deadzone) {
+                        xbox.getRawAxis(1) > deadzone || 
+                            xbox.getRawAxis(1) < -deadzone) {
             xButtonPressed = false;
         }
 
         if (xButtonPressed == true) {
             balanceRobot(pitchNavx);
+        }
+
+        if (xbox.getRawAxis(4) > deadzone ||
+                xbox.getRawAxis(4) < -deadzone &&
+                        xbox.getRawAxis(1) > deadzone || xbox.getRawAxis(1) < -deadzone) {
+            yButtonPressed = false;
         }
         SmartDashboard.putBoolean("Balance mode: ", xButtonPressed);
 
