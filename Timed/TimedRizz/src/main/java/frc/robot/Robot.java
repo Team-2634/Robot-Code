@@ -43,6 +43,7 @@ public class Robot extends TimedRobot {
     boolean xButtonPressed = false;
     boolean yButtonPressed = false;
     double previousPitch = 0;
+
     double setpoint = 0;
     final double kP = 0.5;
 
@@ -50,13 +51,14 @@ public class Robot extends TimedRobot {
     private final double kDriveTick2Feet = 1.0/128*6* Math.PI/12;
 
     public void encoderFunction() {
-      /*  encoder.reset();
+      
+        encoder.reset();
         if (xbox.getYButton()) {
             setpoint = 10;
         }else if (xbox.getRightBumper()){
             setpoint = 0;
         }
- */
+ 
         double sensorPosition = encoder.get()*kDriveTick2Feet;
         double error = setpoint - sensorPosition;
         double outputSpeed = kP * error;
