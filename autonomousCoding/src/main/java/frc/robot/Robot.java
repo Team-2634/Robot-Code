@@ -24,10 +24,10 @@ public class Robot extends TimedRobot {
   final WPI_TalonFX topLeft= new WPI_TalonFX(5);
   */
   
-  public final CANSparkMax leftFront = new CANSparkMax(17, MotorType.kBrushless);
-  public final CANSparkMax rightFront = new CANSparkMax(10, MotorType.kBrushless);
-  public final CANSparkMax leftBack = new CANSparkMax(4, MotorType.kBrushless);
-  public final CANSparkMax rightBack = new CANSparkMax(18, MotorType.kBrushless); 
+  public final CANSparkMax leftFront = new CANSparkMax(11, MotorType.kBrushless);
+  public final CANSparkMax rightFront = new CANSparkMax(6, MotorType.kBrushless);
+  public final CANSparkMax leftBack = new CANSparkMax(5, MotorType.kBrushless);
+  public final CANSparkMax rightBack = new CANSparkMax(8, MotorType.kBrushless); 
 
   final MotorControllerGroup m_leftSide = new MotorControllerGroup(leftBack, leftFront);
   final MotorControllerGroup m_rightSide = new MotorControllerGroup(rightBack, rightFront);
@@ -37,13 +37,15 @@ public class Robot extends TimedRobot {
 
   final XboxController xBoxCont = new XboxController(0);
 
-  double setpoint = 0;
-  final double kP = 0.5;
-  private Encoder encoder = new Encoder(0, 1, false, EncodingType.k4X);
-  private final double kDriveTick2Feet = 1.0/128*6* Math.PI/12;
+  boolean yButtonPressed = false;
 
+  double setpoint = 0;
+  final double kP = 0.05;
+  private Encoder encoder = new Encoder(0, 1, false, EncodingType.k4X);//!!!!!
+  private final double kDriveTick2Feet = 1.0/128*6* Math.PI/12;
+ 
   public void encoderFunction() {
-      
+    
     encoder.reset();
     if (xBoxCont.getYButton()) {
         setpoint = 10;
@@ -59,6 +61,8 @@ public class Robot extends TimedRobot {
     leftFront.set(outputSpeed);
     rightBack.set(-outputSpeed);
     rightFront.set(-outputSpeed);
+
+    SmartDashboard.getNumber("outputSpeed", outputSpeed);
   }
 
   public void setMotorsNeutral() {
@@ -76,16 +80,24 @@ public class Robot extends TimedRobot {
   
 @Override
   public void robotInit() {
+    
   }
 
   @Override
   public void robotPeriodic() {
     SmartDashboard.putNumber("encoder value", encoder.get()*kDriveTick2Feet);
+    SmartDashboard.putNumber("kP", kP);
+   // SmartDashboard.putNumber("Joystick input 10 feet", xBoxCont.);
+    SmartDashboard.putNumber("encoder.get", encoder.get());
+    SmartDashboard.putNumber("encoder", encoder.get()*kDriveTick2Feet);
+    SmartDashboard.putNumber("error",  setpoint - encoder.get()*kDriveTick2Feet);
+    SmartDashboard.putNumber("outPut", kP * setpoint - encoder.get()*kDriveTick2Feet);
   }
 
   @Override
   public void autonomousInit() {
     setMotorsNeutral();
+    encoder.reset();
   }
 
   /** This function is called periodically during autonomous. */
@@ -101,20 +113,36 @@ public class Robot extends TimedRobot {
      * set object
      * balance
      */
-    
-     encoderFunction();
   }
 
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
     setMotorsNeutral();
+    encoder.reset();
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
     m_robotDrive.arcadeDrive(xBoxCont.getRawAxis(4) * 0.8, xBoxCont.getRawAxis(1) * 0.8);
+    
+    if (xBoxCont.getYButtonPressed() == true){
+            yButtonPressed = !yButtonPressed;
+        }
+    
+    double deadzone = 0.5;
+      if (xBoxCont.getRawAxis(4) > deadzone ||
+      xBoxCont.getRawAxis(4) < -deadzone &&
+      xBoxCont.getRawAxis(1) > deadzone || 
+      xBoxCont.getRawAxis(1) < -deadzone) {
+            yButtonPressed = false;
+        }
+
+        if (yButtonPressed == true) {
+          encoderFunction();
+        }
+    //encoderFunction();
     
 /*
     if (xBoxCont.getAButton() == true) {
@@ -125,33 +153,5 @@ public class Robot extends TimedRobot {
       m_clawRaise.tankDrive(-0,0);
     } 
 */
-
-    encoderFunction();
-  }
-
-  /** This function is called once when the robot is disabled. */
-  @Override
-  public void disabledInit() {}
-
-  /** This function is called periodically when disabled. */
-  @Override
-  public void disabledPeriodic() {}
-
-  /** This function is called once when test mode is enabled. */
-  @Override
-  public void testInit() {}
-
-  /** This function is called periodically during test mode. */
-  @Override
-  public void testPeriodic() {}
-
-  /** This function is called once when the robot is first started up. */
-  @Override
-  public void simulationInit() {}
-
-  /** This function is called periodically whilst in simulation. */
-  @Override
-  public void simulationPeriodic() {
-    encoderFunction();
   }
 }
