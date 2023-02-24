@@ -42,16 +42,12 @@ public class Robot extends TimedRobot {
   private Encoder encoder = new Encoder(0, 1, false, EncodingType.k4X);
   private final double kDriveTick2Feet = 1.0/128*6* Math.PI/12;
 
-  /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
-   */
   public void encoderFunction() {
       
     encoder.reset();
     if (xBoxCont.getYButton()) {
         setpoint = 10;
-    }else if (xBoxCont.getRightBumper()){
+    }else if (xBoxCont.getXButtonPressed()){
         setpoint = 0;
     }
 
@@ -96,12 +92,12 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     /*
-     * align with starting 
+     * align with starting node
      * rais arm
      * set down object
      * drive to next object
      * pick up
-     * drive and align (with new location)
+     * drive and align with new node
      * set object
      * balance
      */
@@ -111,12 +107,15 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    setMotorsNeutral();
+  }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
     m_robotDrive.arcadeDrive(xBoxCont.getRawAxis(4) * 0.8, xBoxCont.getRawAxis(1) * 0.8);
+    
 /*
     if (xBoxCont.getAButton() == true) {
       m_clawRaise.tankDrive(1,-1);
@@ -124,7 +123,10 @@ public class Robot extends TimedRobot {
       m_clawRaise.tankDrive(-1,1);
     } else {
       m_clawRaise.tankDrive(-0,0);
-    } */
+    } 
+*/
+
+    encoderFunction();
   }
 
   /** This function is called once when the robot is disabled. */
@@ -149,5 +151,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    encoderFunction();
+  }
 }
