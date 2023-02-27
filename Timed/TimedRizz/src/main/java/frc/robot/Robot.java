@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.kauailabs.navx.frc.AHRS;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj.SPI;
 
@@ -40,16 +41,18 @@ public class Robot extends TimedRobot {
     private AHRS navx;
 
     public Value coolingSolenoid;
+    boolean aButtonPressed = false;
     boolean xButtonPressed = false;
     boolean yButtonPressed = false;
     double previousPitch = 0;
+
 
     double setpoint = 0;
     final double kP = 0.5;
 
     private Encoder encoder = new Encoder(0, 1, false, EncodingType.k4X);
     private final double kDriveTick2Feet = 1.0/128*6* Math.PI/12;
-
+    /* 
     public void encoderFunction() {
       
         encoder.reset();
@@ -67,7 +70,7 @@ public class Robot extends TimedRobot {
         cont.leftFront.set(outputSpeed);
         cont.rightBack.set(-outputSpeed);
         cont.rightFront.set(-outputSpeed);
-    }
+    }*/
 
     public Robot() {
         cont.m_leftSide.setInverted(true);
@@ -109,8 +112,8 @@ public class Robot extends TimedRobot {
          cont.leftBack.setNeutralMode(NeutralMode.Brake);
          cont.rightFront.setNeutralMode(NeutralMode.Brake);
          cont.rightBack.setNeutralMode(NeutralMode.Brake);
-        
-/*        cont.leftFront.setIdleMode(IdleMode.kBrake);
+        /* 
+        cont.leftFront.setIdleMode(IdleMode.kBrake);
         cont.leftBack.setIdleMode(IdleMode.kBrake);
         cont.rightFront.setIdleMode(IdleMode.kBrake);
         cont.rightBack.setIdleMode(IdleMode.kBrake);
@@ -223,16 +226,25 @@ public class Robot extends TimedRobot {
         }
     }
 */
+    double armSpeed = 0.7;
     @Override
     public void teleopPeriodic() {
         double teleopTime = timer.get();
 
-        if (xbox.getYButton() == true) {
-            topsDrive.tankDrive(1,1);
+        if (xbox.getLeftBumper() == true) {
+            topsDrive.tankDrive(armSpeed,-armSpeed);
+            cont.topLeft.setNeutralMode(NeutralMode.Brake);
+            cont.topRIght.setNeutralMode(NeutralMode.Brake);
+        }else if (xbox.getRightBumper() == true) {
+            topsDrive.tankDrive(-armSpeed,armSpeed);
+            cont.topLeft.setNeutralMode(NeutralMode.Brake);
+            cont.topRIght.setNeutralMode(NeutralMode.Brake);
         }else {
             topsDrive.tankDrive(0,0);
+            cont.topLeft.setNeutralMode(NeutralMode.Brake);
+            cont.topRIght.setNeutralMode(NeutralMode.Brake);
         }
-        encoderFunction();
+        //encoderFunction();
 
         // pulsePiston(teleopTime);
 
@@ -247,9 +259,12 @@ public class Robot extends TimedRobot {
 
         m_robotDrive.arcadeDrive(xbox.getRawAxis(4) * 0.8, xbox.getRawAxis(1) * 0.8);
 
-        if (xbox.getAButton() == true) {
+        if (xbox.getAButtonPressed() == true) {
+            aButtonPressed = !aButtonPressed;
+        }
+        if (aButtonPressed == true) {
             dSolenoidShifter.set(Value.kForward);
-        } else if (xbox.getBButton() == true) {
+        } else if (aButtonPressed == false) {
             dSolenoidShifter.set(Value.kReverse);
         }
         /*
@@ -268,10 +283,10 @@ public class Robot extends TimedRobot {
         if (xbox.getXButtonPressed() == true) {
             xButtonPressed = !xButtonPressed;
         }
-/*        if (xbox.getYButtonPressed() == true){
+            if (xbox.getYButtonPressed() == true) {
             yButtonPressed = !yButtonPressed;
         }
-         */
+         
 
         double deadzone = 0.5;
         if (xbox.getRawAxis(4) > deadzone ||
