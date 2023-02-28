@@ -3,6 +3,12 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.CvSink;
+import edu.wpi.first.cscore.CvSource;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.TimedRobot;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
@@ -18,6 +24,8 @@ import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import org.opencv.core.Mat;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.kauailabs.navx.frc.AHRS;
@@ -75,7 +83,7 @@ public class Robot extends TimedRobot {
     public Robot() {
         cont.m_leftSide.setInverted(true);
         cont.m_rightSide.setInverted(true);
-        m_robotDrive.isSafetyEnabled();
+        m_robotDrive.isSafetyEnabled(); 
         try {
             navx = new AHRS(SPI.Port.kMXP);
         } catch (Exception e) {
@@ -97,6 +105,12 @@ public class Robot extends TimedRobot {
         } else if (currentPsi > 119) {
             compressor.disable();
         }
+        // UsbCamera camera = 
+        CameraServer.startAutomaticCapture();
+        // CvSink cvSink = CameraServer.getVideo();
+        // Mat mat = new Mat();
+        // CvSource outputStream = CameraServer.putVideo("Rectangle", 640, 480);
+        // outputStream.putFrame(mat);
     }
 
     @Override
@@ -215,6 +229,7 @@ public class Robot extends TimedRobot {
         timer.start();
         navx.reset();
     }
+
 /* 
     private void pulsePiston(double teleopTime) {
         int pulseFreq = 15;
