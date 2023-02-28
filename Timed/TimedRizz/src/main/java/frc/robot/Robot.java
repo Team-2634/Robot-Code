@@ -101,7 +101,7 @@ public class Robot extends TimedRobot {
         double currentPsi = potentiometer.get();
         int psiCap = 117;
         if (currentPsi <= psiCap) {
-            compressor.enableDigital();
+            compressor.enableDigital(); 
         } else if (currentPsi > 119) {
             compressor.disable();
         }

@@ -58,7 +58,7 @@ public class Robot extends TimedRobot {
   private void driveForward(double distance) {
     PIDController drivePID = new PIDController(kp, ki, kd);
     double targetDistance = distance;
-    double tolerance = 0.1;
+    double tolerance = 1;
     
     drivePID.reset();
     drivePID.setSetpoint(targetDistance);
@@ -126,7 +126,7 @@ public class Robot extends TimedRobot {
     m_robotDrive.arcadeDrive(xBoxCont.getRawAxis(4) * 0.8, xBoxCont.getRawAxis(1) * 0.8);
 
     if (xBoxCont.getYButton() == true) {
-      driveForward(kDefaultPeriod);
+      driveForward(getDistanceTraveled());
     } else if (xBoxCont.getXButton() == true) {
       driveForward(0);
     }
