@@ -41,7 +41,7 @@ public class Robot extends TimedRobot {
 
   double setpoint = 0;
   final double kP = 0.05;
-  private Encoder encoder = new Encoder(0, 1, false, EncodingType.k4X);//!!!!!
+  private Encoder encoder = new Encoder(0, 1, false, EncodingType.k4X);
   private final double kDriveTick2Feet = 1.0/128*6* Math.PI/12;
  
   public void encoderFunction() {
@@ -86,9 +86,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
+    SmartDashboard.putNumber("encoder test", encoder.get());
     SmartDashboard.putNumber("encoder value", encoder.get()*kDriveTick2Feet);
     SmartDashboard.putNumber("kP", kP);
-   // SmartDashboard.putNumber("Joystick input 10 feet", xBoxCont.);
+    //SmartDashboard.putNumber("Joystick input 10 feet", xBoxCont.);
     SmartDashboard.putNumber("encoder.get", encoder.get());
     SmartDashboard.putNumber("encoder", encoder.get()*kDriveTick2Feet);
     SmartDashboard.putNumber("error",  setpoint - encoder.get()*kDriveTick2Feet);
