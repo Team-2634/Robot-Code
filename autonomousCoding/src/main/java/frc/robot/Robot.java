@@ -3,14 +3,15 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -38,35 +39,37 @@ public class Robot extends TimedRobot {
 
   final XboxController xBoxCont = new XboxController(0);
 
-  boolean yButtonPressed = false;
+  final double kp = 0.1;
+  final double ki = 0;
+  final double kd = 0;
 
-  double setpoint = 0;
-  final double kP = 0.05;
-  private Encoder encoder = new Encoder(0, 1, false, EncodingType.k4X);
-  private double encoderFX = new W
-  //encoder_position_degrees = (encoder_position_ticks"encoderFX ATM"" / ticks_per_revolution) * 360 / gear_ratio
-  private final double kDriveTick2Feet = 1.0/128*6* Math.PI/12;
- 
-  public void encoderFunction() {
-
-    leftFront.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
+  private double getDistanceTraveled() {
+    final double wheelDiameter = 4.0; // in inches
+    final double encoderCPR = 2048; // counts per revolution
+    final double gearRatio = 10.71; // gear ratio from motor shaft to wheel
     
-    if (xBoxCont.getYButton()) {
-        setpoint = 10;
-    }else if (xBoxCont.getXButtonPressed()){
-        setpoint = 0;
+    double counts = (leftFront.getSelectedSensorPosition() + rightFront.getSelectedSensorPosition()) / 2.0;
+    double revolutions = counts / encoderCPR;
+    double distance = Math.PI * wheelDiameter * revolutions / gearRatio / 12.0; // in feet
+    
+    return distance;
+  }
+
+  private void driveForward(double distance) {
+    PIDController drivePID = new PIDController(kp, ki, kd);
+    double targetDistance = distance;
+    double tolerance = 0.1;
+    
+    drivePID.reset();
+    drivePID.setSetpoint(targetDistance);
+    
+    while (Math.abs(targetDistance - getDistanceTraveled()) > tolerance) {
+      double output = drivePID.calculate(getDistanceTraveled());
+      m_robotDrive.arcadeDrive(output, 0);
+      Timer.delay(0.02); // small delay to avoid busy loop
     }
-
-    double sensorPosition = encoderFX*kDriveTick2Feet;
-    double error = setpoint - sensorPosition;
-    double outputSpeed = kP * error;
-
-    leftBack.set(outputSpeed);
-    leftFront.set(outputSpeed);
-    rightBack.set(-outputSpeed);
-    rightFront.set(-outputSpeed);
-
-    SmartDashboard.getNumber("outputSpeed", outputSpeed);
+    
+    m_robotDrive.stopMotor();
   }
 
   public void setMotorsNeutral() {
@@ -89,12 +92,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("encoder value", encoderFX*kDriveTick2Feet);
-    SmartDashboard.putNumber("kP", kP);
-    //SmartDashboard.putNumber("Joystick input 10 feet", xBoxCont.);
-    SmartDashboard.putNumber("encoder.get", encoderFX);
-    SmartDashboard.putNumber("error",  setpoint - encoderFX*kDriveTick2Feet);
-    SmartDashboard.putNumber("outPut", kP * setpoint - encoderFX*kDriveTick2Feet);
   }
 
   @Override
@@ -121,39 +118,17 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     setMotorsNeutral();
-    encoder.reset();
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
     m_robotDrive.arcadeDrive(xBoxCont.getRawAxis(4) * 0.8, xBoxCont.getRawAxis(1) * 0.8);
-    
-    if (xBoxCont.getYButtonPressed() == true){
-            yButtonPressed = !yButtonPressed;
-        }
-    
-    double deadzone = 0.5;
-      if (xBoxCont.getRawAxis(4) > deadzone ||
-      xBoxCont.getRawAxis(4) < -deadzone &&
-      xBoxCont.getRawAxis(1) > deadzone || 
-      xBoxCont.getRawAxis(1) < -deadzone) {
-            yButtonPressed = false;
-        }
 
-        if (yButtonPressed == true) {
-          encoderFunction();
-        }
-    //encoderFunction();
-    
-/*
-    if (xBoxCont.getAButton() == true) {
-      m_clawRaise.tankDrive(1,-1);
-    } else if (xBoxCont.getBButton() == true){
-      m_clawRaise.tankDrive(-1,1);
-    } else {
-      m_clawRaise.tankDrive(-0,0);
-    } 
-*/
+    if (xBoxCont.getYButton() == true) {
+      driveForward(kDefaultPeriod);
+    } else if (xBoxCont.getXButton() == true) {
+      driveForward(0);
+    }
   }
 }
