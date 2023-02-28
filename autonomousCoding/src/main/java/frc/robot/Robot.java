@@ -1,7 +1,7 @@
 package frc.robot;
 
-//import com.ctre.phoenix.motorcontrol.NeutralMode;
-//import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -15,25 +15,25 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends TimedRobot {
-  /*
+  
   final WPI_TalonFX leftFront = new WPI_TalonFX(1);
   final WPI_TalonFX rightFront = new WPI_TalonFX(3);
   final WPI_TalonFX leftBack = new WPI_TalonFX(2);
   final WPI_TalonFX rightBack= new WPI_TalonFX(4); 
   final WPI_TalonFX topRIght= new WPI_TalonFX(6); 
   final WPI_TalonFX topLeft= new WPI_TalonFX(5);
-  */
   
+  /*
   public final CANSparkMax leftFront = new CANSparkMax(11, MotorType.kBrushless);
   public final CANSparkMax rightFront = new CANSparkMax(6, MotorType.kBrushless);
   public final CANSparkMax leftBack = new CANSparkMax(5, MotorType.kBrushless);
   public final CANSparkMax rightBack = new CANSparkMax(8, MotorType.kBrushless); 
-
+*/
   final MotorControllerGroup m_leftSide = new MotorControllerGroup(leftBack, leftFront);
   final MotorControllerGroup m_rightSide = new MotorControllerGroup(rightBack, rightFront);
 
   final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftSide, m_rightSide);
-  //final DifferentialDrive m_clawRaise = new DifferentialDrive(topLeft, topRIght);
+  final DifferentialDrive m_clawRaise = new DifferentialDrive(topLeft, topRIght);
 
   final XboxController xBoxCont = new XboxController(0);
 
@@ -66,16 +66,17 @@ public class Robot extends TimedRobot {
   }
 
   public void setMotorsNeutral() {
-    /*
+    
     leftFront.setNeutralMode(NeutralMode.Brake);
     leftBack.setNeutralMode(NeutralMode.Brake);
     rightFront.setNeutralMode(NeutralMode.Brake);
     rightBack.setNeutralMode(NeutralMode.Brake);
-     */
+     /*
     leftFront.setIdleMode(IdleMode.kBrake);
     leftBack.setIdleMode(IdleMode.kBrake);
     rightFront.setIdleMode(IdleMode.kBrake);
     rightBack.setIdleMode(IdleMode.kBrake);
+    */
   }
   
 @Override
