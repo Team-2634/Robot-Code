@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -16,13 +17,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends TimedRobot {
   
-  final WPI_TalonFX leftFront = new WPI_TalonFX(1);
-  final WPI_TalonFX rightFront = new WPI_TalonFX(3);
-  final WPI_TalonFX leftBack = new WPI_TalonFX(2);
-  final WPI_TalonFX rightBack= new WPI_TalonFX(4); 
-  final WPI_TalonFX topRIght= new WPI_TalonFX(6); 
-  final WPI_TalonFX topLeft= new WPI_TalonFX(5);
-  
+  public final WPI_TalonFX leftFront = new WPI_TalonFX(1);
+  public final WPI_TalonFX rightFront = new WPI_TalonFX(3);
+  public final WPI_TalonFX leftBack = new WPI_TalonFX(2);
+  public final WPI_TalonFX rightBack= new WPI_TalonFX(4); 
+  public final WPI_TalonFX topRIght= new WPI_TalonFX(6); 
+  public final WPI_TalonFX topLeft= new WPI_TalonFX(5); 
+
   /*
   public final CANSparkMax leftFront = new CANSparkMax(11, MotorType.kBrushless);
   public final CANSparkMax rightFront = new CANSparkMax(6, MotorType.kBrushless);
@@ -42,20 +43,21 @@ public class Robot extends TimedRobot {
   double setpoint = 0;
   final double kP = 0.05;
   private Encoder encoder = new Encoder(0, 1, false, EncodingType.k4X);
-  private double encoderFX = leftFront.getSelectedSensorPosition();
+  private double encoderFX = new W
   //encoder_position_degrees = (encoder_position_ticks"encoderFX ATM"" / ticks_per_revolution) * 360 / gear_ratio
   private final double kDriveTick2Feet = 1.0/128*6* Math.PI/12;
  
   public void encoderFunction() {
+
+    leftFront.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
     
-    encoder.reset();
     if (xBoxCont.getYButton()) {
         setpoint = 10;
     }else if (xBoxCont.getXButtonPressed()){
         setpoint = 0;
     }
 
-    double sensorPosition = encoder.get()*kDriveTick2Feet;
+    double sensorPosition = encoderFX*kDriveTick2Feet;
     double error = setpoint - sensorPosition;
     double outputSpeed = kP * error;
 
@@ -82,26 +84,22 @@ public class Robot extends TimedRobot {
   }
   
 @Override
-  public void robotInit() {
-    
+  public void robotInit() {   
   }
 
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("encoder test", encoder.get());
-    SmartDashboard.putNumber("encoder value", encoder.get()*kDriveTick2Feet);
+    SmartDashboard.putNumber("encoder value", encoderFX*kDriveTick2Feet);
     SmartDashboard.putNumber("kP", kP);
     //SmartDashboard.putNumber("Joystick input 10 feet", xBoxCont.);
-    SmartDashboard.putNumber("encoder.get", encoder.get());
-    SmartDashboard.putNumber("encoder", encoder.get()*kDriveTick2Feet);
-    SmartDashboard.putNumber("error",  setpoint - encoder.get()*kDriveTick2Feet);
-    SmartDashboard.putNumber("outPut", kP * setpoint - encoder.get()*kDriveTick2Feet);
+    SmartDashboard.putNumber("encoder.get", encoderFX);
+    SmartDashboard.putNumber("error",  setpoint - encoderFX*kDriveTick2Feet);
+    SmartDashboard.putNumber("outPut", kP * setpoint - encoderFX*kDriveTick2Feet);
   }
 
   @Override
   public void autonomousInit() {
     setMotorsNeutral();
-    encoder.reset();
   }
 
   /** This function is called periodically during autonomous. */
