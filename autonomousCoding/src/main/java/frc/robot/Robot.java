@@ -4,13 +4,13 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.Faults;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -35,19 +35,22 @@ public class Robot extends TimedRobot {
   final MotorControllerGroup m_rightSide = new MotorControllerGroup(rightBack, rightFront);
 
   final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftSide, m_rightSide);
-  final DifferentialDrive m_clawRaise = new DifferentialDrive(topLeft, topRIght);
+  private final DifferentialDrive topsDrive = new DifferentialDrive(topLeft, topRIght);
 
   final XboxController xBoxCont = new XboxController(0);
 
-  final double kp = 0.1;
-  final double ki = 0;
-  final double kd = 0;
+  final Faults _faults = new Faults(); 
+
+  final double kp = 0.5;
+  final double ki = 0.05;
+  final double kd = 0.05;
   boolean xButtonPressed = false;
 
+/*
   private double getDistanceTraveled() {
-    final double wheelDiameter = 4.0; // in inches
-    final double encoderCPR = 2048; // counts per revolution
-    final double gearRatio = 10.71; // gear ratio from motor shaft to wheel
+    final double wheelDiameter = 6.5;
+    final double encoderCPR = 2048;
+    final double gearRatio = 10.71;
     
     double counts = (leftFront.getSelectedSensorPosition() + rightFront.getSelectedSensorPosition()) / 2.0;
     double revolutions = counts / encoderCPR;
@@ -57,21 +60,21 @@ public class Robot extends TimedRobot {
   }
 
   private void driveForward(double distance) {
-    PIDController drivePID = new PIDController(kp, ki, kd);
+    PIDController drive = new PIDController(kp, ki, kd);
     double targetDistance = distance;
     double tolerance = 0.5;
     
-    drivePID.reset();
-    drivePID.setSetpoint(targetDistance);
+    drive.reset();
+    drive.setSetpoint(targetDistance);
     
     while (Math.abs(targetDistance - getDistanceTraveled()) > tolerance) {
-      double output = drivePID.calculate(getDistanceTraveled());
+      double output = drive.calculate(getDistanceTraveled());
       m_robotDrive.arcadeDrive(output, 0);
-      Timer.delay(0.02); // small delay to avoid busy loop
     }
     
     m_robotDrive.stopMotor();
-  }
+    drive.close();
+  }  */
 
   public void setMotorsNeutral() {
     
@@ -93,9 +96,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("distance:", getDistanceTraveled());
-    SmartDashboard.putNumber("speedLeftFront:", leftFront.get());
-    SmartDashboard.putBoolean("driveAuto mode:", xButtonPressed);
+    SmartDashboard.putNumber("Sensor Vel:", topRIght.getSelectedSensorVelocity());
+    SmartDashboard.putNumber("Sensor Pos:", topRIght.getSelectedSensorPosition());
+    SmartDashboard.putNumber("Out %:", topRIght.getMotorOutputPercent());
   }
 
   @Override
@@ -106,7 +109,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    driveForward(2);
     /*
      * align with starting node
      * rais arm
@@ -123,27 +125,46 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     setMotorsNeutral();
+    topRIght.configFactoryDefault();
+    topRIght.setInverted(false);
+    topRIght.setSensorPhase(false); 
+  }
+
+  private void limitArmRotation() {
+    /*
+     * get value of encoder with rather
+     * a) topRIght.getSelectedSensorPosition()                                    aka relative position
+     * b) topRIght.getSensorCollection().setIntegratedSensorPositionToAbsolute()  aka absolute position
+     * https://www.chiefdelphi.com/t/falcon-500-talons-fx-absolute-encoder-reset/426613/11
+     * or configur aboslute in pheniox tuner 
+     * switch it to deg (if can)
+     * 
+     * while motor past x degrees then stop motor/set motor to a good position
+     * can do with if as well
+     */
+    while (topRIght.getSelectedSensorPosition() >= 2 && topRIght.getSelectedSensorPosition() <= 3){
+      topsDrive.stopMotor();
+    }
   }
 
   /** This function is called periodically during operator control. */
+  double armSpeed = 0.7;
   @Override
   public void teleopPeriodic() {
     m_robotDrive.arcadeDrive(xBoxCont.getRawAxis(4) * 0.8, xBoxCont.getRawAxis(1) * 0.8);
 
-    if (xBoxCont.getXButtonPressed() == true) {
-      xButtonPressed = !xButtonPressed;
-  }
-
-  double deadzone = 0.5;
-  if (xBoxCont.getRawAxis(4) > deadzone ||
-        xBoxCont.getRawAxis(4) < -deadzone &&
-                xBoxCont.getRawAxis(1) > deadzone || 
-                    xBoxCont.getRawAxis(1) < -deadzone) {
-    xButtonPressed = false;
-  }
-
-  if (xButtonPressed == true) {
-    driveForward(2);
+    if (xBoxCont.getLeftBumper() == true) {
+      topsDrive.tankDrive(armSpeed,-armSpeed);
+      topLeft.setNeutralMode(NeutralMode.Brake);
+      topRIght.setNeutralMode(NeutralMode.Brake);
+  }else if (xBoxCont.getRightBumper() == true) {
+      topsDrive.tankDrive(-armSpeed,armSpeed);
+      topLeft.setNeutralMode(NeutralMode.Brake);
+      topRIght.setNeutralMode(NeutralMode.Brake);
+  }else {
+      topsDrive.tankDrive(0,0);
+      topLeft.setNeutralMode(NeutralMode.Brake);
+      topRIght.setNeutralMode(NeutralMode.Brake);
   }
   }
 }

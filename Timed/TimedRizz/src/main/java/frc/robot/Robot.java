@@ -51,34 +51,11 @@ public class Robot extends TimedRobot {
     public Value coolingSolenoid;
     boolean aButtonPressed = false;
     boolean xButtonPressed = false;
-    boolean yButtonPressed = false;
     double previousPitch = 0;
 
 
-    double setpoint = 0;
-    final double kP = 0.5;
-
-    private Encoder encoder = new Encoder(0, 1, false, EncodingType.k4X);
-    private final double kDriveTick2Feet = 1.0/128*6* Math.PI/12;
-    /* 
     public void encoderFunction() {
-      
-        encoder.reset();
-        if (xbox.getYButton()) {
-            setpoint = 10;
-        }else if (xbox.getRightBumper()){
-            setpoint = 0;
-        }
- 
-        double sensorPosition = encoder.get()*kDriveTick2Feet;
-        double error = setpoint - sensorPosition;
-        double outputSpeed = kP * error;
-
-        cont.leftBack.set(outputSpeed);
-        cont.leftFront.set(outputSpeed);
-        cont.rightBack.set(-outputSpeed);
-        cont.rightFront.set(-outputSpeed);
-    }*/
+    }
 
     public Robot() {
         cont.m_leftSide.setInverted(true);
@@ -93,7 +70,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotPeriodic(){
-        SmartDashboard.putNumber("encoder value", encoder.get()*kDriveTick2Feet);
     }
 
     @Override
@@ -106,7 +82,7 @@ public class Robot extends TimedRobot {
             compressor.disable();
         }
         // UsbCamera camera = 
-        CameraServer.startAutomaticCapture();
+       // CameraServer.startAutomaticCapture();
         // CvSink cvSink = CameraServer.getVideo();
         // Mat mat = new Mat();
         // CvSource outputStream = CameraServer.putVideo("Rectangle", 640, 480);
@@ -298,9 +274,6 @@ public class Robot extends TimedRobot {
         if (xbox.getXButtonPressed() == true) {
             xButtonPressed = !xButtonPressed;
         }
-            if (xbox.getYButtonPressed() == true) {
-            yButtonPressed = !yButtonPressed;
-        }
          
 
         double deadzone = 0.5;
@@ -315,11 +288,6 @@ public class Robot extends TimedRobot {
             balanceRobot(pitchNavx);
         }
 
-        if (xbox.getRawAxis(4) > deadzone ||
-                xbox.getRawAxis(4) < -deadzone &&
-                        xbox.getRawAxis(1) > deadzone || xbox.getRawAxis(1) < -deadzone) {
-            yButtonPressed = false;
-        }
         SmartDashboard.putBoolean("Balance mode: ", xButtonPressed);
 
         SmartDashboard.putNumber("NAVXANGLE Pitch", navx.getPitch());
