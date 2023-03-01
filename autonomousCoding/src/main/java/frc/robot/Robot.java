@@ -42,6 +42,7 @@ public class Robot extends TimedRobot {
   final double kp = 0.1;
   final double ki = 0;
   final double kd = 0;
+  boolean xButtonPressed = false;
 
   private double getDistanceTraveled() {
     final double wheelDiameter = 4.0; // in inches
@@ -58,7 +59,7 @@ public class Robot extends TimedRobot {
   private void driveForward(double distance) {
     PIDController drivePID = new PIDController(kp, ki, kd);
     double targetDistance = distance;
-    double tolerance = 1;
+    double tolerance = 0.5;
     
     drivePID.reset();
     drivePID.setSetpoint(targetDistance);
@@ -92,6 +93,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
+    SmartDashboard.putNumber("distance:", getDistanceTraveled());
+    SmartDashboard.putNumber("speedLeftFront:", leftFront.get());
+    SmartDashboard.putBoolean("driveAuto mode:", xButtonPressed);
   }
 
   @Override
@@ -102,6 +106,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    driveForward(2);
     /*
      * align with starting node
      * rais arm
@@ -125,10 +130,20 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     m_robotDrive.arcadeDrive(xBoxCont.getRawAxis(4) * 0.8, xBoxCont.getRawAxis(1) * 0.8);
 
-    if (xBoxCont.getYButton() == true) {
-      driveForward(getDistanceTraveled());
-    } else if (xBoxCont.getXButton() == true) {
-      driveForward(0);
-    }
+    if (xBoxCont.getXButtonPressed() == true) {
+      xButtonPressed = !xButtonPressed;
+  }
+
+  double deadzone = 0.5;
+  if (xBoxCont.getRawAxis(4) > deadzone ||
+        xBoxCont.getRawAxis(4) < -deadzone &&
+                xBoxCont.getRawAxis(1) > deadzone || 
+                    xBoxCont.getRawAxis(1) < -deadzone) {
+    xButtonPressed = false;
+  }
+
+  if (xButtonPressed == true) {
+    driveForward(2);
+  }
   }
 }
