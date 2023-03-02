@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -24,6 +25,9 @@ public class Robot extends TimedRobot {
   public final WPI_TalonFX rightBack= new WPI_TalonFX(4); 
   public final WPI_TalonFX topRIght= new WPI_TalonFX(6); 
   public final WPI_TalonFX topLeft= new WPI_TalonFX(5); 
+
+  public final Encoder topRightEncoder = new Encoder(0, 1);
+  public final Encoder topLeftEncoder = new Encoder(2, 3);
 
   /*
   public final CANSparkMax leftFront = new CANSparkMax(11, MotorType.kBrushless);
@@ -45,6 +49,12 @@ public class Robot extends TimedRobot {
   final double ki = 0.05;
   final double kd = 0.05;
   boolean xButtonPressed = false;
+
+  double armSpeed = 0.7;
+  double reArmSpeed = -0.7;
+  double circumferenceOfWheel = ;
+  double pulesPerRevTalonFX = 2048;
+  double distancePerPulse = circumferenceOfWheel / pulesPerRev;
 
 /*
   private double getDistanceTraveled() {
@@ -91,7 +101,9 @@ public class Robot extends TimedRobot {
   }
   
 @Override
-  public void robotInit() {   
+  public void robotInit() {
+    topRIght.setSelectedSensorPosition(0, 0, 10);
+    topLeft.setSelectedSensorPosition(0, 0, 10);
   }
 
   @Override
@@ -125,40 +137,41 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     setMotorsNeutral();
-    topRIght.configFactoryDefault();
-    topRIght.setInverted(false);
-    topRIght.setSensorPhase(false); 
+
+    topRightEncoder.setDistancePerPulse(0.05); 
+    topLeftEncoder.setDistancePerPulse(0.05);
+
+    // Set the direction of the encoders
+    topRightEncoder.setReverseDirection(true);
+    topLeftEncoder.setReverseDirection(false);
+
+    // Reset the encoders to zero
+    topRightEncoder.reset();
+    topLeftEncoder.reset();
   }
 
   private void limitArmRotation() {
-    /*
-     * get value of encoder with rather
-     * a) topRIght.getSelectedSensorPosition()                                    aka relative position
-     * b) topRIght.getSensorCollection().setIntegratedSensorPositionToAbsolute()  aka absolute position
-     * https://www.chiefdelphi.com/t/falcon-500-talons-fx-absolute-encoder-reset/426613/11
-     * or configur aboslute in pheniox tuner 
-     * switch it to deg (if can)
-     * 
-     * while motor past x degrees then stop motor/set motor to a good position
-     * can do with if as well
-     */
-    while (topRIght.getSelectedSensorPosition() >= 2 && topRIght.getSelectedSensorPosition() <= 3){
-      topsDrive.stopMotor();
-    }
+
+    if (topRIght.getSelectedSensorPosition() == 2)
+      // Get the current distance traveled by each encoder
+      double topRightDistance = topRightEncoder.getDistance();
+      double topLeftDistance = topLeftEncoder.getDistance();
+  
+      m_robotDrive.tankDrive(armSpeed, reArmSpeed);
+
   }
 
   /** This function is called periodically during operator control. */
-  double armSpeed = 0.7;
   @Override
   public void teleopPeriodic() {
     m_robotDrive.arcadeDrive(xBoxCont.getRawAxis(4) * 0.8, xBoxCont.getRawAxis(1) * 0.8);
 
     if (xBoxCont.getLeftBumper() == true) {
-      topsDrive.tankDrive(armSpeed,-armSpeed);
+      topsDrive.tankDrive(armSpeed, reArmSpeed);
       topLeft.setNeutralMode(NeutralMode.Brake);
       topRIght.setNeutralMode(NeutralMode.Brake);
   }else if (xBoxCont.getRightBumper() == true) {
-      topsDrive.tankDrive(-armSpeed,armSpeed);
+      topsDrive.tankDrive(reArmSpeed,armSpeed);
       topLeft.setNeutralMode(NeutralMode.Brake);
       topRIght.setNeutralMode(NeutralMode.Brake);
   }else {
