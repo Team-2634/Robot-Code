@@ -52,9 +52,10 @@ public class Robot extends TimedRobot {
 
   double armSpeed = 0.7;
   double reArmSpeed = -0.7;
-  double circumferenceOfWheel = ;
+  double radius = 6.5/2;
+  double circumferenceOfWheel = 2*Math.PI*radius;
   double pulesPerRevTalonFX = 2048;
-  double distancePerPulse = circumferenceOfWheel / pulesPerRev;
+  double distancePerPulse = circumferenceOfWheel / pulesPerRevTalonFX;
 
 /*
   private double getDistanceTraveled() {
@@ -111,6 +112,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Sensor Vel:", topRIght.getSelectedSensorVelocity());
     SmartDashboard.putNumber("Sensor Pos:", topRIght.getSelectedSensorPosition());
     SmartDashboard.putNumber("Out %:", topRIght.getMotorOutputPercent());
+    SmartDashboard.putNumber("posEncoder", topRightEncoder.getDistance());
   }
 
   @Override
@@ -138,11 +140,11 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     setMotorsNeutral();
 
-    topRightEncoder.setDistancePerPulse(0.05); 
-    topLeftEncoder.setDistancePerPulse(0.05);
+    topRightEncoder.setDistancePerPulse(distancePerPulse); 
+    topLeftEncoder.setDistancePerPulse(distancePerPulse);
 
     // Set the direction of the encoders
-    topRightEncoder.setReverseDirection(true);
+    topRightEncoder.setReverseDirection(false);
     topLeftEncoder.setReverseDirection(false);
 
     // Reset the encoders to zero
@@ -151,13 +153,6 @@ public class Robot extends TimedRobot {
   }
 
   private void limitArmRotation() {
-
-    if (topRIght.getSelectedSensorPosition() == 2)
-      // Get the current distance traveled by each encoder
-      double topRightDistance = topRightEncoder.getDistance();
-      double topLeftDistance = topLeftEncoder.getDistance();
-  
-      m_robotDrive.tankDrive(armSpeed, reArmSpeed);
 
   }
 
