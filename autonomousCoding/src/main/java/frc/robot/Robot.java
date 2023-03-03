@@ -26,13 +26,13 @@ public class Robot extends TimedRobot {
   public final WPI_TalonFX rightBack= new WPI_TalonFX(4); 
   public final WPI_TalonFX topRIght= new WPI_TalonFX(6); 
   public final WPI_TalonFX topLeft= new WPI_TalonFX(5); 
-  /*
-  public final Encoder leftFrontEncoder = new Encoder(0,1, false);
+  
+  public final Encoder leftFrontEncoder = new Encoder(0,1, false); // not needed
 
   public final Encoder topRightEncoder = new Encoder(5, 6);
   public final Encoder topLeftEncoder = new Encoder(2, 3);
 
-  
+  /*
   public final CANSparkMax leftFront = new CANSparkMax(11, MotorType.kBrushless);
   public final CANSparkMax rightFront = new CANSparkMax(6, MotorType.kBrushless);
   public final CANSparkMax leftBack = new CANSparkMax(5, MotorType.kBrushless);
@@ -57,12 +57,11 @@ public class Robot extends TimedRobot {
   double radius = 6.5/2; //of wheel in inchs
   double circumferenceOfWheel = 2*Math.PI*radius;
   double pulesPerRevTalonFX = 2048;
-  double pulesPerREvCANSparkMAX= 42;
-  double distancePerPulse = circumferenceOfWheel / pulesPerREvCANSparkMAX;
+  double distancePerPulse = circumferenceOfWheel / pulesPerRevTalonFX;
 
   public void driveForward() {
     PIDController driveFwdPid = new PIDController(kp, ki, kd);    
-    double targetDistance = 1;
+    double targetDistance = 5;
     double tolerance = 0.5;
 
     driveFwdPid.reset();
@@ -93,8 +92,8 @@ public class Robot extends TimedRobot {
   
 @Override
   public void robotInit() {
-    //topRIght.setSelectedSensorPosition(0, 0, 10);
-    //topLeft.setSelectedSensorPosition(0, 0, 10);
+    topRIght.setSelectedSensorPosition(0, 0, 10);
+    topLeft.setSelectedSensorPosition(0, 0, 10);
 
     topRightEncoder.setDistancePerPulse(distancePerPulse); 
     topLeftEncoder.setDistancePerPulse(distancePerPulse);
@@ -113,6 +112,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("leftFrontEncoderDIS", leftFrontEncoder.getDistance());
     SmartDashboard.putNumber("leftFrontEncoderPuls", leftFrontEncoder.getDistancePerPulse());
     SmartDashboard.putNumber("Output PID", output);
+    SmartDashboard.putNumber("topRight sensorPos",  topRIght.getSelectedSensorPosition());
+
   }
 
   @Override
