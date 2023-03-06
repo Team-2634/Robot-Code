@@ -1,48 +1,29 @@
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends TimedRobot {
  
-  public final WPI_TalonFX leftFront = new WPI_TalonFX(1);
-  public final WPI_TalonFX rightFront = new WPI_TalonFX(3);
-  public final WPI_TalonFX leftBack = new WPI_TalonFX(2);
+  public final WPI_TalonFX leftFront= new WPI_TalonFX(1);
+  public final WPI_TalonFX rightFront= new WPI_TalonFX(3);
+  public final WPI_TalonFX leftBack= new WPI_TalonFX(2);
   public final WPI_TalonFX rightBack= new WPI_TalonFX(4); 
   public final WPI_TalonFX topRIght= new WPI_TalonFX(6); 
   public final WPI_TalonFX topLeft= new WPI_TalonFX(5); 
-  
-  public final Encoder leftFrontEncoder = new Encoder(0,1, false); // not needed
 
-  public final Encoder topRightEncoder = new Encoder(5, 6);
-  public final Encoder topLeftEncoder = new Encoder(2, 3);
-
-  /*
-  public final CANSparkMax leftFront = new CANSparkMax(11, MotorType.kBrushless);
-  public final CANSparkMax rightFront = new CANSparkMax(6, MotorType.kBrushless);
-  public final CANSparkMax leftBack = new CANSparkMax(5, MotorType.kBrushless);
-  public final CANSparkMax rightBack = new CANSparkMax(8, MotorType.kBrushless); 
-*/
   final MotorControllerGroup m_leftSide = new MotorControllerGroup(leftBack, leftFront);
   final MotorControllerGroup m_rightSide = new MotorControllerGroup(rightBack, rightFront);
 
   final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftSide, m_rightSide);
- private final DifferentialDrive topsDrive = new DifferentialDrive(topLeft, topRIght);
+  private final DifferentialDrive topsDrive = new DifferentialDrive(topLeft, topRIght);
 
   final XboxController xBoxCont = new XboxController(0);
 
@@ -51,6 +32,8 @@ public class Robot extends TimedRobot {
   final double kd = 0.05;
   boolean xButtonPressed = false;
   double output;
+  double currentPos;
+  double error;
 
   double armSpeed = 0.7;
   double reArmSpeed = -0.7;
@@ -58,20 +41,22 @@ public class Robot extends TimedRobot {
   double circumferenceOfWheel = 2*Math.PI*radius;
   double pulesPerRevTalonFX = 2048;
   double distancePerPulse = circumferenceOfWheel / pulesPerRevTalonFX;
+  double targetDistance;
 
   public void driveForward() {
     PIDController driveFwdPid = new PIDController(kp, ki, kd);    
-    double targetDistance = 5;
+    targetDistance = 3;
     double tolerance = 0.5;
 
     driveFwdPid.reset();
     driveFwdPid.setSetpoint(targetDistance);
 
-    while (Math.abs(targetDistance - leftFrontEncoder.getDistance()) > tolerance) {
-      output = driveFwdPid.calculate(leftFrontEncoder.getDistance(), targetDistance);
+    while (Math.abs(targetDistance - leftFront.getSelectedSensorPosition()) > tolerance) {
+      output = driveFwdPid.calculate(leftFront.getSelectedSensorPosition(), targetDistance);
+
       m_robotDrive.arcadeDrive(0, -output);
     }
-    
+  
     m_robotDrive.stopMotor();
     driveFwdPid.close();
   }
@@ -82,40 +67,46 @@ public class Robot extends TimedRobot {
     leftBack.setNeutralMode(NeutralMode.Brake);
     rightFront.setNeutralMode(NeutralMode.Brake);
     rightBack.setNeutralMode(NeutralMode.Brake);
-     /*
-    leftFront.setIdleMode(IdleMode.kBrake);
-    leftBack.setIdleMode(IdleMode.kBrake);
-    rightFront.setIdleMode(IdleMode.kBrake);
-    rightBack.setIdleMode(IdleMode.kBrake);
-    */
   }
   
 @Override
   public void robotInit() {
-    topRIght.setSelectedSensorPosition(0, 0, 10);
-    topLeft.setSelectedSensorPosition(0, 0, 10);
 
-    topRightEncoder.setDistancePerPulse(distancePerPulse); 
-    topLeftEncoder.setDistancePerPulse(distancePerPulse);
+    topRIght.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
+    topLeft.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
+    leftFront.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 
-    // Set the direction of the encoders
-    topRightEncoder.setReverseDirection(false);
-    topLeftEncoder.setReverseDirection(false);
+    topRIght.setSelectedSensorPosition(0);
+    topLeft.setSelectedSensorPosition(0);
+    leftFront.setSelectedSensorPosition(0);
+    
+    // Set the distance per pulse for the integrated encoder
+    topRIght.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
+    topLeft.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
+    leftFront.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
 
-    // Reset the encoders to zero
-    topRightEncoder.reset();
-    topLeftEncoder.reset();
+    // Set the direction of the integrated encoder
+    topRIght.setSensorPhase(false);
+    topLeft.setSensorPhase(false);
+    leftFront.setSensorPhase(false);
+
+    // Reset the integrated encoder to zero
+    topRIght.setSelectedSensorPosition(0);
+    topLeft.setSelectedSensorPosition(0);
+    leftFront.setSelectedSensorPosition(0);
   }
 
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("leftFrontEncoderDIS", leftFrontEncoder.getDistance());
-    SmartDashboard.putNumber("leftFrontEncoderPuls", leftFrontEncoder.getDistancePerPulse());
+    double leftFrontEncoder = leftFront.getSelectedSensorPosition();
+    double topRightEncoder = topRIght.getSelectedSensorPosition();
+    double topLeftEncoder = topLeft.getSelectedSensorPosition();
+    SmartDashboard.putNumber("leftFront SensorPos", leftFrontEncoder);
+    SmartDashboard.putNumber("topRight SensorPos", topRightEncoder);
+    SmartDashboard.putNumber("topLeft sensorPos",  topLeftEncoder);
     SmartDashboard.putNumber("Output PID", output);
-    SmartDashboard.putNumber("topRight sensorPos",  topRIght.getSelectedSensorPosition());
-
   }
-
+  
   @Override
   public void autonomousInit() {
     setMotorsNeutral();
@@ -134,6 +125,7 @@ public class Robot extends TimedRobot {
      * set object
      * balance
      */
+    driveForward();
   }
 
   /** This function is called once when teleop is enabled. */
@@ -144,10 +136,10 @@ public class Robot extends TimedRobot {
 
   public void limitArmRotation() {
 
-    while (topRIght.getSelectedSensorPosition() >= 90){
+    if (topRIght.getSelectedSensorPosition() >= 90){
       topsDrive.tankDrive(armSpeed, reArmSpeed);
     } 
-    while (topRIght.getSelectedSensorPosition() <= 25){
+    if (topRIght.getSelectedSensorPosition() <= 25){
       topsDrive.tankDrive(reArmSpeed, armSpeed);
     } 
   }
@@ -172,7 +164,7 @@ public class Robot extends TimedRobot {
 
   if (xButtonPressed == true) {
     driveForward();
-
+  }
   SmartDashboard.putBoolean("driveForward(); mode: ", xButtonPressed);
     
 
@@ -190,6 +182,5 @@ public class Robot extends TimedRobot {
       topRIght.setNeutralMode(NeutralMode.Brake);
   } 
   }
-}
   }
 }
