@@ -38,7 +38,8 @@ public class Robot extends TimedRobot {
   double radius = 6.5/2; //of wheel in inchs
   double circumferenceOfWheel = 2*Math.PI*radius;
   double pulesPerRevTalonFX = 2048;
-  double distancePerPulse = circumferenceOfWheel / pulesPerRevTalonFX;
+  double distancePerPulse = circumferenceOfWheel / pulesPerRevTalonFX-----------;
+  //double distancePerPulse = pulesPerRevTalonFX / circumferenceOfWheel;
   double targetDistance;
 
   public void driveForward() {
@@ -81,7 +82,7 @@ public class Robot extends TimedRobot {
 @Override
   public void robotInit() {
 
-  topRIght.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
+  topRIght.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
   topLeft.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
   leftFront.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 
@@ -90,7 +91,8 @@ public class Robot extends TimedRobot {
   // Set the distance per pulse for the integrated encoder
   topRIght.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
   topLeft.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
-  leftFront.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
+  leftFront.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0---------------------);
+  //leftFront.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
 
   // Set the direction of the integrated encoder
   topRIght.setSensorPhase(false);
