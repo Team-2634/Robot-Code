@@ -248,7 +248,7 @@ public class Robot extends TimedRobot {
 
         setMotorsNeutral();
 
-        m_robotDrive.arcadeDrive(xbox.getRawAxis(4) * 0.8, xbox.getRawAxis(1) * 0.8);
+        m_robotDrive.arcadeDrive(xbox.getRawAxis(4) * 0.75, xbox.getRawAxis(1) * 0.75);
 
         if (xbox.getAButtonPressed() == true) {
             aButtonPressed = !aButtonPressed;
