@@ -33,8 +33,8 @@ public class Robot extends TimedRobot {
   boolean xButtonPressed = false;
   double output;
 
-  double armSpeed = 0.7;
-  double reArmSpeed = -0.7;
+  double armSpeed = 0.3;
+  double reArmSpeed = -0.3;
   double radius = 6.5/2; //of wheel in inchs
   double circumferenceOfWheel = 2*Math.PI*radius;
   double pulesPerRevTalonFX = 2048;
@@ -42,19 +42,20 @@ public class Robot extends TimedRobot {
   double targetDistance;
 
   public void driveForward() {
+    resetEncoder();
     PIDController driveFwdPid = new PIDController(kp, ki, kd);    
-    targetDistance = 3;
-    double tolerance = 0.5;
+    targetDistance = 5; //inchs
+    double tolerance = 1;
 
     driveFwdPid.reset();
     driveFwdPid.setSetpoint(targetDistance);
 
-    while (Math.abs(targetDistance - leftFront.getSelectedSensorPosition()) > tolerance) {
+    while (Math.abs(targetDistance - leftFront.getSelectedSensorPosition()) >= tolerance) {
       output = driveFwdPid.calculate(leftFront.getSelectedSensorPosition(), driveFwdPid.getSetpoint());
       SmartDashboard.putNumber("PID SetPoint", driveFwdPid.getSetpoint());
       SmartDashboard.putNumber("leftFront motorPercent", leftFront.getMotorOutputPercent());
 
-      m_robotDrive.arcadeDrive(0, -output);
+      m_robotDrive.arcadeDrive(output, 0);
     }
   
     m_robotDrive.stopMotor();
@@ -69,31 +70,34 @@ public class Robot extends TimedRobot {
     rightBack.setNeutralMode(NeutralMode.Brake);
   }
   
+  public void resetEncoder(){
+
+    topRIght.setSelectedSensorPosition(0);
+    topLeft.setSelectedSensorPosition(0);
+    leftFront.setSelectedSensorPosition(0);
+
+  }
+
 @Override
   public void robotInit() {
 
-    topRIght.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
-    topLeft.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
-    leftFront.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
+  topRIght.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
+  topLeft.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
+  leftFront.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 
-    topRIght.setSelectedSensorPosition(0);
-    topLeft.setSelectedSensorPosition(0);
-    leftFront.setSelectedSensorPosition(0);
+  resetEncoder();
     
-    // Set the distance per pulse for the integrated encoder
-    topRIght.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
-    topLeft.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
-    leftFront.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
+  // Set the distance per pulse for the integrated encoder
+  topRIght.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
+  topLeft.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
+  leftFront.configSelectedFeedbackCoefficient(distancePerPulse);// this one is fixed
 
-    // Set the direction of the integrated encoder
-    topRIght.setSensorPhase(false);
-    topLeft.setSensorPhase(false);
-    leftFront.setSensorPhase(false);
-
-    // Reset the integrated encoder to zero
-    topRIght.setSelectedSensorPosition(0);
-    topLeft.setSelectedSensorPosition(0);
-    leftFront.setSelectedSensorPosition(0);
+  // Set the direction of the integrated encoder
+  topRIght.setSensorPhase(false);
+  topLeft.setSensorPhase(false);
+  leftFront.setSensorPhase(false);
+    
+  resetEncoder();
   }
 
   @Override
@@ -133,22 +137,22 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     setMotorsNeutral();
   }
-
+/*
   public void limitArmRotation() {
 
-    if (topRIght.getSelectedSensorPosition() >= 90){
+    if (topRIght.getSelectedSensorPosition() >= 5){
       topsDrive.tankDrive(armSpeed, reArmSpeed);
     } 
-    if (topRIght.getSelectedSensorPosition() <= 25){
+    if (topRIght.getSelectedSensorPosition() <= -0.5){
       topsDrive.tankDrive(reArmSpeed, armSpeed);
     } 
   }
- 
+  */
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
 
-    limitArmRotation();
+    //limitArmRotation();
 
     m_robotDrive.arcadeDrive(xBoxCont.getRawAxis(4) * 0.8, xBoxCont.getRawAxis(1) * 0.8);
     
@@ -161,13 +165,13 @@ public class Robot extends TimedRobot {
                   xBoxCont.getRawAxis(1) > deadzone || 
                       xBoxCont.getRawAxis(1) < -deadzone) {
       xButtonPressed = false;
-
+                      }
   if (xButtonPressed == true) {
     driveForward();
   }
   SmartDashboard.putBoolean("driveForward(); mode: ", xButtonPressed);
     
-
+/*
     if (xBoxCont.getLeftBumper() == true) {
       topsDrive.tankDrive(armSpeed, reArmSpeed);
       topLeft.setNeutralMode(NeutralMode.Brake);
@@ -180,7 +184,6 @@ public class Robot extends TimedRobot {
       topsDrive.tankDrive(0,0);
       topLeft.setNeutralMode(NeutralMode.Brake);
       topRIght.setNeutralMode(NeutralMode.Brake);
-  } 
-  }
+  }  */
   }
 }

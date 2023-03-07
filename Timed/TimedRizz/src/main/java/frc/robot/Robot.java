@@ -270,12 +270,10 @@ public class Robot extends TimedRobot {
          * rightIntake.set(0);
          * }
          */
-
         if (xbox.getXButtonPressed() == true) {
             xButtonPressed = !xButtonPressed;
         }
          
-
         double deadzone = 0.5;
         if (xbox.getRawAxis(4) > deadzone ||
                 xbox.getRawAxis(4) < -deadzone &&
@@ -288,6 +286,11 @@ public class Robot extends TimedRobot {
             balanceRobot(pitchNavx);
         }
 
+        if (xbox.getYButton()== true){
+        cont.armTalon.set(.10);
+        } else if (xbox.getBButton() == true){
+        cont.armTalon.set(-0.10);
+    }
         SmartDashboard.putBoolean("Balance mode: ", xButtonPressed);
 
         SmartDashboard.putNumber("NAVXANGLE Pitch", navx.getPitch());
