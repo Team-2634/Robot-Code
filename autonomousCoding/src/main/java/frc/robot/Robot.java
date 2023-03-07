@@ -38,20 +38,20 @@ public class Robot extends TimedRobot {
   double radius = 6.5/2; //of wheel in inchs
   double circumferenceOfWheel = 2*Math.PI*radius;
   double pulesPerRevTalonFX = 2048;
-  double distancePerPulse = circumferenceOfWheel / pulesPerRevTalonFX-----------;
+  double distancePerPulse = circumferenceOfWheel / pulesPerRevTalonFX;
   //double distancePerPulse = pulesPerRevTalonFX / circumferenceOfWheel;
   double targetDistance;
 
   public void driveForward() {
     resetEncoder();
     PIDController driveFwdPid = new PIDController(kp, ki, kd);    
-    targetDistance = 5-------------; //inchs
+    targetDistance = 5; //inchs
     double tolerance = 1;
 
     driveFwdPid.reset();
     driveFwdPid.setSetpoint(targetDistance);
 
-    while (Math.abs(targetDistance - leftFront.getSelectedSensorPosition()) > tolerance) {
+    while (Math.abs(targetDistance - leftFront.getSelectedSensorPosition()) >= tolerance) {
       output = driveFwdPid.calculate(leftFront.getSelectedSensorPosition(), driveFwdPid.getSetpoint());
       SmartDashboard.putNumber("PID SetPoint", driveFwdPid.getSetpoint());
       SmartDashboard.putNumber("leftFront motorPercent", leftFront.getMotorOutputPercent());
@@ -91,7 +91,7 @@ public class Robot extends TimedRobot {
   // Set the distance per pulse for the integrated encoder
   topRIght.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
   topLeft.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
-  leftFront.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0---------------------);
+  leftFront.configSelectedFeedbackCoefficient(distancePerPulse);
   //leftFront.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
 
   // Set the direction of the integrated encoder
