@@ -32,8 +32,6 @@ public class Robot extends TimedRobot {
   final double kd = 0.05;
   boolean xButtonPressed = false;
   double output;
-  double currentPos;
-  double error;
 
   double armSpeed = 0.7;
   double reArmSpeed = -0.7;
@@ -52,7 +50,9 @@ public class Robot extends TimedRobot {
     driveFwdPid.setSetpoint(targetDistance);
 
     while (Math.abs(targetDistance - leftFront.getSelectedSensorPosition()) > tolerance) {
-      output = driveFwdPid.calculate(leftFront.getSelectedSensorPosition(), targetDistance);
+      output = driveFwdPid.calculate(leftFront.getSelectedSensorPosition(), driveFwdPid.getSetpoint());
+      SmartDashboard.putNumber("PID SetPoint", driveFwdPid.getSetpoint());
+      SmartDashboard.putNumber("leftFront motorPercent", leftFront.getMotorOutputPercent());
 
       m_robotDrive.arcadeDrive(0, -output);
     }
