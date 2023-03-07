@@ -45,7 +45,7 @@ public class Robot extends TimedRobot {
   public void driveForward() {
     resetEncoder();
     PIDController driveFwdPid = new PIDController(kp, ki, kd);    
-    targetDistance = 5; //inchs
+    targetDistance = 5-------------; //inchs
     double tolerance = 1;
 
     driveFwdPid.reset();
