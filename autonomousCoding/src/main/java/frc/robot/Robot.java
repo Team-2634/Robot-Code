@@ -16,14 +16,14 @@ public class Robot extends TimedRobot {
   public final WPI_TalonFX rightFront= new WPI_TalonFX(3);
   public final WPI_TalonFX leftBack= new WPI_TalonFX(2);
   public final WPI_TalonFX rightBack= new WPI_TalonFX(4); 
-  public final WPI_TalonFX topRIght= new WPI_TalonFX(6); 
+  public final WPI_TalonFX topRight= new WPI_TalonFX(6); 
   public final WPI_TalonFX topLeft= new WPI_TalonFX(5); 
 
   final MotorControllerGroup m_leftSide = new MotorControllerGroup(leftBack, leftFront);
   final MotorControllerGroup m_rightSide = new MotorControllerGroup(rightBack, rightFront);
 
   final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftSide, m_rightSide);
-  private final DifferentialDrive topsDrive = new DifferentialDrive(topLeft, topRIght);
+  private final DifferentialDrive topsDrive = new DifferentialDrive(topLeft, topRight);
 
   final XboxController xBoxCont = new XboxController(0);
 
@@ -31,7 +31,6 @@ public class Robot extends TimedRobot {
   final double ki = 0.05;
   final double kd = 0.05;
   boolean xButtonPressed = false;
-  double output;
 
   double armSpeed = 0.3;
   double reArmSpeed = -0.3;
@@ -41,24 +40,45 @@ public class Robot extends TimedRobot {
   double distancePerPulse = circumferenceOfWheel / pulesPerRevTalonFX;
   double targetDistance;
 
+  PIDController driveFwdPid = new PIDController(kp, ki, kd);   
+
+  public void driveForwarddd() {
+    m_robotDrive.arcadeDrive(0, -0.30);
+    SmartDashboard.putNumber("leftFront motorPercent", leftFront.get());
+  }
+
   public void driveForward() {
-    resetEncoder();
-    PIDController driveFwdPid = new PIDController(kp, ki, kd);    
-    targetDistance = 5; //inchs
+    //resetEncoder();
+    double output;
+
+     
+    targetDistance = 200; //inchs
+    double currentDistance = leftFront.getSelectedSensorPosition();
     double tolerance = 1;
 
-    driveFwdPid.reset();
-    driveFwdPid.setSetpoint(targetDistance);
+    //driveFwdPid.reset();
+    //driveFwdPid.setSetpoint(targetDistance);
 
-    while (Math.abs(targetDistance - leftFront.getSelectedSensorPosition()) >= tolerance) {
-      output = driveFwdPid.calculate(leftFront.getSelectedSensorPosition(), driveFwdPid.getSetpoint());
-      SmartDashboard.putNumber("PID SetPoint", driveFwdPid.getSetpoint());
-      SmartDashboard.putNumber("leftFront motorPercent", leftFront.getMotorOutputPercent());
 
-      m_robotDrive.arcadeDrive(output, 0);
+
+    if (Math.abs(targetDistance - currentDistance) > tolerance) {
+      output = driveFwdPid.calculate(currentDistance, targetDistance);
+      
+      SmartDashboard.putNumber("PID currentD", currentDistance);
+      SmartDashboard.putNumber("PID SetPoint", targetDistance);
+      //SmartDashboard.putNumber("leftFront motorPercent", leftFront.get());
+      SmartDashboard.putNumber("PID Output  ", output);
+      //SmartDashboard.putNumber("PID Output Divided", output);
+      
+      output = Math.max(-1, Math.min(1, output));
+
+      m_robotDrive.arcadeDrive(0, -output);
+      //leftFront.set(output/10);
+    } else{
+      System.out.println("stop motor");
+      m_robotDrive.stopMotor();
     }
-  
-    m_robotDrive.stopMotor();
+
     driveFwdPid.close();
   }
 
@@ -72,7 +92,7 @@ public class Robot extends TimedRobot {
   
   public void resetEncoder(){
 
-    topRIght.setSelectedSensorPosition(0);
+    topRight.setSelectedSensorPosition(0);
     topLeft.setSelectedSensorPosition(0);
     leftFront.setSelectedSensorPosition(0);
 
@@ -81,19 +101,20 @@ public class Robot extends TimedRobot {
 @Override
   public void robotInit() {
 
-  topRIght.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
+  topRight.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
   topLeft.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
   leftFront.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 
   resetEncoder();
     
   // Set the distance per pulse for the integrated encoder
-  topRIght.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
+  
+  topRight.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
   topLeft.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
   leftFront.configSelectedFeedbackCoefficient(distancePerPulse);// this one is fixed
-
+  
   // Set the direction of the integrated encoder
-  topRIght.setSensorPhase(false);
+  topRight.setSensorPhase(false);
   topLeft.setSensorPhase(false);
   leftFront.setSensorPhase(false);
     
@@ -103,17 +124,16 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     double leftFrontEncoder = leftFront.getSelectedSensorPosition();
-    double topRightEncoder = topRIght.getSelectedSensorPosition();
+    double topRightEncoder = topRight.getSelectedSensorPosition();
     double topLeftEncoder = topLeft.getSelectedSensorPosition();
-    SmartDashboard.putNumber("leftFront SensorPos", leftFrontEncoder);
-    SmartDashboard.putNumber("topRight SensorPos", topRightEncoder);
-    SmartDashboard.putNumber("topLeft sensorPos",  topLeftEncoder);
-    SmartDashboard.putNumber("Output PID", output);
+    //SmartDashboard.putNumber("topLeft sensorPos",  topLeftEncoder);
+    //SmartDashboard.putNumber("Output PID", output);
   }
   
   @Override
   public void autonomousInit() {
     setMotorsNeutral();
+    driveForward();
   }
 
   /** This function is called periodically during autonomous. */
@@ -129,7 +149,7 @@ public class Robot extends TimedRobot {
      * set object
      * balance
      */
-    driveForward();
+    
   }
 
   /** This function is called once when teleop is enabled. */
