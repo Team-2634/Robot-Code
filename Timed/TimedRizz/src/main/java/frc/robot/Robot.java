@@ -218,16 +218,16 @@ public class Robot extends TimedRobot {
         }
     }
 */
-    double armSpeed = 0.7;
+    double armSpeed = 0.4;
     @Override
     public void teleopPeriodic() {
         double teleopTime = timer.get();
 
-        if (xbox.getLeftBumper() == true) {
+        if (xbox.getLeftTriggerAxis() >= 0.5) {
             topsDrive.tankDrive(armSpeed,-armSpeed);
             cont.topLeft.setNeutralMode(NeutralMode.Brake);
             cont.topRIght.setNeutralMode(NeutralMode.Brake);
-        }else if (xbox.getRightBumper() == true) {
+        }else if (xbox.getRightTriggerAxis() >= 0.5) {
             topsDrive.tankDrive(-armSpeed,armSpeed);
             cont.topLeft.setNeutralMode(NeutralMode.Brake);
             cont.topRIght.setNeutralMode(NeutralMode.Brake);
@@ -287,11 +287,11 @@ public class Robot extends TimedRobot {
             balanceRobot(pitchNavx);
         }
 
-        if (xbox.getPOV() == 0){
-            cont.armTalon.set(.50);
+        if (xbox.getRightBumper() == true){
+            cont.armTalon.set(.30);
             cont.armTalon.setNeutralMode(NeutralMode.Brake);
-        } else if (xbox.getPOV() == 180){
-            cont.armTalon.set(-0.50);
+        } else if (xbox.getLeftBumper() == true){
+            cont.armTalon.set(-0.30);
             cont.armTalon.setNeutralMode(NeutralMode.Brake);
         } else {
             cont.armTalon.set(0);

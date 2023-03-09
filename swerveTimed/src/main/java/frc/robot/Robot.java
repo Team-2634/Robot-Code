@@ -44,13 +44,13 @@ import com.kauailabs.navx.frc.AHRS;
  */
 public class Robot extends TimedRobot {
 
-  private AHRS navx;
+  //private AHRS navx;
   private final XboxController xbox = new XboxController(0);
 
   //constuct pid and other stuff
   final double kp = 0.5;
-  final double ki = 0.05;
-  final double kd = 0.05;
+  final double ki = 0;
+  final double kd = 0;
 
   PIDController pidFrontLeftTurn = new PIDController(kp, ki, kd);
   PIDController pidFrontRightTurn = new PIDController(kp, ki, kd);
@@ -59,15 +59,21 @@ public class Robot extends TimedRobot {
   
   PIDController pidDrive = new PIDController(kp, ki, kd);
   
-  public final WPI_TalonFX frontLeftDrive = new WPI_TalonFX(1);
-  public final WPI_TalonFX frontRightDrive = new WPI_TalonFX(3);
-  public final WPI_TalonFX backLeftDrive = new WPI_TalonFX(2);
-  public final WPI_TalonFX backRightDrive= new WPI_TalonFX(4); 
+  public final WPI_TalonFX frontLeftDrive = new WPI_TalonFX(2);
+  public final WPI_TalonFX frontRightDrive = new WPI_TalonFX(4);
+  public final WPI_TalonFX backLeftDrive = new WPI_TalonFX(6);
+  public final WPI_TalonFX backRightDrive= new WPI_TalonFX(8); 
 
-  public final WPI_TalonFX frontLeftSteer = new WPI_TalonFX(5);
-  public final WPI_TalonFX frontRightSteer = new WPI_TalonFX(6);
-  public final WPI_TalonFX backLeftSteer = new WPI_TalonFX(7);
-  public final WPI_TalonFX backRightSteer = new WPI_TalonFX(8); 
+  public final WPI_TalonFX frontLeftSteer = new WPI_TalonFX(1);
+  public final WPI_TalonFX frontRightSteer = new WPI_TalonFX(3);
+  public final WPI_TalonFX backLeftSteer = new WPI_TalonFX(5);
+  public final WPI_TalonFX backRightSteer = new WPI_TalonFX(7); 
+/* 
+  public final Encoder frontLeftAbsolute = new Encoder(0, 1);
+  public final Encoder frontRightAbsolute = new Encoder(0, 1);
+  public final Encoder backLeftAbsolute = new Encoder(0, 1);
+  public final Encoder backRightAbsolute = new Encoder(0, 1);
+  */
 
   //conversion factors !!!CHANGE THESE!!!
   public final double kWheelDiameterMeters = Units.inchesToMeters(4);
@@ -77,12 +83,19 @@ public class Robot extends TimedRobot {
   public final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
   public final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
   public final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
-  public final double kPTurning = 0.5;
+  //public final double absEncoderTicks = ;
+  //public final double absEncoderTicks2Rad = absEncoderTicks / 2 / Math.PI;
 
   double driveSensitivity = 0.8; //do not change above 1
   double turningSensitivity = 0.8;
   double maxSpeedMpS = 10; // metres/sec
+/* 
+  double frontLeftOffset;
+  double frontRightOffset;
+  double backLeftOffset;
+  double backRightOffset;
 
+*/
   //define location of modules/wheels
   Translation2d m_frontLeftLocation = new Translation2d(0.381, 0.381);
   Translation2d m_frontRightLocation = new Translation2d(0.381, -0.381);
@@ -101,12 +114,27 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     
-    navx.reset();
+    //navx.reset();
     
     frontLeftSteer.setSelectedSensorPosition(0);
     frontRightSteer.setSelectedSensorPosition(0);
     backLeftSteer.setSelectedSensorPosition(0);
     backRightSteer.setSelectedSensorPosition(0);
+/* 
+    frontLeftOffset = frontLeftAbsolute.getDistance();
+    frontRightOffset = frontRightAbsolute.getDistance();
+    backLeftOffset = backLeftAbsolute.getDistance();
+    backRightOffset = backRightAbsolute.getDistance();
+    */
+    frontLeftSteer.setNeutralMode(NeutralMode.Brake);
+    frontRightSteer.setNeutralMode(NeutralMode.Brake);
+    backLeftSteer.setNeutralMode(NeutralMode.Brake);
+    backRightSteer.setNeutralMode(NeutralMode.Brake);
+
+    frontLeftSteer.setNeutralMode(NeutralMode.Brake);
+    frontRightSteer.setNeutralMode(NeutralMode.Brake);
+    backLeftSteer.setNeutralMode(NeutralMode.Brake);
+    backRightSteer.setNeutralMode(NeutralMode.Brake);
   }
   
   /**
@@ -138,7 +166,12 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
   }
 
-
+  public double removeDeadzone(int axisInput) {
+    if (Math.abs(xbox.getRawAxis(axisInput)) < 0.1) {
+      return 0;
+    }
+    return xbox.getRawAxis(axisInput);
+  }
   /** This function is called once when teleop is enabled. */
   
   public void swerveDrive() {
@@ -152,9 +185,9 @@ public class Robot extends TimedRobot {
     //controller inputs are multiplied by max speed to return a fraction of maximum speed and modified further by sensitivity
     //max controller value of 1 returns maximum speed achivable by the robot before being reduced by sensitivity
     //turning is black magic
-    double desiredXSpeed = xbox.getRawAxis(4) * maxSpeedMpS * driveSensitivity;
-    double desiredYSpeed = xbox.getRawAxis(3) * maxSpeedMpS * driveSensitivity;
-    double desiredTurnSpeed = xbox.getRawAxis(1) * turningSensitivity;
+    double desiredXSpeed = removeDeadzone(4) * maxSpeedMpS * driveSensitivity;
+    double desiredYSpeed = removeDeadzone(3) * maxSpeedMpS * driveSensitivity;
+    double desiredTurnSpeed = removeDeadzone(1) * turningSensitivity;
     ChassisSpeeds desiredSpeeds = new ChassisSpeeds(desiredXSpeed, desiredYSpeed, desiredTurnSpeed);
     
     //make desiredSpeeds into speeds and angles for each module
@@ -169,16 +202,29 @@ public class Robot extends TimedRobot {
     SwerveModuleState backRightModule = moduleStates[3];
 
     //optimize wheel angles (ex. wheel is at 359deg and needs to go to 1deg. wheel will now go 2deg instead of 358deg)
+    /* 
     var frontLeftOptimized = SwerveModuleState.optimize(frontLeftModule, new Rotation2d(frontLeftSteer.getSelectedSensorPosition()/kTurningEncoderRot2Rad));
     var frontRightOptimized = SwerveModuleState.optimize(frontRightModule, new Rotation2d(frontRightSteer.getSelectedSensorPosition()/kTurningEncoderRot2Rad));
     var backLeftOptimized = SwerveModuleState.optimize(backLeftModule, new Rotation2d(backLeftSteer.getSelectedSensorPosition()/kTurningEncoderRot2Rad));
     var backRightOptimized = SwerveModuleState.optimize(backRightModule, new Rotation2d(backRightSteer.getSelectedSensorPosition()/kTurningEncoderRot2Rad));
-    
+    */
+    var frontLeftOptimized = frontLeftModule;
+    var frontRightOptimized = frontRightModule;
+    var backLeftOptimized = backLeftModule;
+    var backRightOptimized = backRightModule;
+
+
+
     //set steer motor power to the pid output of current position in radians and desired position in radians
     frontLeftSteer.set(pidFrontLeftTurn.calculate(frontLeftSteer.getSelectedSensorPosition()/kTurningEncoderRot2Rad, frontLeftOptimized.angle.getRadians()));
     frontRightSteer.set(pidFrontRightTurn.calculate(frontRightSteer.getSelectedSensorPosition()/kTurningEncoderRot2Rad, frontRightOptimized.angle.getRadians()));
     backLeftSteer.set(pidBackLeftTurn.calculate(backLeftSteer.getSelectedSensorPosition()/kTurningEncoderRot2Rad, backLeftOptimized.angle.getRadians()));
     backRightSteer.set(pidBackRightTurn.calculate(backRightSteer.getSelectedSensorPosition()/kTurningEncoderRot2Rad, backRightOptimized.angle.getRadians()));
+
+    SmartDashboard.putNumber("frontLeftDesiredAngle", frontLeftOptimized.angle.getRadians());
+    SmartDashboard.putNumber("frontRightDesiredAngle", frontRightOptimized.angle.getRadians());
+    SmartDashboard.putNumber("backLeftDesiredAngle", backLeftOptimized.angle.getRadians());
+    SmartDashboard.putNumber("backRightDesiredAngle", backRightOptimized.angle.getRadians());
 
     //set drive power to desired speed div max speed to get value between 0 and 1
     frontLeftDrive.set(frontLeftModule.speedMetersPerSecond/maxSpeedMpS);
@@ -194,6 +240,16 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     swerveDrive();
+
+    frontLeftSteer.setNeutralMode(NeutralMode.Brake);
+    frontRightSteer.setNeutralMode(NeutralMode.Brake);
+    backLeftSteer.setNeutralMode(NeutralMode.Brake);
+    backRightSteer.setNeutralMode(NeutralMode.Brake);
+
+    frontLeftSteer.setNeutralMode(NeutralMode.Brake);
+    frontRightSteer.setNeutralMode(NeutralMode.Brake);
+    backLeftSteer.setNeutralMode(NeutralMode.Brake);
+    backRightSteer.setNeutralMode(NeutralMode.Brake);
   }
 
   /** This function is called once when the robot is disabled. */
