@@ -34,14 +34,24 @@ public class Robot extends TimedRobot {
 
   double armSpeed = 0.3;
   double reArmSpeed = -0.3;
-  double radius = 6.5/2; //of wheel in inchs
-  double circumferenceOfWheel = 2*Math.PI*radius;
-  double pulesPerRevTalonFX = 2048;
-  double distancePerPulse = circumferenceOfWheel / pulesPerRevTalonFX;
+  double diameter = 6.5;
+  //double radius = diameter/2; //of wheel in inchs
+  //double circumferenceOfWheel = 2*Math.PI*radius;
+  double countsPerRevTalonFX = 2048;
+ // double distancePerPulse = circumferenceOfWheel / pulesPerRevTalonFX;
   
   PIDController drive = new PIDController(kp, ki, kd);   
 
-  public void drive(double targetDistance, double tolerance) {
+  //Converts encoder ticks to feet
+  public double tickToFeet(double numTicks, double gearRatio, double conversion, double diameter){
+    //ticks x 1 rotation / 4096    x  1/1 gear ratio    x 6pi inches /   1 rotation x  1 feet/12 inch = ?feet
+  double feet = numTicks * ((1 / 4028.0) * (gearRatio) * ((diameter * Math.PI)) * (1/12.0));
+  //return ticks converted to feet
+  return feet;
+
+}
+
+  public void driveFwd(double targetDistance, double tolerance) {
     resetEncoder();
     double output;
     double currentDistance = leftFront.getSelectedSensorPosition();
@@ -89,9 +99,9 @@ public class Robot extends TimedRobot {
     
   // Set the distance per pulse for the integrated encoder
   
-  topRight.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
-  topLeft.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
-  leftFront.configSelectedFeedbackCoefficient(distancePerPulse);// this one is fixed
+  //topRight.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
+  //topLeft.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
+  leftFront.configSelectedFeedbackCoefficient(tickToFeet(leftFront.getSelectedSensorPosition(), 10.71, countsPerRevTalonFX, diameter));
   
   // Set the direction of the integrated encoder
   topRight.setSensorPhase(false);
@@ -108,7 +118,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     setMotorsNeutral();
-    drive(200, 1);
+    driveFwd(12, 1);
   }
 
   /** This function is called periodically during autonomous. */
