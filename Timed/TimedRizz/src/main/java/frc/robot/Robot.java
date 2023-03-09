@@ -40,8 +40,8 @@ public class Robot extends TimedRobot {
     private final DifferentialDrive topsDrive = new DifferentialDrive(cont.topRIght, cont.topLeft);
     private final Timer timer = new Timer();
     private final XboxController xbox = new XboxController(0);
-    private final DoubleSolenoid dSolenoidShifter = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
-    private final DoubleSolenoid dSolenoidCool = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3);
+    private final DoubleSolenoid dSolenoidShifter = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
+    private final DoubleSolenoid dSolenoidClaw = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 3);
     private final Compressor compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
     private final double Scale = 250, offset = -25;
     private final AnalogPotentiometer potentiometer = new AnalogPotentiometer(0, Scale, offset);
@@ -51,6 +51,7 @@ public class Robot extends TimedRobot {
     public Value coolingSolenoid;
     boolean aButtonPressed = false;
     boolean xButtonPressed = false;
+    boolean bButtonPressed = false;
     double previousPitch = 0;
 
 
@@ -248,7 +249,7 @@ public class Robot extends TimedRobot {
 
         setMotorsNeutral();
 
-        m_robotDrive.arcadeDrive(xbox.getRawAxis(4) * 0.75, xbox.getRawAxis(1) * 0.75);
+        m_robotDrive.arcadeDrive(-xbox.getRawAxis(4) * 0.75, -xbox.getRawAxis(1) * 0.75);
 
         if (xbox.getAButtonPressed() == true) {
             aButtonPressed = !aButtonPressed;
@@ -286,11 +287,27 @@ public class Robot extends TimedRobot {
             balanceRobot(pitchNavx);
         }
 
-        if (xbox.getYButton()== true){
-        cont.armTalon.set(.10);
-        } else if (xbox.getBButton() == true){
-        cont.armTalon.set(-0.10);
-    }
+        if (xbox.getPOV() == 0){
+            cont.armTalon.set(.50);
+            cont.armTalon.setNeutralMode(NeutralMode.Brake);
+        } else if (xbox.getPOV() == 180){
+            cont.armTalon.set(-0.50);
+            cont.armTalon.setNeutralMode(NeutralMode.Brake);
+        } else {
+            cont.armTalon.set(0);
+            cont.armTalon.setNeutralMode(NeutralMode.Brake);
+        }
+
+        if (xbox.getBButtonPressed() == true) {
+            bButtonPressed = !bButtonPressed;
+        } 
+        
+        if (bButtonPressed == true){
+            dSolenoidClaw.set(Value.kForward);
+        } else if (bButtonPressed == false){
+            dSolenoidClaw.set(Value.kReverse);
+        }
+
         SmartDashboard.putBoolean("Balance mode: ", xButtonPressed);
 
         SmartDashboard.putNumber("NAVXANGLE Pitch", navx.getPitch());
