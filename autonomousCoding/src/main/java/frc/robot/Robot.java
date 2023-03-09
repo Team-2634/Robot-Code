@@ -38,48 +38,28 @@ public class Robot extends TimedRobot {
   double circumferenceOfWheel = 2*Math.PI*radius;
   double pulesPerRevTalonFX = 2048;
   double distancePerPulse = circumferenceOfWheel / pulesPerRevTalonFX;
-  double targetDistance;
+  
+  PIDController drive = new PIDController(kp, ki, kd);   
 
-  PIDController driveFwdPid = new PIDController(kp, ki, kd);   
-
-  public void driveForwarddd() {
-    m_robotDrive.arcadeDrive(0, -0.30);
-    SmartDashboard.putNumber("leftFront motorPercent", leftFront.get());
-  }
-
-  public void driveForward() {
-    //resetEncoder();
+  public void drive(double targetDistance, double tolerance) {
+    resetEncoder();
     double output;
-
-     
-    targetDistance = 200; //inchs
     double currentDistance = leftFront.getSelectedSensorPosition();
-    double tolerance = 1;
-
-    //driveFwdPid.reset();
-    //driveFwdPid.setSetpoint(targetDistance);
-
-
 
     if (Math.abs(targetDistance - currentDistance) > tolerance) {
-      output = driveFwdPid.calculate(currentDistance, targetDistance);
+      output = drive.calculate(currentDistance, targetDistance);
       
       SmartDashboard.putNumber("PID currentD", currentDistance);
       SmartDashboard.putNumber("PID SetPoint", targetDistance);
-      //SmartDashboard.putNumber("leftFront motorPercent", leftFront.get());
       SmartDashboard.putNumber("PID Output  ", output);
-      //SmartDashboard.putNumber("PID Output Divided", output);
       
       output = Math.max(-1, Math.min(1, output));
 
       m_robotDrive.arcadeDrive(0, -output);
-      //leftFront.set(output/10);
     } else{
       System.out.println("stop motor");
       m_robotDrive.stopMotor();
     }
-
-    driveFwdPid.close();
   }
 
   public void setMotorsNeutral() {
@@ -123,17 +103,12 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    double leftFrontEncoder = leftFront.getSelectedSensorPosition();
-    double topRightEncoder = topRight.getSelectedSensorPosition();
-    double topLeftEncoder = topLeft.getSelectedSensorPosition();
-    //SmartDashboard.putNumber("topLeft sensorPos",  topLeftEncoder);
-    //SmartDashboard.putNumber("Output PID", output);
   }
   
   @Override
   public void autonomousInit() {
     setMotorsNeutral();
-    driveForward();
+    drive(200, 1);
   }
 
   /** This function is called periodically during autonomous. */
@@ -171,39 +146,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-
-    //limitArmRotation();
-
     m_robotDrive.arcadeDrive(xBoxCont.getRawAxis(4) * 0.8, xBoxCont.getRawAxis(1) * 0.8);
-    
-    if (xBoxCont.getXButtonPressed() == true) {
-      xButtonPressed = !xButtonPressed;
-  }
-  double deadzone = 0.5;
-  if (xBoxCont.getRawAxis(4) > deadzone ||
-          xBoxCont.getRawAxis(4) < -deadzone &&
-                  xBoxCont.getRawAxis(1) > deadzone || 
-                      xBoxCont.getRawAxis(1) < -deadzone) {
-      xButtonPressed = false;
-                      }
-  if (xButtonPressed == true) {
-    driveForward();
-  }
-  SmartDashboard.putBoolean("driveForward(); mode: ", xButtonPressed);
-    
-/*
-    if (xBoxCont.getLeftBumper() == true) {
-      topsDrive.tankDrive(armSpeed, reArmSpeed);
-      topLeft.setNeutralMode(NeutralMode.Brake);
-      topRIght.setNeutralMode(NeutralMode.Brake);
-  }else if (xBoxCont.getRightBumper() == true) {
-      topsDrive.tankDrive(reArmSpeed,armSpeed);
-      topLeft.setNeutralMode(NeutralMode.Brake);
-      topRIght.setNeutralMode(NeutralMode.Brake);
-  }else {
-      topsDrive.tankDrive(0,0);
-      topLeft.setNeutralMode(NeutralMode.Brake);
-      topRIght.setNeutralMode(NeutralMode.Brake);
-  }  */
   }
 }
