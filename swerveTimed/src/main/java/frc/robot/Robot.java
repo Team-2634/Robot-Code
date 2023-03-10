@@ -48,9 +48,9 @@ public class Robot extends TimedRobot {
   private final XboxController xbox = new XboxController(0);
 
   //constuct pid and other stuff
-  final double kp = 0.2;
-  final double ki = 0.55;
-  final double kd = 0.05;
+  final double kp = 0.1;
+  final double ki = 0.0;
+  final double kd = 0.0;
 
   PIDController pidFrontLeftTurn = new PIDController(kp, ki, kd);
   PIDController pidFrontRightTurn = new PIDController(kp, ki, kd);
@@ -76,11 +76,11 @@ public class Robot extends TimedRobot {
   */
 
   //conversion factors !!!CHANGE THESE!!!
-  public final double kWheelDiameterMeters = Units.inchesToMeters(4);
+  public final double kWheelDiameterMeters = Units.inchesToMeters(3.75);
   public final double kDriveMotorGearRatio = 1 / 8.45;
-  public final double kTurningMotorGearRatio = 1 / 8.14;
+  public final double kTurningMotorGearRatio = 1 / (150/7); //motor rotations to wheel rotations conversion factor
   public final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * Math.PI * kWheelDiameterMeters;
-  public final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
+  public final double kTurningEncoderRot2Rad = kTurningMotorGearRatio / 2 / Math.PI; 
   //public final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
   //public final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
   //public final double absEncoderTicks = ;
@@ -136,12 +136,16 @@ public class Robot extends TimedRobot {
     backLeftSteer.setNeutralMode(NeutralMode.Brake);
     backRightSteer.setNeutralMode(NeutralMode.Brake);
     
-    pidFrontLeftTurn.enableContinuousInput(-Math.PI, Math.PI);
-    pidFrontRightTurn.enableContinuousInput(-Math.PI, Math.PI);
-    pidBackLeftTurn.enableContinuousInput(-Math.PI, Math.PI);
-    pidBackRightTurn.enableContinuousInput(-Math.PI, Math.PI);
+    
 
-    frontLeftSteer.configSelectedFeedbackCoefficient(kTurningEncoderRot2Rad); // devide test?
+    //make pids treat values pi radians and -pi radians as the same and have them loop around
+    pidFrontLeftTurn.enableContinuousInput(-Math.PI, Math.PI);
+    // pidFrontRightTurn.enableContinuousInput(-Math.PI, Math.PI);
+    // pidBackLeftTurn.enableContinuousInput(-Math.PI, Math.PI);
+    // pidBackRightTurn.enableContinuousInput(-Math.PI, Math.PI);
+
+    //frontLeftSteer.configSelectedFeedbackCoefficient(kTurningEncoderRot2Rad); // devide test?
+
   }
   
   /**
@@ -183,13 +187,13 @@ public class Robot extends TimedRobot {
   
   public void swerveDrive() {
     
-    //make pids treat values pi radians and -pi radians as the same and have them loop around
+    
 
     //controller inputs are multiplied by max speed to return a fraction of maximum speed and modified further by sensitivity
     //max controller value of 1 returns maximum speed achivable by the robot before being reduced by sensitivity
     //turning is black magic
-    double desiredXSpeed = 0;//removeDeadzone(1) * maxSpeedMpS * driveSensitivity;
-    double desiredYSpeed = 1;//removeDeadzone(0) * maxSpeedMpS * driveSensitivity;
+    double desiredXSpeed = -removeDeadzone(1) * maxSpeedMpS * driveSensitivity;
+    double desiredYSpeed = removeDeadzone(0) * maxSpeedMpS * driveSensitivity;
     double desiredTurnSpeed = 0;//removeDeadzone(4) * turningSensitivity;
     ChassisSpeeds desiredSpeeds = new ChassisSpeeds(desiredXSpeed, desiredYSpeed, desiredTurnSpeed);
     
@@ -206,9 +210,9 @@ public class Robot extends TimedRobot {
 
     //optimize wheel angles (ex. wheel is at 359deg and needs to go to 1deg. wheel will now go 2deg instead of 358deg)
 
-    var frontLeftSensorPos = (frontLeftSteer.getSelectedSensorPosition()%2048)/kTurningEncoderRot2Rad;
+    double frontLeftSensorPos = frontLeftSteer.getSelectedSensorPosition()*kTurningEncoderRot2Rad;
 
-    var frontLeftCurrentAngle = new Rotation2d(frontLeftSensorPos);
+    var frontLeftCurrentAngle = new Rotation2d(frontLeftSensorPos*kTurningEncoderRot2Rad);
 
 
     
@@ -217,7 +221,7 @@ public class Robot extends TimedRobot {
     var backLeftOptimized = SwerveModuleState.optimize(backLeftModule, new Rotation2d(backLeftSteer.getSelectedSensorPosition()/2048/kTurningEncoderRot2Rad));
     var backRightOptimized = SwerveModuleState.optimize(backRightModule, new Rotation2d(backRightSteer.getSelectedSensorPosition()/2048/kTurningEncoderRot2Rad));
     
-    double frontLeftTurnPower = pidFrontLeftTurn.calculate(frontLeftSteer.getSelectedSensorPosition(), frontLeftOptimized.angle.getRadians());
+    double frontLeftTurnPower = pidFrontLeftTurn.calculate(frontLeftSteer.getSelectedSensorPosition()*kTurningEncoderRot2Rad, frontLeftOptimized.angle.getRadians());
     double frontRightTurnPower = pidFrontRightTurn.calculate(frontRightSteer.getSelectedSensorPosition()/kTurningEncoderRot2Rad, frontRightOptimized.angle.getRadians());
     double backLeftTurnPower = pidBackLeftTurn.calculate(backLeftSteer.getSelectedSensorPosition()/kTurningEncoderRot2Rad, backLeftOptimized.angle.getRadians());
     double backRightTurnPower = pidBackRightTurn.calculate(backRightSteer.getSelectedSensorPosition()/kTurningEncoderRot2Rad, backRightOptimized.angle.getRadians());
@@ -225,14 +229,16 @@ public class Robot extends TimedRobot {
 
 
     //set steer motor power to the pid output of current position in radians and desired position in radians
+    //positive is clockwise (right side up)
     frontLeftSteer.set(frontLeftTurnPower);
     // frontRightSteer.set(frontRightTurnPower);
     // backLeftSteer.set(backLeftTurnPower);
     // backRightSteer.set(backRightTurnPower);
     
+    SmartDashboard.putNumber("pidPosError", pidFrontLeftTurn.getPositionError());
     SmartDashboard.putNumber("frontLeftCurrentAngle", frontLeftCurrentAngle.getDegrees());
-    SmartDashboard.putNumber("frontLeftSensorPos", frontLeftSensorPos);
-    SmartDashboard.putNumber("frontLeftDesiredRadiansRaw", frontLeftOptimized.angle.getRadians());
+    SmartDashboard.putNumber("frontLeftSensorPos", frontLeftSensorPos*kTurningEncoderRot2Rad);
+    SmartDashboard.putNumber("frontLeftDesiredRadiansRaw", frontLeftModule.angle.getRadians());
     // SmartDashboard.putNumber("frontRightDesiredRadianRaws", frontRightOptimized.angle.getRadians());
     // SmartDashboard.putNumber("backLeftDesiredRadiansRaw", backLeftOptimized.angle.getRadians());
     // SmartDashboard.putNumber("backRightDesiredRadiansRaw", backRightOptimized.angle.getRadians());
@@ -273,6 +279,13 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     //swerveDrive();
+
+    frontLeftSteer.setSelectedSensorPosition(0);
+    frontRightSteer.setSelectedSensorPosition(0);
+    backLeftSteer.setSelectedSensorPosition(0);
+    backRightSteer.setSelectedSensorPosition(0);
+
+    //frontLeftSteer.configSelectedFeedbackCoefficient(kTurningEncoderRot2Rad);
   }
     
   /** This function is called periodically during operator control. */
