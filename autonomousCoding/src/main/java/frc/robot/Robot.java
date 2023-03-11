@@ -43,8 +43,6 @@ public class Robot extends TimedRobot {
   double diameterRizzArcadeWheels = 6.5;
   double radiusRizzArcadeWheels = diameterRizzArcadeWheels/2; //of wheel in inchs
   double countsPerRevTalonFX = 2048;
-
-  //double distancePerPulse = circumferenceOfWheel / pulesPerRevTalonFX;
   
   PIDController drive = new PIDController(kp, ki, kd);   
 
@@ -125,10 +123,10 @@ public void driveTurn_leftOrRight_NORMAL(double targetDistanceDegrees, double to
 }
 
 public void limitArmRotation() {
-  if (topRight.getSelectedSensorPosition() >= 90){
+  if (topRight.getSelectedSensorPosition() >= 90){ //change degrees
     topsDrive.tankDrive(armSpeed, reArmSpeed);
   } 
-  if (topRight.getSelectedSensorPosition() <= -10){
+  if (topRight.getSelectedSensorPosition() <= -10){ //change degrees
     topsDrive.tankDrive(reArmSpeed, armSpeed);
   } 
 }
@@ -170,7 +168,13 @@ public void robotInit() {
 
   @Override
 public void robotPeriodic() {
-  limitArmRotation();
+  //limitArmRotation();
+
+  // print oout encoder status
+  SmartDashboard.putNumber("topRight.Encoder: ", topRight.getSelectedSensorPosition());
+  SmartDashboard.putNumber("leftFront.Encoder: ", leftFront.getSelectedSensorPosition());
+  SmartDashboard.putNumber("rightFront.Encoder: ", rightFront.getSelectedSensorPosition());
+
   }
   
   @Override
