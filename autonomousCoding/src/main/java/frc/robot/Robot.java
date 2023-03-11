@@ -16,14 +16,20 @@ public class Robot extends TimedRobot {
   public final WPI_TalonFX rightFront= new WPI_TalonFX(3);
   public final WPI_TalonFX leftBack= new WPI_TalonFX(2);
   public final WPI_TalonFX rightBack= new WPI_TalonFX(4); 
-  public final WPI_TalonFX topRight= new WPI_TalonFX(6); 
-  public final WPI_TalonFX topLeft= new WPI_TalonFX(5); 
+  double arcadeDrive_GearRatio = 0; //figure out note: will change for swerver drive
 
   final MotorControllerGroup m_leftSide = new MotorControllerGroup(leftBack, leftFront);
   final MotorControllerGroup m_rightSide = new MotorControllerGroup(rightBack, rightFront);
 
   final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftSide, m_rightSide);
+
+  public final WPI_TalonFX topRight= new WPI_TalonFX(6); 
+  public final WPI_TalonFX topLeft= new WPI_TalonFX(5); 
+  double armLift_GearRatio = Math.pow(6,2);
+
   private final DifferentialDrive topsDrive = new DifferentialDrive(topLeft, topRight);
+
+  // push arm ratio: 12:1
 
   final XboxController xBoxCont = new XboxController(0);
 
@@ -32,39 +38,43 @@ public class Robot extends TimedRobot {
   final double kd = 0.05;
   boolean xButtonPressed = false;
 
-  double armSpeed = 0.3;
-  double reArmSpeed = -0.3;
-  double diameter = 6.5;
-  //double radius = diameter/2; //of wheel in inchs
-  //double circumferenceOfWheel = 2*Math.PI*radius;
+  double armSpeed = 0.4;
+  double reArmSpeed = -0.4;
+  double diameterRizzArcadeWheels = 6.5;
+  double radiusRizzArcadeWheels = diameterRizzArcadeWheels/2; //of wheel in inchs
   double countsPerRevTalonFX = 2048;
- // double distancePerPulse = circumferenceOfWheel / pulesPerRevTalonFX;
+
+  //double distancePerPulse = circumferenceOfWheel / pulesPerRevTalonFX;
   
   PIDController drive = new PIDController(kp, ki, kd);   
 
-  //Converts encoder ticks to feet
-  public double tickToFeet(double numTicks, double gearRatio, double conversion, double diameter){
-    //ticks x 1 rotation / 4096    x  1/1 gear ratio    x 6pi inches /   1 rotation x  1 feet/12 inch = ?feet
-  double feet = numTicks * ((1 / 4028.0) * (gearRatio) * ((diameter * Math.PI)) * (1/12.0));
-  //return ticks converted to feet
-  return feet;
+public double encoderToFeet(double radius, double countsPerRev, double encoderValue, double gearRatio){
+  double circumferenceOfWheel = 2*Math.PI*radius;
+  double countsPerInch = countsPerRev / circumferenceOfWheel / gearRatio;
+  double inches = encoderValue / countsPerInch;
+  double feet = inches / 12;
 
+  // in other words: double Feet = (encoderValue/(countsPerRev/(2*Math.PI*radius)))/12;
+
+  return feet;
 }
 
-  public void driveFwd(double targetDistance, double tolerance) {
+public double encoderToDegrees(double countsPerRev, double encoderValue, double gearRatio) {
+  double countsPerRotation = countsPerRev * gearRatio;
+  double degreesPerCount = 360.0 / countsPerRotation;
+  double degrees = encoderValue * degreesPerCount;
+  return degrees;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+public void driveFwd_or_Bwd_AUTONOMOUS(double targetDistanceFeet, double tolerance) {
     resetEncoder();
     double output;
     double currentDistance = leftFront.getSelectedSensorPosition();
 
-    if (Math.abs(targetDistance - currentDistance) > tolerance) {
-      output = drive.calculate(currentDistance, targetDistance);
-      
-      SmartDashboard.putNumber("PID currentD", currentDistance);
-      SmartDashboard.putNumber("PID SetPoint", targetDistance);
-      SmartDashboard.putNumber("PID Output  ", output);
-      
+    if (Math.abs(targetDistanceFeet - currentDistance) > tolerance) {
+      output = drive.calculate(currentDistance, targetDistanceFeet);
       output = Math.max(-1, Math.min(1, output));
-
       m_robotDrive.arcadeDrive(0, -output);
     } else{
       System.out.println("stop motor");
@@ -72,7 +82,59 @@ public class Robot extends TimedRobot {
     }
   }
 
-  public void setMotorsNeutral() {
+public void driveFwd_or_Bwd_NORMAL(double targetDistanceFeet, double tolerance) {
+   resetEncoder();
+   double output;
+   double currentDistance = leftFront.getSelectedSensorPosition();
+   if (Math.abs(targetDistanceFeet - currentDistance) > tolerance) {
+     output = drive.calculate(currentDistance, targetDistanceFeet);
+     output = Math.max(-1, Math.min(1, output));
+     m_robotDrive.arcadeDrive(output, 0);
+   } else{
+     System.out.println("stop motor");
+     m_robotDrive.stopMotor();
+   }
+ }
+
+public void driveTurn_leftOrRight_AUTONOMOUS(double targetDistanceDegrees, double tolerance) {
+  resetEncoder();
+  double output;
+  double currentDistance = rightFront.getSelectedSensorPosition();
+  if (Math.abs(targetDistanceDegrees - currentDistance) > tolerance) {
+    output = drive.calculate(currentDistance, targetDistanceDegrees);
+    output = Math.max(-1, Math.min(1, output));
+    m_robotDrive.arcadeDrive(-output, 0);
+  } else{
+    System.out.println("stop motor");
+    m_robotDrive.stopMotor();
+  }
+ }
+
+public void driveTurn_leftOrRight_NORMAL(double targetDistanceDegrees, double tolerance) {
+ resetEncoder();
+ double output;
+ double currentDistance = rightFront.getSelectedSensorPosition();
+ if (Math.abs(targetDistanceDegrees - currentDistance) > tolerance) {
+   output = drive.calculate(currentDistance, targetDistanceDegrees);
+   output = Math.max(-1, Math.min(1, output));
+   m_robotDrive.arcadeDrive(0, output);
+ } else{
+   System.out.println("stop motor");
+   m_robotDrive.stopMotor();
+ }
+}
+
+public void limitArmRotation() {
+  if (topRight.getSelectedSensorPosition() >= 90){
+    topsDrive.tankDrive(armSpeed, reArmSpeed);
+  } 
+  if (topRight.getSelectedSensorPosition() <= -10){
+    topsDrive.tankDrive(reArmSpeed, armSpeed);
+  } 
+}
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+public void setMotorsNeutral() {
     
     leftFront.setNeutralMode(NeutralMode.Brake);
     leftBack.setNeutralMode(NeutralMode.Brake);
@@ -80,48 +142,45 @@ public class Robot extends TimedRobot {
     rightBack.setNeutralMode(NeutralMode.Brake);
   }
   
-  public void resetEncoder(){
-
-    topRight.setSelectedSensorPosition(0);
-    topLeft.setSelectedSensorPosition(0);
+public void resetEncoder(){
     leftFront.setSelectedSensorPosition(0);
-
+    rightFront.setSelectedSensorPosition(0);
+    topRight.setSelectedSensorPosition(0);
   }
 
 @Override
-  public void robotInit() {
-
-  topRight.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
-  topLeft.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
+public void robotInit() {
+  setMotorsNeutral();
+  //tell motor to use integrated sensor
   leftFront.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
+  rightFront.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
+  topRight.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 
-  resetEncoder();
-    
-  // Set the distance per pulse for the integrated encoder
-  
-  //topRight.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
-  //topLeft.configSelectedFeedbackCoefficient(distancePerPulse / 2048.0);
-  leftFront.configSelectedFeedbackCoefficient(tickToFeet(leftFront.getSelectedSensorPosition(), 10.71, countsPerRevTalonFX, diameter));
-  
+  //config units you want encoder to be in
+  leftFront.configSelectedFeedbackCoefficient(encoderToFeet(radiusRizzArcadeWheels, countsPerRevTalonFX, leftFront.getSelectedSensorPosition(), arcadeDrive_GearRatio));
+  rightFront.configSelectedFeedbackCoefficient(encoderToDegrees(countsPerRevTalonFX, rightFront.getSelectedSensorPosition(), arcadeDrive_GearRatio));
+  topRight.configSelectedFeedbackCoefficient(encoderToDegrees(countsPerRevTalonFX, topRight.getSelectedSensorPosition(), armLift_GearRatio));
+
   // Set the direction of the integrated encoder
-  topRight.setSensorPhase(false);
-  topLeft.setSensorPhase(false);
   leftFront.setSensorPhase(false);
-    
+  rightFront.setSensorPhase(false);
+  topRight.setSensorPhase(false);
   resetEncoder();
   }
 
   @Override
-  public void robotPeriodic() {
+public void robotPeriodic() {
+  limitArmRotation();
   }
   
   @Override
   public void autonomousInit() {
-    setMotorsNeutral();
-    driveFwd(12, 1);
+    driveFwd_or_Bwd_AUTONOMOUS(12, 1);
+    driveFwd_or_Bwd_AUTONOMOUS(-12, 1);
+    driveTurn_leftOrRight_AUTONOMOUS(180, 1);
+    driveTurn_leftOrRight_AUTONOMOUS(-180, 1);
   }
 
-  /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
     /*
@@ -137,25 +196,14 @@ public class Robot extends TimedRobot {
     
   }
 
-  /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    setMotorsNeutral();
   }
-/*
-  public void limitArmRotation() {
-
-    if (topRIght.getSelectedSensorPosition() >= 5){
-      topsDrive.tankDrive(armSpeed, reArmSpeed);
-    } 
-    if (topRIght.getSelectedSensorPosition() <= -0.5){
-      topsDrive.tankDrive(reArmSpeed, armSpeed);
-    } 
-  }
-  */
-  /** This function is called periodically during operator control. */
+  
   @Override
   public void teleopPeriodic() {
     m_robotDrive.arcadeDrive(xBoxCont.getRawAxis(4) * 0.8, xBoxCont.getRawAxis(1) * 0.8);
+    topsDrive.tankDrive(xBoxCont.getLeftTriggerAxis(), -xBoxCont.getLeftTriggerAxis());
+    topsDrive.tankDrive(-xBoxCont.getLeftTriggerAxis(), xBoxCont.getLeftTriggerAxis());
   }
 }
