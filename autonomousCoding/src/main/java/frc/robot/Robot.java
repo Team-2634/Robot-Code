@@ -292,16 +292,19 @@ public void robotInit() {
 public void robotPeriodic() {
   //limitArmRotation();
 
-  SmartDashboard.putNumber("topRight.Encoder: ", topRight.getSelectedSensorPosition());
-  SmartDashboard.putNumber("leftFront.Encoder: ", leftFront.getSelectedSensorPosition());
-  SmartDashboard.putNumber("rightFront.Encoder: ", rightFront.getSelectedSensorPosition());
+  SmartDashboard.putNumber("topRight.Encoder Degrees: ", topRight.getSelectedSensorPosition());
+  SmartDashboard.putNumber("leftFront.Encoder Feet: ", leftFront.getSelectedSensorPosition());
+  SmartDashboard.putNumber("rightFront.Encoder Degrees: ", rightFront.getSelectedSensorPosition());
   //^^encoder
   SmartDashboard.putNumber("navx getPitch: ", navx.getPitch());
   SmartDashboard.putNumber("navx getYaw: ", navx.getYaw());
   SmartDashboard.putNumber("navx getRoll: ", navx.getRoll());
   SmartDashboard.putNumber("navx getAngle: ", navx.getAngle());
   //^^navx Angles
-
+  SmartDashboard.putBoolean("gearShift: ", aButtonPressed);
+  SmartDashboard.putBoolean("claw || close: ", bButtonPressed);
+  SmartDashboard.putBoolean("BalanceCode: ", xButtonPressed);
+  //^^ButtonToggles
   }
   
   @Override
