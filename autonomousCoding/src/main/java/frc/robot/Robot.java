@@ -23,7 +23,7 @@ public class Robot extends TimedRobot {
   AHRS navx = new AHRS(SPI.Port.kMXP);
   Timer timer = new Timer();
   final XboxController xBoxCont = new XboxController(0);
- 
+
   final WPI_TalonFX leftFront= new WPI_TalonFX(1);
   final WPI_TalonFX rightFront= new WPI_TalonFX(3);
   final WPI_TalonFX leftBack= new WPI_TalonFX(2);
@@ -31,20 +31,22 @@ public class Robot extends TimedRobot {
   final MotorControllerGroup m_leftSide = new MotorControllerGroup(leftBack, leftFront);
   final MotorControllerGroup m_rightSide = new MotorControllerGroup(rightBack, rightFront);
   final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftSide, m_rightSide);
-  double arcadeDrive_GearRatio = 0; //figure out note: will change for swerver drive
+  double arcadeDrive_GearRatio = 36; //figure out note: will change for swerver drive
   //^^arcade setup
 
   public final WPI_TalonFX topRight= new WPI_TalonFX(6); 
   public final WPI_TalonFX topLeft= new WPI_TalonFX(5);
-  double armSpeed = 0.4;
-  double reArmSpeed = -0.4;
+  double armSpeed = 0.3;
+  double reArmSpeed = -0.3;
+  double minArmAngle = 0;
+  double maxArmAngle = -17;
   private final DifferentialDrive topsDrive = new DifferentialDrive(topLeft, topRight); 
-  double armLift_GearRatio = Math.pow(6,2);
+  double armLift_GearRatio = 144; //36 olds news
   //^^TankArm setup
 
-  private final DoubleSolenoid dSolenoidShifter = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
-  private final DoubleSolenoid dSolenoidClaw = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 3);
-  private final DoubleSolenoid coolingSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 3);
+//private final DoubleSolenoid dSolenoidShifter = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
+  private final DoubleSolenoid dSolenoidClaw = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 3, 0);
+//private final DoubleSolenoid coolingSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 3);
   private final Compressor compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
   private final double Scale = 250, offset = -25;
   private final AnalogPotentiometer potentiometer = new AnalogPotentiometer(0, Scale, offset);
@@ -61,8 +63,8 @@ public class Robot extends TimedRobot {
   final double kp = 0.5;
   final double ki = 0.05;
   final double kd = 0.05;
-  final double kpPitch = 0.5; 
-  final double kpYaw = 0.5;
+  final double kpPitch = 0.1; 
+  final double kpYaw = 0.1;
   // may need to be set by user in function call
 
   PIDController drive = new PIDController(kp, ki, kd); // may need to spearate for turnings
@@ -70,22 +72,22 @@ public class Robot extends TimedRobot {
   PIDController pidYaw = new PIDController(kpYaw, ki, kd);
 //functions start here~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+//maTH ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 public double encoderToFeet(double radius, double countsPerRev, double encoderValue, double gearRatio){
-  double circumferenceOfWheel = 2*Math.PI*radius;
-  double countsPerInch = countsPerRev / circumferenceOfWheel / gearRatio;
+  double circumferenceOfWheel = 2*Math.PI*radius; //20.42
+  double countsPerInch = countsPerRev / circumferenceOfWheel / gearRatio; //2.78594
   double inches = encoderValue / countsPerInch;
   double feet = inches / 12;
-  // in other words: double Feet = (encoderValue/(countsPerRev/(2*Math.PI*radius)))/12;
   return feet;
 }
-
+/* NO LONGER NEEDED WE T=HAVE DOUBLE TALONDEG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 public double encoderToDegrees(double countsPerRev, double encoderValue, double gearRatio) {
   double countsPerRotation = countsPerRev * gearRatio;
   double degreesPerCount = 360.0 / countsPerRotation;
   double degrees = encoderValue * degreesPerCount;
   return degrees;
 }
-
+ */
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 public void drive_AUTONOMOUS(double targetDistanceFeet, double tolerance, boolean currentMotorTurn) {
   resetEncoder();
@@ -204,9 +206,9 @@ public void autoBalance_AUTONOMOUS() {
     outputYaw = pidYaw.calculate(currentYaw, targetAngleYaw);
     outputYaw = Math.max(-1, Math.min(1, outputYaw));
   }
-  m_robotDrive.arcadeDrive(outputPitch, outputYaw);
+  m_robotDrive.arcadeDrive(-outputPitch, -outputYaw);
 }
-
+// no longer use rest encoder down here vvvvvvvvvvvvvvvvv
 public void armLift_Lower(double targetDistanceDegrees, double tolerance){
   resetEncoder();
   double output;
@@ -234,32 +236,32 @@ public void setMotorsNeutral() {
 public void resetEncoder(){
   leftFront.setSelectedSensorPosition(0);
   rightFront.setSelectedSensorPosition(0);
-  topRight.setSelectedSensorPosition(0);
 }
 
 public void limitArmRotation() {
-  if (topRight.getSelectedSensorPosition() >= 90){ //change degrees
+  if (topRight.getSelectedSensorPosition() >= maxArmAngle){ //change degrees
     topsDrive.tankDrive(armSpeed, reArmSpeed);
-  } 
-  if (topRight.getSelectedSensorPosition() <= -10){ //change degrees
+  }
+  if (topRight.getSelectedSensorPosition() <= minArmAngle){ //change degrees
     topsDrive.tankDrive(reArmSpeed, armSpeed);
   } 
 }
 
 private void pulsePiston(double Time) {
   int pulseFreq = 15;
-  int pulseDuration = 1;
-  if (Time % pulseFreq < pulseDuration) {
+  int pulseDuration = 1;/*
+    if (Time % pulseFreq < pulseDuration) {
     coolingSolenoid.set(Value.kForward);
   } else {
     coolingSolenoid.set(Value.kReverse);
-  }
+  }*/
 }
 //some more functions~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 @Override
 public void robotInit() {
   timer.reset();
   timer.start();
+  topRight.setSelectedSensorPosition(0);
   double currentPsi = potentiometer.get();
   int psiCap = 117;
   if (currentPsi <= psiCap) {
@@ -276,11 +278,11 @@ public void robotInit() {
   rightFront.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
   topRight.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 
-  //config units you want encoder to be in
-  leftFront.configSelectedFeedbackCoefficient(encoderToFeet(radiusRizzArcadeWheels, countsPerRevTalonFX, leftFront.getSelectedSensorPosition(), arcadeDrive_GearRatio));
-  rightFront.configSelectedFeedbackCoefficient(encoderToDegrees(countsPerRevTalonFX, rightFront.getSelectedSensorPosition(), arcadeDrive_GearRatio));
-  topRight.configSelectedFeedbackCoefficient(encoderToDegrees(countsPerRevTalonFX, topRight.getSelectedSensorPosition(), armLift_GearRatio));
-
+ //config units you want encoder to be in
+ leftFront.configSelectedFeedbackCoefficient(1);//encoderToFeet(radiusRizzArcadeWheels, countsPerRevTalonFX, leftFront.getSelectedSensorPosition(), arcadeDrive_GearRatio));
+ rightFront.configSelectedFeedbackCoefficient(1);//encoderToDegrees(countsPerRevTalonFX, rightFront.getSelectedSensorPosition(), arcadeDrive_GearRatio));
+ topRight.configSelectedFeedbackCoefficient(1);//encoderToDegrees(countsPerRevTalonFX, topRight.getSelectedSensorPosition(), armLift_GearRatio));
+  
   // Set the direction of the integrated encoder
   leftFront.setSensorPhase(false);
   rightFront.setSensorPhase(false);
@@ -289,12 +291,12 @@ public void robotInit() {
   }
 
 @Override
-public void robotPeriodic() {
+public void robotPeriodic() { 
   //limitArmRotation();
-
   SmartDashboard.putNumber("topRight.Encoder Degrees: ", topRight.getSelectedSensorPosition());
-  SmartDashboard.putNumber("leftFront.Encoder Feet: ", leftFront.getSelectedSensorPosition());
-  SmartDashboard.putNumber("rightFront.Encoder Degrees: ", rightFront.getSelectedSensorPosition());
+  //SmartDashboard.putNumber("leftFront.Encoder Feet: ", leftFrontFeet);
+  double talonDeg = topRight.getSelectedSensorPosition() * (360.0/(2048*144));
+  SmartDashboard.putNumber("rightFront.Encoder Degrees: ", talonDeg);
   //^^encoder
   SmartDashboard.putNumber("navx getPitch: ", navx.getPitch());
   SmartDashboard.putNumber("navx getYaw: ", navx.getYaw());
@@ -310,21 +312,23 @@ public void robotPeriodic() {
   @Override
   public void autonomousInit() {
     //armLift_Lower(90, 5);
-    //Timer.delay(5);
+    /*
+    Timer.delay(5);
     drive_AUTONOMOUS(12, 1, false); //fwd 12 feet
-    //Timer.delay(5);
+    Timer.delay(5);
     drive_AUTONOMOUS(-12, 1, false); //Bkwd 12 feet
-    //Timer.delay(5);
+    Timer.delay(5);
     drive_AUTONOMOUS(180, 1, true); //turn 180
-    //Timer.delay(5);
-    drive_AUTONOMOUS(-180, 1, true); //turn back 180
+    Timer.delay(5);
+    drive_AUTONOMOUS(-180, 1, true); //turn back 180 
+    */
   }
 
   @Override
   public void autonomousPeriodic() {
     double AutonomousTime = timer.get();
-    pulsePiston(AutonomousTime);
-    limitArmRotation();
+    //pulsePiston(AutonomousTime);
+    //limitArmRotation();
     autoBalance_AUTONOMOUS();
     /*
      * align with starting node
@@ -353,10 +357,10 @@ public void robotPeriodic() {
     double teleopTime = timer.get();
     pulsePiston(teleopTime);
     m_robotDrive.arcadeDrive(xBoxCont.getRawAxis(4) * 0.8, xBoxCont.getRawAxis(1) * 0.8);
-    topsDrive.tankDrive(xBoxCont.getLeftTriggerAxis(), -xBoxCont.getLeftTriggerAxis());
-    topsDrive.tankDrive(-xBoxCont.getLeftTriggerAxis(), xBoxCont.getLeftTriggerAxis());
+    //topsDrive.tankDrive(xBoxCont.getLeftTriggerAxis(), -xBoxCont.getLeftTriggerAxis());
+    //topsDrive.tankDrive(-xBoxCont.getRightTriggerAxis(), xBoxCont.getRightTriggerAxis());
 
-    /*
+    
     if (xBoxCont.getLeftTriggerAxis() >= 0.5) {
       topsDrive.tankDrive(armSpeed,-armSpeed);
   }else if (xBoxCont.getRightTriggerAxis() >= 0.5) {
@@ -364,17 +368,17 @@ public void robotPeriodic() {
   }else {
       topsDrive.tankDrive(0,0);
   } 
-  */
-
+  
    if (xBoxCont.getAButtonPressed() == true) {
      aButtonPressed = !aButtonPressed;
  }
+ /*
  if (aButtonPressed == true) {
      dSolenoidShifter.set(Value.kForward);
  } else if (aButtonPressed == false) {
      dSolenoidShifter.set(Value.kReverse);
  }
- 
+  */
  if (xBoxCont.getBButtonPressed() == true) {
    bButtonPressed = !bButtonPressed;
  } 
