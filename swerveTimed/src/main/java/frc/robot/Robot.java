@@ -48,7 +48,7 @@ public class Robot extends TimedRobot {
   private final XboxController xbox = new XboxController(0);
 
   //constuct pid and other stuff
-  final double kp = 0.1;
+  final double kp = 0.3;
   final double ki = 0.0;
   final double kd = 0.0;
 
@@ -78,9 +78,10 @@ public class Robot extends TimedRobot {
   //conversion factors !!!CHANGE THESE!!!
   public final double kWheelDiameterMeters = Units.inchesToMeters(3.75);
   public final double kDriveMotorGearRatio = 1 / 8.45;
-  public final double kTurningMotorGearRatio = 1 / (150/7); //motor rotations to wheel rotations conversion factor
+  public final double kTurningMotorGearRatio = 1.0 / (150.0/7.0); //motor rotations to wheel rotations conversion factor
   public final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * Math.PI * kWheelDiameterMeters;
-  public final double kTurningEncoderRot2Rad = kTurningMotorGearRatio / 2 / Math.PI; 
+  public final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI; 
+  public final double kTurningEncoderTicksToRad = kTurningEncoderRot2Rad/2048;
   //public final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
   //public final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
   //public final double absEncoderTicks = ;
@@ -140,11 +141,9 @@ public class Robot extends TimedRobot {
 
     //make pids treat values pi radians and -pi radians as the same and have them loop around
     pidFrontLeftTurn.enableContinuousInput(-Math.PI, Math.PI);
-    // pidFrontRightTurn.enableContinuousInput(-Math.PI, Math.PI);
-    // pidBackLeftTurn.enableContinuousInput(-Math.PI, Math.PI);
-    // pidBackRightTurn.enableContinuousInput(-Math.PI, Math.PI);
-
-    //frontLeftSteer.configSelectedFeedbackCoefficient(kTurningEncoderRot2Rad); // devide test?
+    pidFrontRightTurn.enableContinuousInput(-Math.PI, Math.PI);
+    pidBackLeftTurn.enableContinuousInput(-Math.PI, Math.PI);
+    pidBackRightTurn.enableContinuousInput(-Math.PI, Math.PI);
 
   }
   
@@ -192,9 +191,9 @@ public class Robot extends TimedRobot {
     //controller inputs are multiplied by max speed to return a fraction of maximum speed and modified further by sensitivity
     //max controller value of 1 returns maximum speed achivable by the robot before being reduced by sensitivity
     //turning is black magic
-    double desiredXSpeed = -removeDeadzone(1) * maxSpeedMpS * driveSensitivity;
+    double desiredXSpeed = removeDeadzone(1) * maxSpeedMpS * driveSensitivity;
     double desiredYSpeed = removeDeadzone(0) * maxSpeedMpS * driveSensitivity;
-    double desiredTurnSpeed = 0;//removeDeadzone(4) * turningSensitivity;
+    double desiredTurnSpeed = removeDeadzone(4) * turningSensitivity;
     ChassisSpeeds desiredSpeeds = new ChassisSpeeds(desiredXSpeed, desiredYSpeed, desiredTurnSpeed);
     
     //make desiredSpeeds into speeds and angles for each module
@@ -210,56 +209,71 @@ public class Robot extends TimedRobot {
 
     //optimize wheel angles (ex. wheel is at 359deg and needs to go to 1deg. wheel will now go 2deg instead of 358deg)
 
-    double frontLeftSensorPos = frontLeftSteer.getSelectedSensorPosition()*kTurningEncoderRot2Rad;
+    double frontLeftSensorPos = frontLeftSteer.getSelectedSensorPosition()*kTurningEncoderTicksToRad;
+    double frontRightSensorPos = frontRightSteer.getSelectedSensorPosition()*kTurningEncoderTicksToRad;
+    double backLeftSensorPos = backLeftSteer.getSelectedSensorPosition()*kTurningEncoderTicksToRad;
+    double backRightSensorPos = backRightSteer.getSelectedSensorPosition()*kTurningEncoderTicksToRad;
 
-    var frontLeftCurrentAngle = new Rotation2d(frontLeftSensorPos*kTurningEncoderRot2Rad);
-
-
+    var frontLeftCurrentAngle = new Rotation2d(frontLeftSensorPos);
+    var frontRightCurrentAngle = new Rotation2d(frontRightSensorPos);
+    var backLeftCurrentAngle = new Rotation2d(backLeftSensorPos);
+    var backRightCurrentAngle = new Rotation2d(backRightSensorPos);
     
     var frontLeftOptimized = SwerveModuleState.optimize(frontLeftModule, frontLeftCurrentAngle);
-    var frontRightOptimized = SwerveModuleState.optimize(frontRightModule, new Rotation2d(frontRightSteer.getSelectedSensorPosition()/2048/kTurningEncoderRot2Rad));
-    var backLeftOptimized = SwerveModuleState.optimize(backLeftModule, new Rotation2d(backLeftSteer.getSelectedSensorPosition()/2048/kTurningEncoderRot2Rad));
-    var backRightOptimized = SwerveModuleState.optimize(backRightModule, new Rotation2d(backRightSteer.getSelectedSensorPosition()/2048/kTurningEncoderRot2Rad));
+    var frontRightOptimized = SwerveModuleState.optimize(frontRightModule, frontRightCurrentAngle);
+    var backLeftOptimized = SwerveModuleState.optimize(backLeftModule, backLeftCurrentAngle);
+    var backRightOptimized = SwerveModuleState.optimize(backRightModule, backRightCurrentAngle);
     
-    double frontLeftTurnPower = pidFrontLeftTurn.calculate(frontLeftSteer.getSelectedSensorPosition()*kTurningEncoderRot2Rad, frontLeftOptimized.angle.getRadians());
-    double frontRightTurnPower = pidFrontRightTurn.calculate(frontRightSteer.getSelectedSensorPosition()/kTurningEncoderRot2Rad, frontRightOptimized.angle.getRadians());
-    double backLeftTurnPower = pidBackLeftTurn.calculate(backLeftSteer.getSelectedSensorPosition()/kTurningEncoderRot2Rad, backLeftOptimized.angle.getRadians());
-    double backRightTurnPower = pidBackRightTurn.calculate(backRightSteer.getSelectedSensorPosition()/kTurningEncoderRot2Rad, backRightOptimized.angle.getRadians());
+    double frontLeftTurnPower = pidFrontLeftTurn.calculate(frontLeftSteer.getSelectedSensorPosition()*kTurningEncoderTicksToRad, frontLeftOptimized.angle.getRadians());
+    double frontRightTurnPower = pidFrontRightTurn.calculate(frontRightSteer.getSelectedSensorPosition()*kTurningEncoderTicksToRad, frontRightOptimized.angle.getRadians());
+    double backLeftTurnPower = pidBackLeftTurn.calculate(backLeftSteer.getSelectedSensorPosition()*kTurningEncoderTicksToRad, backLeftOptimized.angle.getRadians());
+    double backRightTurnPower = pidBackRightTurn.calculate(backRightSteer.getSelectedSensorPosition()*kTurningEncoderTicksToRad, backRightOptimized.angle.getRadians());
 
 
 
     //set steer motor power to the pid output of current position in radians and desired position in radians
     //positive is clockwise (right side up)
     frontLeftSteer.set(frontLeftTurnPower);
-    // frontRightSteer.set(frontRightTurnPower);
-    // backLeftSteer.set(backLeftTurnPower);
-    // backRightSteer.set(backRightTurnPower);
+    frontRightSteer.set(frontRightTurnPower);
+    backLeftSteer.set(backLeftTurnPower);
+    backRightSteer.set(backRightTurnPower);
+
+    SmartDashboard.putNumber("radsPerMotorTurn", kTurningEncoderRot2Rad);
+    SmartDashboard.putNumber("motorTurningGearRatio", kTurningMotorGearRatio);
+
+    SmartDashboard.putNumber("frontLeftPidPosError", pidFrontLeftTurn.getPositionError());
+    SmartDashboard.putNumber("frontRightPidPosError", pidFrontRightTurn.getPositionError());
     
-    SmartDashboard.putNumber("pidPosError", pidFrontLeftTurn.getPositionError());
+
     SmartDashboard.putNumber("frontLeftCurrentAngle", frontLeftCurrentAngle.getDegrees());
-    SmartDashboard.putNumber("frontLeftSensorPos", frontLeftSensorPos*kTurningEncoderRot2Rad);
+    SmartDashboard.putNumber("frontRightCurrentAngle", frontRightCurrentAngle.getDegrees());
+
+
+    SmartDashboard.putNumber("frontLeftSensorPosRadians", frontLeftSensorPos);
+    SmartDashboard.putNumber("frontRightSensorPosRadians", frontRightSensorPos);
+
     SmartDashboard.putNumber("frontLeftDesiredRadiansRaw", frontLeftModule.angle.getRadians());
-    // SmartDashboard.putNumber("frontRightDesiredRadianRaws", frontRightOptimized.angle.getRadians());
+    SmartDashboard.putNumber("frontRightDesiredRadianRaw", frontRightModule.angle.getRadians());
     // SmartDashboard.putNumber("backLeftDesiredRadiansRaw", backLeftOptimized.angle.getRadians());
     // SmartDashboard.putNumber("backRightDesiredRadiansRaw", backRightOptimized.angle.getRadians());
 
     SmartDashboard.putNumber("frontLeftDesiredRadians", frontLeftOptimized.angle.getRadians());
-    // SmartDashboard.putNumber("frontRightDesiredRadians", frontRightOptimized.angle.getRadians());
+    SmartDashboard.putNumber("frontRightDesiredRadians", frontRightOptimized.angle.getRadians());
     // SmartDashboard.putNumber("backLeftDesiredRadians", backLeftOptimized.angle.getRadians());
     // SmartDashboard.putNumber("backRightDesiredRadians", backRightOptimized.angle.getRadians());
 
     SmartDashboard.putNumber("frontLeftTurnPower", frontLeftTurnPower);
-    // SmartDashboard.putNumber("frontRightTurnPower", frontRightTurnPower);
+    SmartDashboard.putNumber("frontRightTurnPower", frontRightTurnPower);
     // SmartDashboard.putNumber("backLeftTurnPower", backLeftTurnPower);
     // SmartDashboard.putNumber("backRightTurnPower", backRightTurnPower);    
 
     SmartDashboard.putNumber("frontLeftTurnPosition", frontLeftSteer.getSelectedSensorPosition());
-    // SmartDashboard.putNumber("frontRightTurnPosition", frontRightSteer.getSelectedSensorPosition());
+    SmartDashboard.putNumber("frontRightTurnPosition", frontRightSteer.getSelectedSensorPosition());
     // SmartDashboard.putNumber("backLeftTurnPosition", backLeftSteer.getSelectedSensorPosition());
     // SmartDashboard.putNumber("backRightTurnPosition", backRightSteer.getSelectedSensorPosition()); 
 
     SmartDashboard.putNumber("frontLeftDesiredSpeed", frontLeftOptimized.speedMetersPerSecond);
-    // SmartDashboard.putNumber("frontRightDesiredSpeed", frontRightOptimized.speedMetersPerSecond);
+    SmartDashboard.putNumber("frontRightDesiredSpeed", frontRightOptimized.speedMetersPerSecond);
     // SmartDashboard.putNumber("backLeftDesiredSpeed", backLeftOptimized.speedMetersPerSecond);
     // SmartDashboard.putNumber("backRightDesiredSpeed", backRightOptimized.speedMetersPerSecond);
     
@@ -268,10 +282,10 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("desiredRot", desiredTurnSpeed);
 
     //set drive power to desired speed div max speed to get value between 0 and 1
-    // frontLeftDrive.set(frontLeftModule.speedMetersPerSecond/maxSpeedMpS);
-    // frontRightDrive.set(frontRightModule.speedMetersPerSecond/maxSpeedMpS);
-    // backLeftDrive.set(backLeftModule.speedMetersPerSecond/maxSpeedMpS);
-    // backRightDrive.set(backRightModule.speedMetersPerSecond/maxSpeedMpS);
+    frontLeftDrive.set(frontLeftOptimized.speedMetersPerSecond/maxSpeedMpS);
+    frontRightDrive.set(frontRightModule.speedMetersPerSecond/maxSpeedMpS);
+    backLeftDrive.set(backLeftModule.speedMetersPerSecond/maxSpeedMpS);
+    backRightDrive.set(backRightModule.speedMetersPerSecond/maxSpeedMpS);
 
     
   }
