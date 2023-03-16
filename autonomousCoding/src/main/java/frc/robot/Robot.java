@@ -23,6 +23,7 @@ public class Robot extends TimedRobot {
   AHRS navx = new AHRS(SPI.Port.kMXP);
   Timer timer = new Timer();
   final XboxController xBoxCont = new XboxController(0);
+  double maxDegree = 360; // if your over 360 then your driving to much
 
   final WPI_TalonFX leftFront= new WPI_TalonFX(1);
   final WPI_TalonFX rightFront= new WPI_TalonFX(3);
@@ -32,21 +33,21 @@ public class Robot extends TimedRobot {
   final MotorControllerGroup m_rightSide = new MotorControllerGroup(rightBack, rightFront);
   final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftSide, m_rightSide);
   double arcadeDrive_GearRatio = 36; //figure out note: will change for swerver drive
+  double maxSpeed_FeetPerSecond = 12.7588;
   //^^arcade setup
 
   public final WPI_TalonFX topRight= new WPI_TalonFX(6); 
   public final WPI_TalonFX topLeft= new WPI_TalonFX(5);
   double armSpeed = 0.3;
   double reArmSpeed = -0.3;
-  double minArmAngle = 0;
+  double minArmAngle = 1;
   double maxArmAngle = -17;
   private final DifferentialDrive topsDrive = new DifferentialDrive(topLeft, topRight); 
   double armLift_GearRatio = 144; //36 olds news
   //^^TankArm setup
 
-//private final DoubleSolenoid dSolenoidShifter = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
   private final DoubleSolenoid dSolenoidClaw = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 3, 0);
-//private final DoubleSolenoid coolingSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 3);
+  private final DoubleSolenoid coolingSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 3);
   private final Compressor compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
   private final double Scale = 250, offset = -25;
   private final AnalogPotentiometer potentiometer = new AnalogPotentiometer(0, Scale, offset);
@@ -58,6 +59,7 @@ public class Robot extends TimedRobot {
 
   double diameterRizzArcadeWheels = 6.5;
   double radiusRizzArcadeWheels = diameterRizzArcadeWheels/2; //of wheel in inchs
+  double radiusArmGear = 0; //GET RADIUS
   double countsPerRevTalonFX = 2048;
   
   final double kp = 0.5;
@@ -72,98 +74,69 @@ public class Robot extends TimedRobot {
   PIDController pidYaw = new PIDController(kpYaw, ki, kd);
 //functions start here~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-//maTH ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 public double encoderToFeet(double radius, double countsPerRev, double encoderValue, double gearRatio){
-  double circumferenceOfWheel = 2*Math.PI*radius; //20.42
-  double countsPerInch = countsPerRev / circumferenceOfWheel / gearRatio; //2.78594
+  double circumferenceOfWheel = 2*Math.PI*radius; 
+  double countsPerInch = countsPerRev / circumferenceOfWheel / gearRatio; 
   double inches = encoderValue / countsPerInch;
   double feet = inches / 12;
   return feet;
 }
-/* NO LONGER NEEDED WE T=HAVE DOUBLE TALONDEG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 public double encoderToDegrees(double countsPerRev, double encoderValue, double gearRatio) {
   double countsPerRotation = countsPerRev * gearRatio;
   double degreesPerCount = 360.0 / countsPerRotation;
   double degrees = encoderValue * degreesPerCount;
   return degrees;
 }
- */
+ 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-public void drive_AUTONOMOUS(double targetDistanceFeet, double tolerance, boolean currentMotorTurn) {
-  resetEncoder();
+public void drive_AUTONOMOUS(double targetDistance, double tolerance, boolean currentMotorTurn) {
+  resetEncoder_DriveFeet();
+  resetEncoder_TurnDegrees();
   double output;
   double currentDistance;
 
-  if (currentMotorTurn == false){
-    currentDistance = leftFront.getSelectedSensorPosition();
-  } else if (currentMotorTurn == true) {
-    currentDistance = rightFront.getSelectedSensorPosition();
-  } else {
-    currentDistance = leftFront.getSelectedSensorPosition();
-  }
+  currentDistance = currentMotorTurn ? rightFront.getSelectedSensorPosition() : leftFront.getSelectedSensorPosition();
   
-  if (Math.abs(targetDistanceFeet - currentDistance) > tolerance) {
-    output = drive.calculate(currentDistance, targetDistanceFeet);
-    output = Math.max(-1, Math.min(1, output));
+  if (Math.abs(targetDistance - currentDistance) > tolerance) {
+    
+    if (currentMotorTurn == false){
+    output = drive.calculate(currentDistance, targetDistance) / (maxSpeed_FeetPerSecond * 12.0); //calculate output in feet then convert to precentage
     m_robotDrive.arcadeDrive(0, -output);
+
+  } else if (currentMotorTurn == true){ 
+    output = drive.calculate(currentDistance, targetDistance) / (maxDegree * 100.0); //calculate output in degrees then convert to precentage
+    m_robotDrive.arcadeDrive(-output, 0);
+  }  
   } else{
     System.out.println("stop motor");
     m_robotDrive.stopMotor();
   }
 }
 
-public void drive_NORMAL(double targetDistanceFeet, double tolerance, boolean currentMotorTurn) {
-  resetEncoder();
+public void drive_NORMAL(double targetDistance, double tolerance, boolean currentMotorTurn) {
+  resetEncoder_DriveFeet();
+  resetEncoder_TurnDegrees();
   double output;
   double currentDistance;
 
-  if (currentMotorTurn == false){
-   currentDistance = leftFront.getSelectedSensorPosition();
-  } else if (currentMotorTurn == true) {
-    currentDistance = rightFront.getSelectedSensorPosition();
-  } else {
-    currentDistance = leftFront.getSelectedSensorPosition();
-  }
+  currentDistance = currentMotorTurn ? rightFront.getSelectedSensorPosition() : leftFront.getSelectedSensorPosition();
   
-  if (Math.abs(targetDistanceFeet - currentDistance) > tolerance) {
-    output = drive.calculate(currentDistance, targetDistanceFeet);
-    output = Math.max(-1, Math.min(1, output));
+  if (Math.abs(targetDistance - currentDistance) > tolerance) {
+    
+    if (currentMotorTurn == false){
+    output = drive.calculate(currentDistance, targetDistance) / (maxSpeed_FeetPerSecond * 12.0); //calculate output in feet then convert to precentage
     m_robotDrive.arcadeDrive(output, 0);
+
+  } else if (currentMotorTurn == true){ 
+    output = drive.calculate(currentDistance, targetDistance) / (maxDegree * 100.0); //calculate output in degrees then convert to precentage
+    m_robotDrive.arcadeDrive(0, output);
+  }  
   } else{
     System.out.println("stop motor");
     m_robotDrive.stopMotor();
   }
 }
-
-/*
-public void driveTurn_leftOrRight_AUTONOMOUS(double targetDistanceDegrees, double tolerance) {
-  resetEncoder();
-  double output;
-  double currentDistance = rightFront.getSelectedSensorPosition();
-  if (Math.abs(targetDistanceDegrees - currentDistance) > tolerance) {
-    output = drive.calculate(currentDistance, targetDistanceDegrees);
-    output = Math.max(-1, Math.min(1, output));
-    m_robotDrive.arcadeDrive(-output, 0);
-  } else{
-    System.out.println("stop motor");
-    m_robotDrive.stopMotor();
-  }
- }
-
-public void driveTurn_leftOrRight_NORMAL(double targetDistanceDegrees, double tolerance) {
- resetEncoder();
- double output;
- double currentDistance = rightFront.getSelectedSensorPosition();
- if (Math.abs(targetDistanceDegrees - currentDistance) > tolerance) {
-   output = drive.calculate(currentDistance, targetDistanceDegrees);
-   output = Math.max(-1, Math.min(1, output));
-   m_robotDrive.arcadeDrive(0, output);
- } else{
-   System.out.println("stop motor");
-   m_robotDrive.stopMotor();
- }
-}
- */
 
 public void autoBalance_NORMAL() {
   double outputPitch=0;
@@ -177,12 +150,10 @@ public void autoBalance_NORMAL() {
   currentYaw = navx.getYaw();
 
   if (Math.abs(targetAnglePitch - currentPitch) > tolerance) {
-    outputPitch = pidPitch.calculate(currentPitch, targetAnglePitch);
-    outputPitch = Math.max(-1, Math.min(1, outputPitch));
+    outputPitch = pidPitch.calculate(currentPitch, targetAnglePitch) / (maxDegree * 100.0); //calculate output in degrees then convert to precentage
   }
   if (Math.abs(targetAngleYaw - currentYaw) > tolerance) {
-    outputYaw = pidYaw.calculate(currentYaw, targetAngleYaw);
-    outputYaw = Math.max(-1, Math.min(1, outputYaw));
+    outputYaw = pidYaw.calculate(currentYaw, targetAngleYaw) / (maxDegree * 100.0); //calculate output in degrees then convert to precentage
   }
   m_robotDrive.arcadeDrive(outputPitch, outputYaw);
 }
@@ -199,24 +170,34 @@ public void autoBalance_AUTONOMOUS() {
   currentYaw = navx.getYaw();
 
   if (Math.abs(targetAnglePitch - currentPitch) > tolerance) {
-    outputPitch = pidPitch.calculate(currentPitch, targetAnglePitch);
-    outputPitch = Math.max(-1, Math.min(1, outputPitch));
+    outputPitch = pidPitch.calculate(currentPitch, targetAnglePitch) / (maxDegree * 100.0); //calculate output in degrees then convert to precentage
   }
   if (Math.abs(targetAngleYaw - currentYaw) > tolerance) {
-    outputYaw = pidYaw.calculate(currentYaw, targetAngleYaw);
-    outputYaw = Math.max(-1, Math.min(1, outputYaw));
+    outputYaw = pidYaw.calculate(currentYaw, targetAngleYaw) / (maxDegree * 100.0); //calculate output in degrees then convert to precentage
   }
   m_robotDrive.arcadeDrive(-outputPitch, -outputYaw);
 }
-// no longer use rest encoder down here vvvvvvvvvvvvvvvvv
+
 public void armLift_Lower(double targetDistanceDegrees, double tolerance){
-  resetEncoder();
+  resetEncoder_armLift();
   double output;
-  double currentDistance = rightFront.getSelectedSensorPosition();
+  double currentDistance = topRight.getSelectedSensorPosition();
   if (Math.abs(targetDistanceDegrees - currentDistance) > tolerance) {
-    output = drive.calculate(currentDistance, targetDistanceDegrees);
-    output = Math.max(-1, Math.min(1, output));
+    output = drive.calculate(currentDistance, targetDistanceDegrees) / (maxDegree * 100.0); //calculate output in degrees then convert to precentage
     m_robotDrive.tankDrive(output, output);
+  } else{
+    System.out.println("stop motor");
+    m_robotDrive.stopMotor();
+  }
+}
+
+public void armExtender(double targetDistanceFeet, double tolerance){
+  resetEncoder_Extend();
+  double output;
+  double currentDistance = armTalonExtenstion.getSelectedSensorPosition();
+  if (Math.abs(targetDistanceFeet - currentDistance) > tolerance) {
+    output = drive.calculate(currentDistance, targetDistanceFeet) / (maxSpeed_FeetPerSecond * 12.0); //calculate output in feet then convert to precentage
+    armTalonExtenstion.set(output);
   } else{
     System.out.println("stop motor");
     m_robotDrive.stopMotor();
@@ -233,31 +214,50 @@ public void setMotorsNeutral() {
   armTalonExtenstion.setNeutralMode(NeutralMode.Brake);
 }
   
-public void resetEncoder(){
+public void resetEncoder_DriveFeet(){
+  //resets eveything including encoder value
   leftFront.setSelectedSensorPosition(0);
-  rightFront.setSelectedSensorPosition(0);
+  //config units you want encoder to be in
+  leftFront.configSelectedFeedbackCoefficient(encoderToFeet(radiusRizzArcadeWheels, countsPerRevTalonFX, leftFront.getSelectedSensorPosition(), arcadeDrive_GearRatio));
 }
 
-public void limitArmRotation() {
-  if (topRight.getSelectedSensorPosition() >= maxArmAngle){ //change degrees
+public void resetEncoder_TurnDegrees(){
+  rightFront.setSelectedSensorPosition(0);  
+  rightFront.configSelectedFeedbackCoefficient(encoderToDegrees(countsPerRevTalonFX, rightFront.getSelectedSensorPosition(), arcadeDrive_GearRatio));
+}
+
+public void resetEncoder_armLift(){
+  topRight.setSelectedSensorPosition(0);  
+  topRight.configSelectedFeedbackCoefficient(encoderToDegrees(countsPerRevTalonFX, topRight.getSelectedSensorPosition(), armLift_GearRatio));
+}
+
+public void resetEncoder_Extend(){
+  armTalonExtenstion.setSelectedSensorPosition(0);
+  armTalonExtenstion.configSelectedFeedbackCoefficient(encoderToFeet(radiusArmGear, countsPerRevTalonFX, armTalonExtenstion.getSelectedSensorPosition(), armTalonExtenstion_GearRatio));
+
+}
+
+public void limitArmRotation(double getArmDegValue) {
+  if (getArmDegValue <= maxArmAngle){ //change degrees
     topsDrive.tankDrive(armSpeed, reArmSpeed);
   }
-  if (topRight.getSelectedSensorPosition() <= minArmAngle){ //change degrees
+  if (topRight.getSelectedSensorPosition() >= minArmAngle){ //change degrees
     topsDrive.tankDrive(reArmSpeed, armSpeed);
   } 
 }
 
 private void pulsePiston(double Time) {
   int pulseFreq = 15;
-  int pulseDuration = 1;/*
+  int pulseDuration = 1;
     if (Time % pulseFreq < pulseDuration) {
     coolingSolenoid.set(Value.kForward);
   } else {
     coolingSolenoid.set(Value.kReverse);
-  }*/
+  }
 }
 //some more functions~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-@Override
+
+  @Override
 public void robotInit() {
   timer.reset();
   timer.start();
@@ -278,32 +278,48 @@ public void robotInit() {
   rightFront.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
   topRight.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 
- //config units you want encoder to be in
- leftFront.configSelectedFeedbackCoefficient(1);//encoderToFeet(radiusRizzArcadeWheels, countsPerRevTalonFX, leftFront.getSelectedSensorPosition(), arcadeDrive_GearRatio));
- rightFront.configSelectedFeedbackCoefficient(1);//encoderToDegrees(countsPerRevTalonFX, rightFront.getSelectedSensorPosition(), arcadeDrive_GearRatio));
- topRight.configSelectedFeedbackCoefficient(1);//encoderToDegrees(countsPerRevTalonFX, topRight.getSelectedSensorPosition(), armLift_GearRatio));
-  
   // Set the direction of the integrated encoder
   leftFront.setSensorPhase(false);
   rightFront.setSensorPhase(false);
   topRight.setSensorPhase(false);
-  resetEncoder();
+
+  //resetvvvvvvvvvvvvvvvvvv
+  resetEncoder_DriveFeet();
+  resetEncoder_TurnDegrees();
+  resetEncoder_armLift();
+  /*
+   * leftFront.configSelectedFeedbackCoefficient(0);
+   * rightFront.configSelectedFeedbackCoefficient(0);
+   * topRight.configSelectedFeedbackCoefficient(0);
+   */
   }
 
-@Override
+  @Override
 public void robotPeriodic() { 
-  //limitArmRotation();
+  limitArmRotation(topRight.getSelectedSensorPosition());
+
+  
   SmartDashboard.putNumber("topRight.Encoder Degrees: ", topRight.getSelectedSensorPosition());
-  //SmartDashboard.putNumber("leftFront.Encoder Feet: ", leftFrontFeet);
-  double talonDeg = topRight.getSelectedSensorPosition() * (360.0/(2048*144));
-  SmartDashboard.putNumber("rightFront.Encoder Degrees: ", talonDeg);
+  SmartDashboard.putNumber("leftFront.Encoder Feet: ", leftFront.getSelectedSensorPosition());
+  SmartDashboard.putNumber("rightFront.Encoder Degrees: ", rightFront.getSelectedSensorPosition());
+  /*
+  double talonDeg_TopRight = encoderToDegrees(countsPerRevTalonFX, topRight.getSelectedSensorPosition(), armLift_GearRatio);
+  SmartDashboard.putNumber("topRight.Encoder Degrees: ", talonDeg_TopRight);
+  limitArmRotation(talonDeg_TopRight);
+
+  double talonDeg_rightFront = encoderToDegrees(countsPerRevTalonFX, rightFront.getSelectedSensorPosition(), arcadeDrive_GearRatio);
+  SmartDashboard.putNumber("rightFront.Encoder Degrees: ", talonDeg_rightFront);
+  
+  double leftFront_Feet = encoderToFeet(radiusRizzArcadeWheels, countsPerRevTalonFX, leftFront.getSelectedSensorPosition(), arcadeDrive_GearRatio);
+  SmartDashboard.putNumber("leftFront.Encoder Feet: ", leftFront_Feet);
+   */
+  
   //^^encoder
   SmartDashboard.putNumber("navx getPitch: ", navx.getPitch());
   SmartDashboard.putNumber("navx getYaw: ", navx.getYaw());
   SmartDashboard.putNumber("navx getRoll: ", navx.getRoll());
   SmartDashboard.putNumber("navx getAngle: ", navx.getAngle());
   //^^navx Angles
-  SmartDashboard.putBoolean("gearShift: ", aButtonPressed);
   SmartDashboard.putBoolean("claw || close: ", bButtonPressed);
   SmartDashboard.putBoolean("BalanceCode: ", xButtonPressed);
   //^^ButtonToggles
@@ -312,7 +328,8 @@ public void robotPeriodic() {
   @Override
   public void autonomousInit() {
     //armLift_Lower(90, 5);
-    /*
+    //armExtender
+    //claw_OpenAndClose
     Timer.delay(5);
     drive_AUTONOMOUS(12, 1, false); //fwd 12 feet
     Timer.delay(5);
@@ -321,64 +338,79 @@ public void robotPeriodic() {
     drive_AUTONOMOUS(180, 1, true); //turn 180
     Timer.delay(5);
     drive_AUTONOMOUS(-180, 1, true); //turn back 180 
-    */
   }
 
   @Override
   public void autonomousPeriodic() {
     double AutonomousTime = timer.get();
-    //pulsePiston(AutonomousTime);
-    //limitArmRotation();
+    pulsePiston(AutonomousTime);
     autoBalance_AUTONOMOUS();
     /*
-     * align with starting node
-     * rais arm
-     * set down object
-     * drive to next object
-     * pick up
-     * drive and align with new node
-     * set object
-     * balance
-     */
-    
+     * thread armLift and Arm Lower for autonomous: 
+     * note: thread what we can for down the line stuff.
+     * also idea: thread section of autonomous as long as 1 thread aint using the same thing twice
+     * 
+note: Create a new thread for armLift_Lower
+Thread thread_ArmLift = new Thread(() -> {
+  armLift_Lower(targetDistanceDegrees, tolerance);
+});
+
+note: Create a new thread for armExtender
+Thread thread_ArmExtend = new Thread(() -> {
+  armExtender(targetDistanceFeet, tolerance);
+});
+
+note: to Start both threads ie
+thread_ArmLift.start();
+thread_ArmExtend.start();
+
+//Note: tolerance for now = 0 but needs testing
+  * robot Init
+  * armLift_Lower // line to drop object
+  * armExtension // line extend over pole/space
+  * clawOpen // drop object 
+  * armExtension // retract arm
+  * drive_AUTONOMOUS(18, 0, false); // drive and !!TURN!! to be lined up to get next object 18 feet away (not calculated ramp)
+  * clawClose // pickup object
+  * armLift_Lower // to driving position/ set position
+  * drive_AUTONOMOUS(-18, 0, false); // go back to home
+  * clawOpen // drop object
+  * drive_AUTONOMOUS(7.9375, 0, false); // go to platform and balance
+  * autoBalance_AUTONOMOUS(); // BALANCE FOR LEFT OVER TIME
+  */
   }
 
   @Override
   public void teleopInit() {
   }
-  
-  boolean aButtonPressed = false;
-  boolean bButtonPressed = false;
-  boolean xButtonPressed = false;
-  double deadzone = 0.5;
 
   @Override
   public void teleopPeriodic() {
     double teleopTime = timer.get();
     pulsePiston(teleopTime);
-    m_robotDrive.arcadeDrive(xBoxCont.getRawAxis(4) * 0.8, xBoxCont.getRawAxis(1) * 0.8);
-    //topsDrive.tankDrive(xBoxCont.getLeftTriggerAxis(), -xBoxCont.getLeftTriggerAxis());
-    //topsDrive.tankDrive(-xBoxCont.getRightTriggerAxis(), xBoxCont.getRightTriggerAxis());
-
-    
-    if (xBoxCont.getLeftTriggerAxis() >= 0.5) {
-      topsDrive.tankDrive(armSpeed,-armSpeed);
-  }else if (xBoxCont.getRightTriggerAxis() >= 0.5) {
-      topsDrive.tankDrive(-armSpeed,armSpeed);
-  }else {
-      topsDrive.tankDrive(0,0);
-  } 
   
-   if (xBoxCont.getAButtonPressed() == true) {
-     aButtonPressed = !aButtonPressed;
- }
- /*
- if (aButtonPressed == true) {
-     dSolenoidShifter.set(Value.kForward);
- } else if (aButtonPressed == false) {
-     dSolenoidShifter.set(Value.kReverse);
- }
-  */
+  //drive vvv
+  m_robotDrive.arcadeDrive(xBoxCont.getRawAxis(4) * 0.8, xBoxCont.getRawAxis(1) * 0.8);
+
+  //arm angle vvv
+ if (xBoxCont.getLeftTriggerAxis() >= 0.5) {
+     topsDrive.tankDrive(armSpeed,reArmSpeed);
+ }else if (xBoxCont.getRightTriggerAxis() >= 0.5) {
+     topsDrive.tankDrive(-armSpeed,armSpeed);
+ }else {
+     topsDrive.tankDrive(0,0);
+ } 
+
+// arm extendo vvv
+ if (xBoxCont.getRightBumper() == true){
+  armTalonExtenstion.set(.30);
+} else if (xBoxCont.getLeftBumper() == true){
+  armTalonExtenstion.set(-0.30);
+} else {
+  armTalonExtenstion.set(0);
+}
+
+ //BButton aka CLAW vvv
  if (xBoxCont.getBButtonPressed() == true) {
    bButtonPressed = !bButtonPressed;
  } 
@@ -387,30 +419,30 @@ public void robotPeriodic() {
  } else if (bButtonPressed == false){
    dSolenoidClaw.set(Value.kReverse);
  }
- 
-   if (xBoxCont.getRightBumper() == true){
-     armTalonExtenstion.set(.30);
- } else if (xBoxCont.getLeftBumper() == true){
-     armTalonExtenstion.set(-0.30);
- } else {
-     armTalonExtenstion.set(0);
- }
+
+//XButton aka balance vvv
+ if (xBoxCont.getXButtonPressed() == true) {
+  xButtonPressed = !xButtonPressed;
+}
  
  if (xBoxCont.getRawAxis(4) > deadzone || xBoxCont.getRawAxis(4) < -deadzone &&
      xBoxCont.getRawAxis(1) > deadzone || xBoxCont.getRawAxis(1) < -deadzone) 
      {
-     xButtonPressed = false;
+    xButtonPressed = false;
  }
  if (xButtonPressed == true) {
-     autoBalance_NORMAL();
+    autoBalance_NORMAL();
  }
  }
-}
 
+ boolean bButtonPressed = false;
+ boolean xButtonPressed = false;
+ double deadzone = 0.5;
+
+}
 /*
  * bumbers = arm extenstion
  * triggers = TankDrive aka armLift
- * A button = gearShift
  * B button = claw open close
  * X button = toggle balance code teleop
  * JoyStick = fwd, back, left and right
