@@ -38,8 +38,8 @@ public class Robot extends TimedRobot {
 
   public final WPI_TalonFX topRight= new WPI_TalonFX(6); 
   public final WPI_TalonFX topLeft= new WPI_TalonFX(5);
-  double armSpeed = 0.3;
-  double reArmSpeed = -0.3;
+  double armSpeed = 0.55;
+  double reArmSpeed = -0.55;
   double minArmAngle = 1;
   double maxArmAngle = -17;
   private final DifferentialDrive topsDrive = new DifferentialDrive(topLeft, topRight); 
@@ -51,7 +51,7 @@ public class Robot extends TimedRobot {
   //^^extend arm setup
 
   private final DoubleSolenoid dSolenoidClaw = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 3, 0);
-  private final DoubleSolenoid coolingSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 3);
+  //private final DoubleSolenoid coolingSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 3);
   private final Compressor compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
   private final double Scale = 250, offset = -25;
   private final AnalogPotentiometer potentiometer = new AnalogPotentiometer(0, Scale, offset);
@@ -246,6 +246,10 @@ public void limitArmRotation(double getArmDegValue) {
   } 
 }
 
+public void limitArmRotateSpeed(double getArmDegValue) {
+  
+}
+/*
 private void pulsePiston(double Time) {
   int pulseFreq = 15;
   int pulseDuration = 1;
@@ -254,7 +258,7 @@ private void pulsePiston(double Time) {
   } else {
     coolingSolenoid.set(Value.kReverse);
   }
-}
+} */
 //some more functions~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   @Override
@@ -296,7 +300,7 @@ private void pulsePiston(double Time) {
 
   @Override
   public void robotPeriodic() { 
-  limitArmRotation(topRight.getSelectedSensorPosition());
+  //limitArmRotation(topRight.getSelectedSensorPosition());
 
   
   SmartDashboard.putNumber("topRight.Encoder Degrees: ", topRight.getSelectedSensorPosition());
@@ -349,7 +353,7 @@ private void pulsePiston(double Time) {
   @Override
   public void autonomousPeriodic() {
     double AutonomousTime = timer.get();
-    pulsePiston(AutonomousTime);
+    //pulsePiston(AutonomousTime);
     autoBalance_AUTONOMOUS();
     /*
      * thread armLift and Arm Lower for autonomous: 
@@ -393,24 +397,24 @@ thread_ArmExtend.start();
   @Override
   public void teleopPeriodic() {
     double teleopTime = timer.get();
-    pulsePiston(teleopTime);
+    //pulsePiston(teleopTime);
   
   //drive vvv
-  m_robotDrive.arcadeDrive(xBoxCont.getRawAxis(4) * 0.8, xBoxCont.getRawAxis(1) * 0.8);
+  m_robotDrive.arcadeDrive(xBoxCont.getRawAxis(4) * 0.55, xBoxCont.getRawAxis(1) * 0.7);
 
   //arm angle vvv
- if (xBoxCont.getLeftTriggerAxis() >= 0.5) {
-     topsDrive.tankDrive(armSpeed,reArmSpeed);
- }else if (xBoxCont.getRightTriggerAxis() >= 0.5) {
-     topsDrive.tankDrive(-armSpeed,armSpeed);
+ if (xBoxCont.getRightTriggerAxis() >= 0.5) {
+     topsDrive.tankDrive(0.5,-0.5); //adjusted armSPeed and reArmSPeed
+ }else if (xBoxCont.getLeftTriggerAxis() >= 0.5) {
+     topsDrive.tankDrive(-0.45,0.45);
  }else {
      topsDrive.tankDrive(0,0);
  } 
 
 // arm extendo vvv
- if (xBoxCont.getRightBumper() == true){
+ if (xBoxCont.getLeftBumper() == true){
   armTalonExtenstion.set(.30);
-} else if (xBoxCont.getLeftBumper() == true){
+} else if (xBoxCont.getRightBumper() == true){
   armTalonExtenstion.set(-0.30);
 } else {
   armTalonExtenstion.set(0);
