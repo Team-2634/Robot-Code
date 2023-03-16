@@ -1,5 +1,5 @@
 package frc.robot;
-
+// the constants in this code need to be changed and edited after installation of swerver drive
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -32,7 +32,7 @@ public class Robot extends TimedRobot {
   final MotorControllerGroup m_leftSide = new MotorControllerGroup(leftBack, leftFront);
   final MotorControllerGroup m_rightSide = new MotorControllerGroup(rightBack, rightFront);
   final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftSide, m_rightSide);
-  double arcadeDrive_GearRatio = 36; //figure out note: will change for swerver drive
+  double arcadeDrive_GearRatio = 36; //figure out, note: this will change for swerver drive
   double maxSpeed_FeetPerSecond = 12.7588;
   //^^arcade setup
 
@@ -46,16 +46,16 @@ public class Robot extends TimedRobot {
   double armLift_GearRatio = 144; //36 olds news
   //^^TankArm setup
 
+  final WPI_TalonFX armTalonExtenstion = new WPI_TalonFX(7);
+  double armTalonExtenstion_GearRatio = 12;
+  //^^extend arm setup
+
   private final DoubleSolenoid dSolenoidClaw = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 3, 0);
   private final DoubleSolenoid coolingSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 3);
   private final Compressor compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
   private final double Scale = 250, offset = -25;
   private final AnalogPotentiometer potentiometer = new AnalogPotentiometer(0, Scale, offset);
   //^^pnuematics solenoid values chek!!!
-
-  final WPI_TalonFX armTalonExtenstion = new WPI_TalonFX(7);
-  double armTalonExtenstion_GearRatio = 12;
-  //^^extend arm setup
 
   double diameterRizzArcadeWheels = 6.5;
   double radiusRizzArcadeWheels = diameterRizzArcadeWheels/2; //of wheel in inchs
@@ -113,7 +113,7 @@ public void drive_AUTONOMOUS(double targetDistance, double tolerance, boolean cu
     m_robotDrive.stopMotor();
   }
 }
-
+// change pid values ^^^
 public void drive_NORMAL(double targetDistance, double tolerance, boolean currentMotorTurn) {
   resetEncoder_DriveFeet();
   resetEncoder_TurnDegrees();
@@ -137,7 +137,7 @@ public void drive_NORMAL(double targetDistance, double tolerance, boolean curren
     m_robotDrive.stopMotor();
   }
 }
-
+// change pid values ^^^
 public void autoBalance_NORMAL() {
   double outputPitch=0;
   double outputYaw=0;
@@ -157,7 +157,7 @@ public void autoBalance_NORMAL() {
   }
   m_robotDrive.arcadeDrive(outputPitch, outputYaw);
 }
-
+// change pid values ^^^
 public void autoBalance_AUTONOMOUS() {
   double outputPitch=0;
   double outputYaw=0;
@@ -177,7 +177,7 @@ public void autoBalance_AUTONOMOUS() {
   }
   m_robotDrive.arcadeDrive(-outputPitch, -outputYaw);
 }
-
+// change pid values ^^^
 public void armLift_Lower(double targetDistanceDegrees, double tolerance){
   resetEncoder_armLift();
   double output;
@@ -190,7 +190,7 @@ public void armLift_Lower(double targetDistanceDegrees, double tolerance){
     m_robotDrive.stopMotor();
   }
 }
-
+// needs its own pid ^^^^^
 public void armExtender(double targetDistanceFeet, double tolerance){
   resetEncoder_Extend();
   double output;
@@ -203,6 +203,7 @@ public void armExtender(double targetDistanceFeet, double tolerance){
     m_robotDrive.stopMotor();
   }
 }
+// needs its own pid ^^^^
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 public void setMotorsNeutral() {
   leftFront.setNeutralMode(NeutralMode.Brake);
@@ -215,7 +216,7 @@ public void setMotorsNeutral() {
 }
   
 public void resetEncoder_DriveFeet(){
-  //resets eveything including encoder value
+  //resets eveything including encoder value/Coefficient
   leftFront.setSelectedSensorPosition(0);
   //config units you want encoder to be in
   leftFront.configSelectedFeedbackCoefficient(encoderToFeet(radiusRizzArcadeWheels, countsPerRevTalonFX, leftFront.getSelectedSensorPosition(), arcadeDrive_GearRatio));
@@ -234,7 +235,6 @@ public void resetEncoder_armLift(){
 public void resetEncoder_Extend(){
   armTalonExtenstion.setSelectedSensorPosition(0);
   armTalonExtenstion.configSelectedFeedbackCoefficient(encoderToFeet(radiusArmGear, countsPerRevTalonFX, armTalonExtenstion.getSelectedSensorPosition(), armTalonExtenstion_GearRatio));
-
 }
 
 public void limitArmRotation(double getArmDegValue) {
@@ -258,7 +258,7 @@ private void pulsePiston(double Time) {
 //some more functions~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   @Override
-public void robotInit() {
+  public void robotInit() {
   timer.reset();
   timer.start();
   topRight.setSelectedSensorPosition(0);
@@ -295,7 +295,7 @@ public void robotInit() {
   }
 
   @Override
-public void robotPeriodic() { 
+  public void robotPeriodic() { 
   limitArmRotation(topRight.getSelectedSensorPosition());
 
   
@@ -327,17 +327,23 @@ public void robotPeriodic() {
   
   @Override
   public void autonomousInit() {
-    //armLift_Lower(90, 5);
-    //armExtender
-    //claw_OpenAndClose
     Timer.delay(5);
-    drive_AUTONOMOUS(12, 1, false); //fwd 12 feet
+    drive_AUTONOMOUS(6, 1, false); //fwd 6 feet
     Timer.delay(5);
-    drive_AUTONOMOUS(-12, 1, false); //Bkwd 12 feet
+    drive_AUTONOMOUS(-6, 1, false); //Bkwd 6 feet
     Timer.delay(5);
     drive_AUTONOMOUS(180, 1, true); //turn 180
     Timer.delay(5);
     drive_AUTONOMOUS(-180, 1, true); //turn back 180 
+    Timer.delay(5);
+    armLift_Lower(-45, 5); // raise arm 45 degrees
+    Timer.delay(5);
+    armExtender(3, 0.5);// extend 3 feet
+    Timer.delay(5);
+    armExtender(-3, 0.5);// retract 3 feet
+    Timer.delay(5);
+    armLift_Lower(45, 5); // lower 45 deg
+
   }
 
   @Override
