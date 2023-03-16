@@ -57,8 +57,6 @@ public class Robot extends TimedRobot {
   PIDController pidBackLeftTurn = new PIDController(kp, ki, kd);
   PIDController pidBackRightTurn = new PIDController(kp, ki, kd);
   
-  PIDController pidDrive = new PIDController(kp, ki, kd);
-  
   public final WPI_TalonFX frontLeftDrive = new WPI_TalonFX(2);
   public final WPI_TalonFX frontRightDrive = new WPI_TalonFX(4);
   public final WPI_TalonFX backLeftDrive = new WPI_TalonFX(6);
@@ -87,8 +85,8 @@ public class Robot extends TimedRobot {
   //public final double absEncoderTicks = ;
   //public final double absEncoderTicks2Rad = absEncoderTicks / 2 / Math.PI;
 
-  double driveSensitivity = 0.8; //do not change above 1
-  double turningSensitivity = 0.8;
+  double driveSensitivity = 0.4; //do not change above 1
+  double turningSensitivity = 2;
   double maxSpeedMpS = 5; // metres/sec
 /* 
   double frontLeftOffset;
@@ -136,7 +134,16 @@ public class Robot extends TimedRobot {
     frontRightSteer.setNeutralMode(NeutralMode.Brake);
     backLeftSteer.setNeutralMode(NeutralMode.Brake);
     backRightSteer.setNeutralMode(NeutralMode.Brake);
-    
+
+    frontLeftSteer.setInverted(true);
+    frontRightSteer.setInverted(true);
+    backLeftSteer.setInverted(true);
+    backRightSteer.setInverted(true);
+
+    frontLeftDrive.setInverted(true);
+    frontRightDrive.setInverted(true);
+    backLeftDrive.setInverted(true);
+    backRightDrive.setInverted(true);
     
 
     //make pids treat values pi radians and -pi radians as the same and have them loop around
@@ -184,17 +191,16 @@ public class Robot extends TimedRobot {
   }
   /** This function is called once when teleop is enabled. */
   
-  public void swerveDrive() {
+  public void swerveDrive(double xSpeed, double ySpeed, double rotSpeed) {
     
     
 
     //controller inputs are multiplied by max speed to return a fraction of maximum speed and modified further by sensitivity
     //max controller value of 1 returns maximum speed achivable by the robot before being reduced by sensitivity
     //turning is black magic
-    double desiredXSpeed = removeDeadzone(1) * maxSpeedMpS * driveSensitivity;
-    double desiredYSpeed = removeDeadzone(0) * maxSpeedMpS * driveSensitivity;
-    double desiredTurnSpeed = removeDeadzone(4) * turningSensitivity;
-    ChassisSpeeds desiredSpeeds = new ChassisSpeeds(desiredXSpeed, desiredYSpeed, desiredTurnSpeed);
+    
+
+    ChassisSpeeds desiredSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rotSpeed);
     
     //make desiredSpeeds into speeds and angles for each module
     SwerveModuleState[] moduleStates = m_kinematics.toSwerveModuleStates(desiredSpeeds);
@@ -238,6 +244,12 @@ public class Robot extends TimedRobot {
     backLeftSteer.set(backLeftTurnPower);
     backRightSteer.set(backRightTurnPower);
 
+    SmartDashboard.putNumber("frontLeftRawSpeed", frontLeftModule.speedMetersPerSecond);
+    SmartDashboard.putNumber("frontRightRawSpeed", frontRightModule.speedMetersPerSecond);
+
+    SmartDashboard.putNumber("frontLeftSpeed", frontLeftOptimized.speedMetersPerSecond);
+    SmartDashboard.putNumber("frontRightSpeed", frontRightOptimized.speedMetersPerSecond);
+
     SmartDashboard.putNumber("radsPerMotorTurn", kTurningEncoderRot2Rad);
     SmartDashboard.putNumber("motorTurningGearRatio", kTurningMotorGearRatio);
 
@@ -277,15 +289,15 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("backLeftDesiredSpeed", backLeftOptimized.speedMetersPerSecond);
     // SmartDashboard.putNumber("backRightDesiredSpeed", backRightOptimized.speedMetersPerSecond);
     
-    SmartDashboard.putNumber("desiredX", desiredXSpeed);
-    SmartDashboard.putNumber("desiredY", desiredYSpeed);
-    SmartDashboard.putNumber("desiredRot", desiredTurnSpeed);
+    SmartDashboard.putNumber("desiredX", xSpeed);
+    SmartDashboard.putNumber("desiredY", ySpeed);
+    SmartDashboard.putNumber("desiredRot", rotSpeed);
 
     //set drive power to desired speed div max speed to get value between 0 and 1
     frontLeftDrive.set(frontLeftOptimized.speedMetersPerSecond/maxSpeedMpS);
-    frontRightDrive.set(frontRightModule.speedMetersPerSecond/maxSpeedMpS);
-    backLeftDrive.set(backLeftModule.speedMetersPerSecond/maxSpeedMpS);
-    backRightDrive.set(backRightModule.speedMetersPerSecond/maxSpeedMpS);
+    frontRightDrive.set(frontRightOptimized.speedMetersPerSecond/maxSpeedMpS);
+    backLeftDrive.set(backLeftOptimized.speedMetersPerSecond/maxSpeedMpS);
+    backRightDrive.set(backRightOptimized.speedMetersPerSecond/maxSpeedMpS);
 
     
   }
@@ -305,7 +317,11 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    swerveDrive();
+    double contXSpeed = removeDeadzone(1) * maxSpeedMpS * driveSensitivity;
+    double contYSpeed = removeDeadzone(0) * maxSpeedMpS * driveSensitivity;
+    double contTurnSpeed = removeDeadzone(4) * turningSensitivity;
+
+    swerveDrive(contXSpeed, contYSpeed, contTurnSpeed);
 
     frontLeftSteer.setNeutralMode(NeutralMode.Brake);
     frontRightSteer.setNeutralMode(NeutralMode.Brake);
