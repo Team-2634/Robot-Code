@@ -216,25 +216,23 @@ public void setMotorsNeutral() {
 }
   
 public void resetEncoder_DriveFeet(){
-  //resets eveything including encoder value/Coefficient
   leftFront.setSelectedSensorPosition(0);
-  //config units you want encoder to be in
-  leftFront.configSelectedFeedbackCoefficient(encoderToFeet(radiusRizzArcadeWheels, countsPerRevTalonFX, leftFront.getSelectedSensorPosition(), arcadeDrive_GearRatio));
+  leftFront.configSelectedFeedbackCoefficient(1);
 }
 
 public void resetEncoder_TurnDegrees(){
   rightFront.setSelectedSensorPosition(0);  
-  rightFront.configSelectedFeedbackCoefficient(encoderToDegrees(countsPerRevTalonFX, rightFront.getSelectedSensorPosition(), arcadeDrive_GearRatio));
+  rightFront.configSelectedFeedbackCoefficient(1);
 }
 
 public void resetEncoder_armLift(){
   topRight.setSelectedSensorPosition(0);  
-  topRight.configSelectedFeedbackCoefficient(encoderToDegrees(countsPerRevTalonFX, topRight.getSelectedSensorPosition(), armLift_GearRatio));
+  topRight.configSelectedFeedbackCoefficient(1);
 }
 
 public void resetEncoder_Extend(){
   armTalonExtenstion.setSelectedSensorPosition(0);
-  armTalonExtenstion.configSelectedFeedbackCoefficient(encoderToFeet(radiusArmGear, countsPerRevTalonFX, armTalonExtenstion.getSelectedSensorPosition(), armTalonExtenstion_GearRatio));
+  armTalonExtenstion.configSelectedFeedbackCoefficient(1);
 }
 
 public void limitArmRotation(double getArmDegValue) {
@@ -249,16 +247,6 @@ public void limitArmRotation(double getArmDegValue) {
 public void limitArmRotateSpeed(double getArmDegValue) {
   
 }
-/*
-private void pulsePiston(double Time) {
-  int pulseFreq = 15;
-  int pulseDuration = 1;
-    if (Time % pulseFreq < pulseDuration) {
-    coolingSolenoid.set(Value.kForward);
-  } else {
-    coolingSolenoid.set(Value.kReverse);
-  }
-} */
 //some more functions~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   @Override
@@ -291,22 +279,11 @@ private void pulsePiston(double Time) {
   resetEncoder_DriveFeet();
   resetEncoder_TurnDegrees();
   resetEncoder_armLift();
-  /*
-   * leftFront.configSelectedFeedbackCoefficient(0);
-   * rightFront.configSelectedFeedbackCoefficient(0);
-   * topRight.configSelectedFeedbackCoefficient(0);
-   */
+  resetEncoder_Extend();
   }
 
   @Override
-  public void robotPeriodic() { 
-  //limitArmRotation(topRight.getSelectedSensorPosition());
-
-  
-  SmartDashboard.putNumber("topRight.Encoder Degrees: ", topRight.getSelectedSensorPosition());
-  SmartDashboard.putNumber("leftFront.Encoder Feet: ", leftFront.getSelectedSensorPosition());
-  SmartDashboard.putNumber("rightFront.Encoder Degrees: ", rightFront.getSelectedSensorPosition());
-  /*
+  public void robotPeriodic() {    
   double talonDeg_TopRight = encoderToDegrees(countsPerRevTalonFX, topRight.getSelectedSensorPosition(), armLift_GearRatio);
   SmartDashboard.putNumber("topRight.Encoder Degrees: ", talonDeg_TopRight);
   limitArmRotation(talonDeg_TopRight);
@@ -316,7 +293,7 @@ private void pulsePiston(double Time) {
   
   double leftFront_Feet = encoderToFeet(radiusRizzArcadeWheels, countsPerRevTalonFX, leftFront.getSelectedSensorPosition(), arcadeDrive_GearRatio);
   SmartDashboard.putNumber("leftFront.Encoder Feet: ", leftFront_Feet);
-   */
+  
   
   //^^encoder
   SmartDashboard.putNumber("navx getPitch: ", navx.getPitch());
@@ -352,8 +329,6 @@ private void pulsePiston(double Time) {
 
   @Override
   public void autonomousPeriodic() {
-    double AutonomousTime = timer.get();
-    //pulsePiston(AutonomousTime);
     autoBalance_AUTONOMOUS();
     /*
      * thread armLift and Arm Lower for autonomous: 
@@ -396,8 +371,6 @@ thread_ArmExtend.start();
 
   @Override
   public void teleopPeriodic() {
-    double teleopTime = timer.get();
-    //pulsePiston(teleopTime);
   
   //drive vvv
   m_robotDrive.arcadeDrive(xBoxCont.getRawAxis(4) * 0.55, xBoxCont.getRawAxis(1) * 0.7);
