@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.sensors.WPI_CANCoder;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -27,6 +28,7 @@ public class Robot extends TimedRobot {
   //Constants vvvvv
   Timer timer = new Timer();
   final XboxController xBoxCont = new XboxController(0);
+  final XboxController xBoxCont2 = new XboxController(1);
   double maxDegree = 360; // if your over 360 then your driving to much
   
   //these are used for swerve vvv
@@ -48,6 +50,22 @@ public class Robot extends TimedRobot {
   public final WPI_TalonFX frontRightSteer = new WPI_TalonFX(3);
   public final WPI_TalonFX backLeftSteer = new WPI_TalonFX(5);
   public final WPI_TalonFX backRightSteer = new WPI_TalonFX(7); 
+
+  public final WPI_CANCoder frontLeftAbsEncoder = new WPI_CANCoder(1);
+  public final WPI_CANCoder frontRightAbsEncoder = new WPI_CANCoder(2);
+  public final WPI_CANCoder backLeftAbsEncoder = new WPI_CANCoder(3);
+  public final WPI_CANCoder backRightAbsEncoder = new WPI_CANCoder(4);
+
+  //put in the unique angle offsets
+  public double frontLeftAbsOffset = 0;
+  public double frontRightAbsOffset = 0;
+  public double backLeftAbsOffset = 0;
+  public double backRightAbsOffset = 0;
+
+  public double frontLeftAbsAngle = 0;
+  public double frontRightAbsAngle = 0;
+  public double backLeftAbsAngle = 0;
+  public double backRightAbsAngle = 0;
   
   public final double kWheelDiameterMeters = Units.inchesToMeters(3.75);
   public final double kDriveMotorGearRatio = 1 / 8.45;
@@ -173,12 +191,12 @@ public class Robot extends TimedRobot {
     var backLeftOptimized = SwerveModuleState.optimize(backLeftModule, backLeftCurrentAngle);
     var backRightOptimized = SwerveModuleState.optimize(backRightModule, backRightCurrentAngle);
     
+    //set steer motor power to the pid output of current position in radians and desired position in radians
     double frontLeftTurnPower = pidFrontLeftTurn.calculate(frontLeftSteer.getSelectedSensorPosition()*kTurningEncoderTicksToRad, frontLeftOptimized.angle.getRadians());
     double frontRightTurnPower = pidFrontRightTurn.calculate(frontRightSteer.getSelectedSensorPosition()*kTurningEncoderTicksToRad, frontRightOptimized.angle.getRadians());
     double backLeftTurnPower = pidBackLeftTurn.calculate(backLeftSteer.getSelectedSensorPosition()*kTurningEncoderTicksToRad, backLeftOptimized.angle.getRadians());
     double backRightTurnPower = pidBackRightTurn.calculate(backRightSteer.getSelectedSensorPosition()*kTurningEncoderTicksToRad, backRightOptimized.angle.getRadians());
 
-    //set steer motor power to the pid output of current position in radians and desired position in radians
     //positive is clockwise (right side up)
     frontLeftSteer.set(frontLeftTurnPower);
     frontRightSteer.set(frontRightTurnPower);
@@ -201,10 +219,38 @@ public class Robot extends TimedRobot {
     } 
   }
 
+  //returns in radians
+  public void absolutePosition() {
+    frontLeftAbsAngle = (frontLeftAbsEncoder.getAbsolutePosition() - frontLeftAbsOffset) * (Math.PI / 180);
+    frontRightAbsAngle = (frontRightAbsEncoder.getAbsolutePosition() - frontRightAbsOffset) * (Math.PI / 180);
+    backLeftAbsAngle = (backLeftAbsEncoder.getAbsolutePosition() - backLeftAbsOffset) * (Math.PI / 180);
+    backRightAbsAngle = (backRightAbsEncoder.getAbsolutePosition() - backRightAbsOffset) * (Math.PI / 180);
+  }
+
+  public void straightenModules() {
+    //while loop might break things by over going the 20ms cycle time. Redo this part if it doesn't work
+    while (Math.abs(frontLeftAbsAngle)>0.05 || 
+    Math.abs(frontRightAbsAngle)>0.05 || 
+    Math.abs(backLeftAbsAngle)>0.05 || 
+    Math.abs(backRightAbsAngle)>0.05) {
+
+    absolutePosition();
+
+    double frontLeftTurnPower = pidFrontLeftTurn.calculate(frontLeftAbsAngle, 0);
+    double frontRightTurnPower = pidFrontRightTurn.calculate(frontRightAbsAngle, 0);
+    double backLeftTurnPower = pidBackLeftTurn.calculate(backLeftAbsAngle, 0);
+    double backRightTurnPower = pidBackRightTurn.calculate(backRightAbsAngle, 0);
+
+    frontLeftSteer.set(frontLeftTurnPower);
+    frontRightSteer.set(frontRightTurnPower);
+    backLeftSteer.set(backLeftTurnPower);
+    backRightSteer.set(backRightTurnPower);
+    }
+  }
+
   //execution Functions vvvvv
   @Override
   public void robotInit() {
-    resetEncoders();
     setMotorBreaks();
     invertMotors();
     continouousInput();
@@ -216,7 +262,8 @@ public class Robot extends TimedRobot {
     } else if (currentPsi > 119) {
         compressor.disable();
     }
-  }
+    resetEncoders();
+  } 
 
   @Override
   public void robotPeriodic() {
@@ -226,6 +273,7 @@ public class Robot extends TimedRobot {
     //smartDash lines vvv
     //sensor values vvv
     SmartDashboard.putNumber("encoderDegrees_rightArmSide", encoderDegrees_rightArmSide);
+    SmartDashboard.putNumber("Current PSI:", potentiometer.get());
   }
   
   @Override
@@ -239,7 +287,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-
+    straightenModules();
+    resetEncoders();
   }
 
   @Override
