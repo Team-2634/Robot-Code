@@ -69,9 +69,13 @@ public class Robot extends TimedRobot {
 
   //these are for the arm vvv
   public final WPI_TalonFX leftArmSide= new WPI_TalonFX(6); 
-  public final WPI_TalonFX rightArnSide= new WPI_TalonFX(5);
-  private final DifferentialDrive armRotate = new DifferentialDrive(leftArmSide, rightArnSide); 
+  public final WPI_TalonFX rightArmSide= new WPI_TalonFX(5);
+  private final DifferentialDrive armRotate = new DifferentialDrive(leftArmSide, rightArmSide); 
   final WPI_TalonFX armTalonExtenstion = new WPI_TalonFX(7);
+  double maxArmDeg = 60;
+  double minArmDeg = -5;
+  double armSpeed_Fast =  0.50;
+  double armSpeed_Slow = 0.45;
 
   //Claw and pnuematics vvv  
   private final DoubleSolenoid dSolenoidClaw = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 3, 0);
@@ -88,7 +92,7 @@ public class Robot extends TimedRobot {
   PIDController pidPitch = new PIDController(kp_Pitch, ki_Navx, kd_Navx);
   PIDController pidYaw = new PIDController(kp_Yaw, ki_Navx, kd_Navx);
   //constants ^^^^^
-
+  
   // our functions vvvvvv
 
   public void resetEncoders () {
@@ -186,8 +190,16 @@ public class Robot extends TimedRobot {
     backRightDrive.set(backRightOptimized.speedMetersPerSecond/maxSpeedMpS);
   }
 
+  public void limitArmRotation(double getArmDegValue) {
+    if (getArmDegValue <= maxArmDeg){
+      armRotate.tankDrive(armSpeed_Fast, -armSpeed_Fast);
+    }
+    if (getArmDegValue >= minArmDeg){ 
+      armRotate.tankDrive(-armSpeed_Slow, armSpeed_Slow);
+    } 
+  }
+
   //execution Functions vvvvv
-  
   @Override
   public void robotInit() {
     resetEncoders();
@@ -198,7 +210,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
+    double encoderDegrees_rightArmSide = rightArmSide.getSelectedSensorPosition()/maxDegree;
+    //limitArmRotation(encoderDegrees_rightArmSide);  
 
+    //smartDash lines vvv
+    SmartDashboard.putNumber("encoderDegrees_rightArmSide", encoderDegrees_rightArmSide);
   }
   
   @Override
