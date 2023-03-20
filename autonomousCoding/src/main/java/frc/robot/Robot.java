@@ -18,6 +18,11 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.SPI;
 
+/*
+ * second controller is arm
+ * thread em
+ */
+
 public class Robot extends TimedRobot {
 
   AHRS navx = new AHRS(SPI.Port.kMXP);

@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -76,12 +77,14 @@ public class Robot extends TimedRobot {
   double minArmDeg = -5;
   double armSpeed_Fast =  0.50;
   double armSpeed_Slow = 0.45;
+  double armTalonExtenstionSpeed = 0.3;
 
-  //Claw and pnuematics vvv  
+  //Claw and pnuematics aka claw vvv  
   private final DoubleSolenoid dSolenoidClaw = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 3, 0);
   private final Compressor compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
   private final double Scale = 250, offset = -25;
   private final AnalogPotentiometer potentiometer = new AnalogPotentiometer(0, Scale, offset);
+  boolean bButtonPressed = false;
 
   //navx2 vvv
   final double kp_Pitch = 0.1; 
@@ -92,9 +95,8 @@ public class Robot extends TimedRobot {
   PIDController pidPitch = new PIDController(kp_Pitch, ki_Navx, kd_Navx);
   PIDController pidYaw = new PIDController(kp_Yaw, ki_Navx, kd_Navx);
   //constants ^^^^^
-  
-  // our functions vvvvvv
 
+  // our functions vvvvvv
   public void resetEncoders () {
     frontLeftSteer.setSelectedSensorPosition(0);
     frontRightSteer.setSelectedSensorPosition(0);
@@ -206,6 +208,14 @@ public class Robot extends TimedRobot {
     setMotorBreaks();
     invertMotors();
     continouousInput();
+
+    double currentPsi = potentiometer.get();
+    int psiCap = 117;
+    if (currentPsi <= psiCap) {
+        compressor.enableDigital(); 
+    } else if (currentPsi > 119) {
+        compressor.disable();
+    }
   }
 
   @Override
@@ -214,6 +224,7 @@ public class Robot extends TimedRobot {
     //limitArmRotation(encoderDegrees_rightArmSide);  
 
     //smartDash lines vvv
+    //sensor values vvv
     SmartDashboard.putNumber("encoderDegrees_rightArmSide", encoderDegrees_rightArmSide);
   }
   
@@ -233,6 +244,38 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+    //swerve vvv
+    double contXSpeed = removeDeadzone(1) * maxSpeedMpS * driveSensitivity;
+    double contYSpeed = removeDeadzone(0) * maxSpeedMpS * driveSensitivity;
+    double contTurnSpeed = removeDeadzone(4) * turningSensitivity;
+    swerveDrive(contXSpeed, contYSpeed, contTurnSpeed);
 
+    // arm extendo vvv
+     if (xBoxCont.getLeftBumper() == true){
+      armTalonExtenstion.set(armTalonExtenstionSpeed);
+    } else if (xBoxCont.getRightBumper() == true){
+      armTalonExtenstion.set(-armTalonExtenstionSpeed);
+    } else {
+      armTalonExtenstion.set(0);
+    }
+
+    //arm angle vvv
+     if (xBoxCont.getRightTriggerAxis() >= 0.5) {
+      armRotate.tankDrive(armSpeed_Fast,-armSpeed_Fast); //adjusted armSPeed and reArmSPeed
+    }else if (xBoxCont.getLeftTriggerAxis() >= 0.5) {
+      armRotate.tankDrive(-armSpeed_Slow ,armSpeed_Slow);
+    }else {
+      armRotate.tankDrive(0,0);
+    } 
+
+    //BButton aka CLAW vvv
+     if (xBoxCont.getBButtonPressed() == true) {
+      bButtonPressed = !bButtonPressed;
+    } 
+    if (bButtonPressed == true){
+      dSolenoidClaw.set(Value.kForward);
+    } else if (bButtonPressed == false){
+      dSolenoidClaw.set(Value.kReverse);
+    }
   }
 }
