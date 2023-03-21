@@ -223,6 +223,32 @@ public class Robot extends TimedRobot {
     } 
   }
 
+  public void robotArm() {
+
+    
+
+
+     //arm angle vvv
+     if (arm_xBoxCont.getRightTriggerAxis() >= 0.5) {
+      armRotate.tankDrive(armSpeed_Fast,-armSpeed_Fast); //adjusted armSPeed and reArmSPeed
+    }else if (arm_xBoxCont.getLeftTriggerAxis() >= 0.5) {
+      armRotate.tankDrive(-armSpeed_Slow ,armSpeed_Slow);
+    }else {
+      armRotate.tankDrive(0,0);
+    } 
+
+    //BButton aka CLAW vvv
+     if (arm_xBoxCont.getBButtonPressed() == true) {
+      bButtonPressed = !bButtonPressed;
+    } 
+    if (bButtonPressed == true){
+      dSolenoidClaw.set(Value.kForward);
+    } else if (bButtonPressed == false){
+      dSolenoidClaw.set(Value.kReverse);
+    }
+
+  }
+
   //returns in radians
   public void absolutePosition() {
     frontLeftAbsAngle = (frontLeftAbsEncoder.getAbsolutePosition() - frontLeftAbsOffset) * (Math.PI / 180);
@@ -298,7 +324,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    //swerve vvv
+    //swerve vvv (uses driving_xBoxCont)
     double contXSpeed = removeDeadzone(1) * maxSpeedMpS * driveSensitivity;
     double contYSpeed = removeDeadzone(0) * maxSpeedMpS * driveSensitivity;
     double contTurnSpeed = removeDeadzone(4) * turningSensitivity;
@@ -313,24 +339,6 @@ public class Robot extends TimedRobot {
       armTalonExtenstion.set(0);
     }
 
-    //arm angle vvv
-     if (arm_xBoxCont.getRightTriggerAxis() >= 0.5) {
-      armRotate.tankDrive(armSpeed_Fast,-armSpeed_Fast); //adjusted armSPeed and reArmSPeed
-    }else if (arm_xBoxCont.getLeftTriggerAxis() >= 0.5) {
-      armRotate.tankDrive(-armSpeed_Slow ,armSpeed_Slow);
-    }else {
-      armRotate.tankDrive(0,0);
-    } 
-
-    //BButton aka CLAW vvv
-     if (arm_xBoxCont.getBButtonPressed() == true) {
-      bButtonPressed = !bButtonPressed;
-    } 
-    if (bButtonPressed == true){
-      dSolenoidClaw.set(Value.kForward);
-    } else if (bButtonPressed == false){
-      dSolenoidClaw.set(Value.kReverse);
-    }
   }
 }
 /*
