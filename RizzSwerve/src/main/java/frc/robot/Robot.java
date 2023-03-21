@@ -42,9 +42,9 @@ public class Robot extends TimedRobot {
   PIDController pidBackRightTurn = new PIDController(kp, ki, kd);
 
   public final WPI_TalonFX frontLeftDrive = new WPI_TalonFX(2);
-  public final WPI_TalonFX frontRightDrive = new WPI_TalonFX(4);
-  public final WPI_TalonFX backLeftDrive = new WPI_TalonFX(6);
-  public final WPI_TalonFX backRightDrive= new WPI_TalonFX(8); 
+  public final WPI_TalonFX frontRightDrive= new WPI_TalonFX(4);
+  public final WPI_TalonFX backLeftDrive  = new WPI_TalonFX(6);
+  public final WPI_TalonFX backRightDrive = new WPI_TalonFX(8); 
 
   public final WPI_TalonFX frontLeftSteer = new WPI_TalonFX(1);
   public final WPI_TalonFX frontRightSteer = new WPI_TalonFX(3);
@@ -123,15 +123,19 @@ public class Robot extends TimedRobot {
   }
 
   public void setMotorBreaks () {
-    frontLeftSteer.setNeutralMode(NeutralMode.Brake);
-    frontRightSteer.setNeutralMode(NeutralMode.Brake);
-    backLeftSteer.setNeutralMode(NeutralMode.Brake);
-    backRightSteer.setNeutralMode(NeutralMode.Brake);
+    frontLeftDrive.setNeutralMode(NeutralMode.Brake);
+    frontRightDrive.setNeutralMode(NeutralMode.Brake);
+    backLeftDrive.setNeutralMode(NeutralMode.Brake);
+    backRightDrive.setNeutralMode(NeutralMode.Brake);
 
     frontLeftSteer.setNeutralMode(NeutralMode.Brake);
     frontRightSteer.setNeutralMode(NeutralMode.Brake);
     backLeftSteer.setNeutralMode(NeutralMode.Brake);
     backRightSteer.setNeutralMode(NeutralMode.Brake);
+
+    leftArmSide.setNeutralMode(NeutralMode.Brake);
+    rightArmSide.setNeutralMode(NeutralMode.Brake);
+    armTalonExtenstion.setNeutralMode(NeutralMode.Brake);
   }
 
   public void invertMotors () {
@@ -262,6 +266,7 @@ public class Robot extends TimedRobot {
     } else if (currentPsi > 119) {
         compressor.disable();
     }
+    
     resetEncoders();
   } 
 
@@ -328,3 +333,43 @@ public class Robot extends TimedRobot {
     }
   }
 }
+/*
+ * public class Robot {
+        Thread driveThread = new Thread(() -> {
+            while (true) {
+                // read inputs from the drive controller
+                double xSpeed = driveController.getX(Hand.kLeft);
+                double zRotation = driveController.getX(Hand.kRight);
+                // update the drive subsystem
+                driveSubsystem.arcadeDrive(xSpeed, zRotation);
+                // sleep for a short time to avoid hogging the CPU
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        Thread armThread = new Thread(() -> {
+            while (true) {
+                // read inputs from the arm controller
+                double armSpeed = armController.getY(Hand.kLeft);
+                boolean isGripperOpen = armController.getAButton();
+                // update the arm subsystem
+                armSubsystem.setArmSpeed(armSpeed);
+                armSubsystem.setGripperState(isGripperOpen);
+                // sleep for a short time to avoid hogging the CPU
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        // start the threads
+        driveThread.start();
+        armThread.start();
+    }
+    
+}
+ */
