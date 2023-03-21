@@ -25,9 +25,6 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.SPI;
 
-// getangle for 360 instead of getYaw which is over
-
-
 public class Robot extends TimedRobot {
   //Constants vvvvv
   Timer timer = new Timer();
@@ -101,11 +98,13 @@ public class Robot extends TimedRobot {
   public final WPI_TalonFX rightArmSide= new WPI_TalonFX(5);
   private final DifferentialDrive armRotate = new DifferentialDrive(leftArmSide, rightArmSide); 
   final WPI_TalonFX armTalonExtenstion = new WPI_TalonFX(7);
+  double extenstionEncoder_Metres;
   double maxArmDeg = 60;
   double minArmDeg = -5;
   double armSpeed_Fast =  0.50;
   double armSpeed_Slow = 0.45;
   double armTalonExtenstionSpeed = 0.3;
+  double encoderDegrees_rightArmSide;
 
   //Claw and pnuematics aka claw vvv  
   private final DoubleSolenoid dSolenoidClaw = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 3, 0);
@@ -126,7 +125,6 @@ public class Robot extends TimedRobot {
   double navxPitch_Deg;
   double navxRoll_Deg;
   // constants ^^^^^
-
   // our functions vvvvvv
 /*
   public double encoderToMetres(double radius, double countsPerRev, double encoderValue, double gearRatio){
@@ -244,7 +242,6 @@ public class Robot extends TimedRobot {
     if (getArmDegValue >= minArmDeg){ 
       armRotate.tankDrive(-armSpeed_Slow, armSpeed_Slow);
     } 
-    
   }
 
   public void robotArm(double armDown, double armUp, Boolean claw_xBox, Boolean extendArm, Boolean retractArm) {
@@ -309,6 +306,28 @@ public class Robot extends TimedRobot {
     swerveDrive(outputXSpeed, outputYSpeed, outputYaw_Rad);
   }
 
+  public void armLift_Lower(double targetDistanceDegrees, double tolerance){
+    double output;
+    double currentDistance = encoderDegrees_rightArmSide;
+    if (Math.abs(targetDistanceDegrees - currentDistance) > tolerance) {
+      output = drive.calculate(currentDistance, targetDistanceDegrees) / (maxDegree * 100.0); //degrees to precents fix
+      armRotate.tankDrive(output, -output);
+    }
+  }
+
+  public void armExtender(double targetDistanceMetres, double tolerance){
+    double output;
+    double currentDistance = extenstionEncoder_Metres;
+    if (Math.abs(targetDistanceMetres - currentDistance) > tolerance) {
+      output = drive.calculate(currentDistance, targetDistanceMetres) / ( 12.0); //calculate output in feet then convert to precentage
+      armTalonExtenstion.set(output);
+    } else{
+      System.out.println("stop motor");
+    }
+  }
+/////^
+//!!!^ change armLift aand extenstion functions calculation and chek drive again
+/////^
   public void autoBalance() {
     double outputPitch=0;
     double outputYaw=0;
@@ -331,8 +350,8 @@ public class Robot extends TimedRobot {
     swerveDrive(outputPitch, 0, outputYawRad);
   }
 
-  //returns in radians
   public void absolutePosition() {
+    //return radians
     frontLeftAbsAngle = (frontLeftAbsEncoder.getAbsolutePosition() - frontLeftAbsOffset) * (Math.PI / 180);
     frontRightAbsAngle = (frontRightAbsEncoder.getAbsolutePosition() - frontRightAbsOffset) * (Math.PI / 180);
     backLeftAbsAngle = (backLeftAbsEncoder.getAbsolutePosition() - backLeftAbsOffset) * (Math.PI / 180);
@@ -385,9 +404,13 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     // limit arm vvv
-  double encoderDegrees_rightArmSide = rightArmSide.getSelectedSensorPosition()/maxDegree;
+    encoderDegrees_rightArmSide = rightArmSide.getSelectedSensorPosition()/maxDegree; // add gear ratio
     SmartDashboard.putNumber("encoderDegrees_rightArmSide", encoderDegrees_rightArmSide);
     //limitArmRotation(encoderDegrees_rightArmSide);  
+
+    //armExtenstion
+    extenstionEncoder_Metres = armTalonExtenstion.getSelectedSensorPosition()*kTurningEncoderTicksToMetresPerSec;
+    SmartDashboard.putNumber("Arm_Distance_metres", extenstionEncoder_Metres);
 
     //encoder drive variables vvv
     encoderLeftFrontDrive_Meteres = frontLeftDrive.getSelectedSensorPosition()*kTurningEncoderTicksToMetresPerSec;
@@ -408,6 +431,8 @@ public class Robot extends TimedRobot {
 
     //Pnuematics vvv
     SmartDashboard.putNumber("Current PSI:", potentiometer.get());
+
+    //encoders vvv
     SmartDashboard.putNumber("frontLeftAbs Offset", frontLeftAbsEncoder.getAbsolutePosition());
     SmartDashboard.putNumber("frontRightAbs Offset", frontRightAbsEncoder.getAbsolutePosition());
     SmartDashboard.putNumber("backLeftAbs Offset", backLeftAbsEncoder.getAbsolutePosition());
@@ -436,7 +461,7 @@ public class Robot extends TimedRobot {
           double contYSpeed = removeDeadzone(0) * driveSensitivity;
           double contTurnSpeed = removeDeadzone(4) * turningSensitivity;
           swerveDrive(contXSpeed, contYSpeed, contTurnSpeed);
-          
+
           //turn field oriented on/off
           if(true){
           double angleRad = Math.toRadians(navx.getAngle());
@@ -478,4 +503,5 @@ public class Robot extends TimedRobot {
     robotArm(armDown, armUp, claw_xBox, extendArm, retractArm);
      */
   }
+
 }

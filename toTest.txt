@@ -1,5 +1,6 @@
 things to test
 
+- controls (arm)
 - arm degrees
 - straighten wheels
 - camera
