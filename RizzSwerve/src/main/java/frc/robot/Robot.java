@@ -27,8 +27,8 @@ public class Robot extends TimedRobot {
 
   //Constants vvvvv
   Timer timer = new Timer();
-  final XboxController xBoxCont = new XboxController(0);
-  final XboxController xBoxCont2 = new XboxController(1);
+  final XboxController driving_xBoxCont = new XboxController(0);
+  final XboxController arm_xBoxCont = new XboxController(1);
   double maxDegree = 360; // if your over 360 then your driving to much
   
   //these are used for swerve vvv
@@ -154,10 +154,10 @@ public class Robot extends TimedRobot {
   }
 
   public double removeDeadzone(int axisInput) {
-    if (Math.abs(xBoxCont.getRawAxis(axisInput)) < 0.1) {
+    if (Math.abs(driving_xBoxCont.getRawAxis(axisInput)) < 0.1) {
       return 0;
     }
-    return xBoxCont.getRawAxis(axisInput);
+    return driving_xBoxCont.getRawAxis(axisInput);
   }
 
   public void swerveDrive(double xSpeed, double ySpeed, double rotSpeed) {
@@ -300,25 +300,25 @@ public class Robot extends TimedRobot {
     swerveDrive(contXSpeed, contYSpeed, contTurnSpeed);
 
     // arm extendo vvv
-     if (xBoxCont.getLeftBumper() == true){
+     if (arm_xBoxCont.getLeftBumper() == true){
       armTalonExtenstion.set(armTalonExtenstionSpeed);
-    } else if (xBoxCont.getRightBumper() == true){
+    } else if (arm_xBoxCont.getRightBumper() == true){
       armTalonExtenstion.set(-armTalonExtenstionSpeed);
     } else {
       armTalonExtenstion.set(0);
     }
 
     //arm angle vvv
-     if (xBoxCont.getRightTriggerAxis() >= 0.5) {
+     if (arm_xBoxCont.getRightTriggerAxis() >= 0.5) {
       armRotate.tankDrive(armSpeed_Fast,-armSpeed_Fast); //adjusted armSPeed and reArmSPeed
-    }else if (xBoxCont.getLeftTriggerAxis() >= 0.5) {
+    }else if (arm_xBoxCont.getLeftTriggerAxis() >= 0.5) {
       armRotate.tankDrive(-armSpeed_Slow ,armSpeed_Slow);
     }else {
       armRotate.tankDrive(0,0);
     } 
 
     //BButton aka CLAW vvv
-     if (xBoxCont.getBButtonPressed() == true) {
+     if (arm_xBoxCont.getBButtonPressed() == true) {
       bButtonPressed = !bButtonPressed;
     } 
     if (bButtonPressed == true){
