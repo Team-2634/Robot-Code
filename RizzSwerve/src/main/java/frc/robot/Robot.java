@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.SPI;
 
 public class Robot extends TimedRobot {
-
   //Constants vvvvv
   Timer timer = new Timer();
   final XboxController driving_xBoxCont = new XboxController(0);
@@ -112,7 +111,7 @@ public class Robot extends TimedRobot {
   AHRS navx = new AHRS(SPI.Port.kMXP);  
   PIDController pidPitch = new PIDController(kp_Pitch, ki_Navx, kd_Navx);
   PIDController pidYaw = new PIDController(kp_Yaw, ki_Navx, kd_Navx);
-  //constants ^^^^^
+  // constants ^^^^^
 
   // our functions vvvvvv
   public void resetEncoders () {
@@ -223,22 +222,18 @@ public class Robot extends TimedRobot {
     } 
   }
 
-  public void robotArm() {
-
-    
-
-
-     //arm angle vvv
-     if (arm_xBoxCont.getRightTriggerAxis() >= 0.5) {
+  public void robotArm(double armDown, double armUp, Boolean claw_xBox, Boolean extendArm, Boolean retractArm) {
+    //arm angle vvv
+    if (armDown >= 0.5) {
       armRotate.tankDrive(armSpeed_Fast,-armSpeed_Fast); //adjusted armSPeed and reArmSPeed
-    }else if (arm_xBoxCont.getLeftTriggerAxis() >= 0.5) {
+    }else if (armUp >= 0.5) {
       armRotate.tankDrive(-armSpeed_Slow ,armSpeed_Slow);
     }else {
       armRotate.tankDrive(0,0);
     } 
 
-    //BButton aka CLAW vvv
-     if (arm_xBoxCont.getBButtonPressed() == true) {
+    //b Button aka CLAW vvv
+     if (claw_xBox == true) {
       bButtonPressed = !bButtonPressed;
     } 
     if (bButtonPressed == true){
@@ -247,6 +242,14 @@ public class Robot extends TimedRobot {
       dSolenoidClaw.set(Value.kReverse);
     }
 
+    // arm extendo vvv
+    if (extendArm == true){
+      armTalonExtenstion.set(armTalonExtenstionSpeed);
+    } else if (retractArm == true){
+      armTalonExtenstion.set(-armTalonExtenstionSpeed);
+    } else {
+      armTalonExtenstion.set(0);
+    }
   }
 
   //returns in radians
@@ -324,60 +327,42 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+    Thread swerveThread = new Thread(() -> {
+      while (true) {
+          double contXSpeed = removeDeadzone(1) * maxSpeedMpS * driveSensitivity;
+          double contYSpeed = removeDeadzone(0) * maxSpeedMpS * driveSensitivity;
+          double contTurnSpeed = removeDeadzone(4) * turningSensitivity;
+          swerveDrive(contXSpeed, contYSpeed, contTurnSpeed);
+      }
+  });
+  
+  Thread armThread = new Thread(() -> {
+      while (true) {
+          double armDown = arm_xBoxCont.getLeftTriggerAxis();
+          double armUp = arm_xBoxCont.getRightTriggerAxis();
+          boolean claw_xBox = arm_xBoxCont.getBButtonPressed();
+          boolean extendArm = arm_xBoxCont.getLeftBumper();
+          boolean retractArm = arm_xBoxCont.getRightBumper();
+          robotArm(armDown, armUp, claw_xBox, extendArm, retractArm);
+      }
+  });
+  
+  swerveThread.start();
+  armThread.start();
+/*
     //swerve vvv (uses driving_xBoxCont)
     double contXSpeed = removeDeadzone(1) * maxSpeedMpS * driveSensitivity;
     double contYSpeed = removeDeadzone(0) * maxSpeedMpS * driveSensitivity;
     double contTurnSpeed = removeDeadzone(4) * turningSensitivity;
     swerveDrive(contXSpeed, contYSpeed, contTurnSpeed);
 
-    // arm extendo vvv
-     if (arm_xBoxCont.getLeftBumper() == true){
-      armTalonExtenstion.set(armTalonExtenstionSpeed);
-    } else if (arm_xBoxCont.getRightBumper() == true){
-      armTalonExtenstion.set(-armTalonExtenstionSpeed);
-    } else {
-      armTalonExtenstion.set(0);
-    }
-
+    //robot arm
+    double armDown = arm_xBoxCont.getLeftTriggerAxis();
+    double armUp = arm_xBoxCont.getRightTriggerAxis();
+    boolean claw_xBox = arm_xBoxCont.getBButtonPressed();
+    boolean extendArm = arm_xBoxCont.getLeftBumper();
+    boolean retractArm = arm_xBoxCont.getRightBumper();
+    robotArm(armDown, armUp, claw_xBox, extendArm, retractArm);
+     */
   }
 }
-/*
- * public class Robot {
-        Thread driveThread = new Thread(() -> {
-            while (true) {
-                // read inputs from the drive controller
-                double xSpeed = driveController.getX(Hand.kLeft);
-                double zRotation = driveController.getX(Hand.kRight);
-                // update the drive subsystem
-                driveSubsystem.arcadeDrive(xSpeed, zRotation);
-                // sleep for a short time to avoid hogging the CPU
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        Thread armThread = new Thread(() -> {
-            while (true) {
-                // read inputs from the arm controller
-                double armSpeed = armController.getY(Hand.kLeft);
-                boolean isGripperOpen = armController.getAButton();
-                // update the arm subsystem
-                armSubsystem.setArmSpeed(armSpeed);
-                armSubsystem.setGripperState(isGripperOpen);
-                // sleep for a short time to avoid hogging the CPU
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        // start the threads
-        driveThread.start();
-        armThread.start();
-    }
-    
-}
- */
