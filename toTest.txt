@@ -1,0 +1,6 @@
+things to test
+
+- arm degrees
+- straighten wheels
+- camera
+- other smartDashboard values

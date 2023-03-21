@@ -10,6 +10,8 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
 import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -22,6 +24,9 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.SPI;
+
+// getangle for 360 instead of getYaw which is over
+
 
 public class Robot extends TimedRobot {
   //Constants vvvvv
@@ -39,6 +44,8 @@ public class Robot extends TimedRobot {
   PIDController pidFrontRightTurn = new PIDController(kp, ki, kd);
   PIDController pidBackLeftTurn = new PIDController(kp, ki, kd);
   PIDController pidBackRightTurn = new PIDController(kp, ki, kd);
+
+  PIDController drive = new PIDController(kp, ki, kd); // this will be used for driving in feet direction
 
   public final WPI_TalonFX frontLeftDrive = new WPI_TalonFX(2);
   public final WPI_TalonFX frontRightDrive= new WPI_TalonFX(4);
@@ -67,11 +74,15 @@ public class Robot extends TimedRobot {
   public double backRightAbsAngle = 0;
   
   public final double kWheelDiameterMeters = Units.inchesToMeters(3.75);
-  public final double kDriveMotorGearRatio = 1 / 8.45;
+  public final double kDriveMotorGearRatio = 1 / 8.14;
   public final double kTurningMotorGearRatio = 1.0 / (150.0/7.0); //motor rotations to wheel rotations conversion factor
   public final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * Math.PI * kWheelDiameterMeters;
   public final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI; 
+  public final double kTurningEncoderTicksToMetresPerSec = kDriveEncoderRot2Meter/2048;
   public final double kTurningEncoderTicksToRad = kTurningEncoderRot2Rad/2048;
+
+  double encoderLeftFrontDrive_Meteres;
+  double encoderleftFrontSteer_Rad;
 
   double driveSensitivity = 0.4; //do not change above 1
   double turningSensitivity = 2;
@@ -111,9 +122,22 @@ public class Robot extends TimedRobot {
   AHRS navx = new AHRS(SPI.Port.kMXP);  
   PIDController pidPitch = new PIDController(kp_Pitch, ki_Navx, kd_Navx);
   PIDController pidYaw = new PIDController(kp_Yaw, ki_Navx, kd_Navx);
+  double navxYaw_Deg;
+  double navxPitch_Deg;
+  double navxRoll_Deg;
   // constants ^^^^^
 
   // our functions vvvvvv
+/*
+  public double encoderToMetres(double radius, double countsPerRev, double encoderValue, double gearRatio){
+    double circumferenceOfWheel = 2*Math.PI*radius; 
+    double countsPerInch = countsPerRev / circumferenceOfWheel / gearRatio;
+    double inches = encoderValue / countsPerInch;
+    double metres = Units.inchesToMeters(inches);
+    return metres;
+  }
+ */
+
   public void resetEncoders () {
     frontLeftSteer.setSelectedSensorPosition(0);
     frontRightSteer.setSelectedSensorPosition(0);
@@ -164,7 +188,7 @@ public class Robot extends TimedRobot {
   }
 
   public void swerveDrive(double xSpeed, double ySpeed, double rotSpeed) {
-    ChassisSpeeds desiredSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rotSpeed);
+    ChassisSpeeds desiredSpeeds = new ChassisSpeeds(xSpeed*maxSpeedMpS, ySpeed*maxSpeedMpS, rotSpeed);
     
     //make desiredSpeeds into speeds and angles for each module
     SwerveModuleState[] moduleStates = m_kinematics.toSwerveModuleStates(desiredSpeeds);
@@ -213,13 +237,14 @@ public class Robot extends TimedRobot {
     backRightDrive.set(backRightOptimized.speedMetersPerSecond/maxSpeedMpS);
   }
 
-  public void limitArmRotation(double getArmDegValue) {
+  public void limitationArm(double getArmDegValue, double setDegree) {
     if (getArmDegValue <= maxArmDeg){
       armRotate.tankDrive(armSpeed_Fast, -armSpeed_Fast);
     }
     if (getArmDegValue >= minArmDeg){ 
       armRotate.tankDrive(-armSpeed_Slow, armSpeed_Slow);
     } 
+    
   }
 
   public void robotArm(double armDown, double armUp, Boolean claw_xBox, Boolean extendArm, Boolean retractArm) {
@@ -250,6 +275,60 @@ public class Robot extends TimedRobot {
     } else {
       armTalonExtenstion.set(0);
     }
+  }
+
+  public void drive_PID(double targetXdistance_Metres, double targetYdistance_Metres, double targetYaw_deg, double tolerance) {
+    double currentDistanceY;
+    currentDistanceY = encoderleftFrontSteer_Rad;
+    double outputYSpeed=0;
+
+    double currentDistanceX;
+    currentDistanceX = encoderLeftFrontDrive_Meteres;
+    double outputXSpeed=0;
+
+    double currentYaw;
+    currentYaw = navxYaw_Deg;
+    double outputYaw;
+    double outputYaw_Rad=0;
+
+    //currentDistance = currentMotorTurn ? rightFront.getSelectedSensorPosition() : leftFront.getSelectedSensorPosition();
+    
+    if (Math.abs(targetXdistance_Metres - currentDistanceX) > tolerance) {
+      outputXSpeed = drive.calculate(currentDistanceX, targetXdistance_Metres)/maxSpeedMpS;
+      //swerveDrive(outputXSpeed, 0, 0);
+    }
+    if (Math.abs(targetYdistance_Metres - currentDistanceY) > tolerance) {
+      outputYSpeed = drive.calculate(currentDistanceY, targetYdistance_Metres)/maxSpeedMpS;
+      //swerveDrive(0, outputYSpeed, 0);
+    }
+    if (Math.abs(targetYaw_deg - currentYaw) > tolerance) {
+      outputYaw = pidYaw.calculate(currentYaw, targetYaw_deg);
+      outputYaw_Rad = Math.toRadians(outputYaw);
+      //swerveDrive(0, 0, outputYaw_Rad);
+    }
+    swerveDrive(outputXSpeed, outputYSpeed, outputYaw_Rad);
+  }
+
+  public void autoBalance() {
+    double outputPitch=0;
+    double outputYaw=0;
+    double outputYawRad=0;
+    double currentPitch;
+    double currentYaw;
+    double targetAnglePitch = 0;
+    double targetAngleYaw = 0;
+    double tolerance = 5;
+    currentPitch = navx.getPitch();
+    currentYaw = navx.getYaw();
+  
+    if (Math.abs(targetAnglePitch - currentPitch) > tolerance) {
+      outputPitch = pidPitch.calculate(currentPitch, targetAnglePitch); // turn into precent
+    }
+    if (Math.abs(targetAngleYaw - currentYaw) > tolerance) {
+      outputYaw = pidYaw.calculate(currentYaw, targetAngleYaw);
+      outputYawRad = Math.toRadians(outputYaw);
+    }
+    swerveDrive(outputPitch, 0, outputYawRad);
   }
 
   //returns in radians
@@ -287,6 +366,8 @@ public class Robot extends TimedRobot {
     setMotorBreaks();
     invertMotors();
     continouousInput();
+    straightenModules();
+    navx.calibrate();
 
     navx.reset();
 
@@ -303,12 +384,29 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    double encoderDegrees_rightArmSide = rightArmSide.getSelectedSensorPosition()/maxDegree;
+    // limit arm vvv
+  double encoderDegrees_rightArmSide = rightArmSide.getSelectedSensorPosition()/maxDegree;
+    SmartDashboard.putNumber("encoderDegrees_rightArmSide", encoderDegrees_rightArmSide);
     //limitArmRotation(encoderDegrees_rightArmSide);  
 
-    //smartDash lines vvv
-    //sensor values vvv
-    SmartDashboard.putNumber("encoderDegrees_rightArmSide", encoderDegrees_rightArmSide);
+    //encoder drive variables vvv
+    encoderLeftFrontDrive_Meteres = frontLeftDrive.getSelectedSensorPosition()*kTurningEncoderTicksToMetresPerSec;
+    SmartDashboard.putNumber("Drive_Distance_Metres: ", encoderLeftFrontDrive_Meteres);
+    encoderleftFrontSteer_Rad = frontLeftSteer.getSelectedSensorPosition()*kTurningEncoderTicksToRad;
+    SmartDashboard.putNumber("Orientation: ", encoderleftFrontSteer_Rad);
+
+    //camera vvv
+    UsbCamera camera = CameraServer.startAutomaticCapture();
+
+    // navX2 vvv
+    navxYaw_Deg = navx.getYaw();
+    SmartDashboard.putNumber("Yaw_Deg", navxYaw_Deg);
+    navxPitch_Deg = navx.getPitch();
+    SmartDashboard.putNumber("Pitch_deg", navxPitch_Deg);
+    navxRoll_Deg = navx.getRoll();
+    SmartDashboard.putNumber("Roll_Deg", navxRoll_Deg);
+
+    //Pnuematics vvv
     SmartDashboard.putNumber("Current PSI:", potentiometer.get());
     SmartDashboard.putNumber("frontLeftAbs Offset", frontLeftAbsEncoder.getAbsolutePosition());
     SmartDashboard.putNumber("frontRightAbs Offset", frontRightAbsEncoder.getAbsolutePosition());
@@ -318,23 +416,23 @@ public class Robot extends TimedRobot {
   
   @Override
   public void autonomousInit() {
+    drive_PID(3,0,0,0.5);
   }
 
   @Override
   public void autonomousPeriodic() {
-    
+    autoBalance();
   }
 
   @Override
   public void teleopInit() {
-    straightenModules();
-    resetEncoders();
   }
 
   @Override
   public void teleopPeriodic() {
     Thread swerveThread = new Thread(() -> {
       while (true) {
+<<<<<<< Updated upstream
         double contXSpeed = removeDeadzone(1) * maxSpeedMpS * driveSensitivity;
         double contYSpeed = removeDeadzone(0) * maxSpeedMpS * driveSensitivity;
         double contTurnSpeed = removeDeadzone(4) * turningSensitivity;
@@ -348,6 +446,12 @@ public class Robot extends TimedRobot {
           contYSpeed = -contXSpeed * Math.sin(angleRad) + contYSpeed * Math.cos(angleRad);
         }
         swerveDrive(contXSpeed, contYSpeed, contTurnSpeed);
+=======
+          double contXSpeed = removeDeadzone(1) * driveSensitivity;
+          double contYSpeed = removeDeadzone(0) * driveSensitivity;
+          double contTurnSpeed = removeDeadzone(4) * turningSensitivity;
+          swerveDrive(contXSpeed, contYSpeed, contTurnSpeed);
+>>>>>>> Stashed changes
       }
   });
   
