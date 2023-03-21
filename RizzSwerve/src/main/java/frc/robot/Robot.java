@@ -432,13 +432,13 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     Thread swerveThread = new Thread(() -> {
       while (true) {
-<<<<<<< Updated upstream
-        double contXSpeed = removeDeadzone(1) * maxSpeedMpS * driveSensitivity;
-        double contYSpeed = removeDeadzone(0) * maxSpeedMpS * driveSensitivity;
-        double contTurnSpeed = removeDeadzone(4) * turningSensitivity;
-
+          double contXSpeed = removeDeadzone(1) * driveSensitivity;
+          double contYSpeed = removeDeadzone(0) * driveSensitivity;
+          double contTurnSpeed = removeDeadzone(4) * turningSensitivity;
+          swerveDrive(contXSpeed, contYSpeed, contTurnSpeed);
+          
           //turn field oriented on/off
-        if(true){
+          if(true){
           double angleRad = Math.toRadians(navx.getAngle());
           SmartDashboard.putNumber("getGyroAngle", navx.getAngle());
           contXSpeed = contXSpeed * Math.cos(angleRad) + contYSpeed * Math.sin(angleRad);
@@ -446,12 +446,6 @@ public class Robot extends TimedRobot {
           contYSpeed = -contXSpeed * Math.sin(angleRad) + contYSpeed * Math.cos(angleRad);
         }
         swerveDrive(contXSpeed, contYSpeed, contTurnSpeed);
-=======
-          double contXSpeed = removeDeadzone(1) * driveSensitivity;
-          double contYSpeed = removeDeadzone(0) * driveSensitivity;
-          double contTurnSpeed = removeDeadzone(4) * turningSensitivity;
-          swerveDrive(contXSpeed, contYSpeed, contTurnSpeed);
->>>>>>> Stashed changes
       }
   });
   
