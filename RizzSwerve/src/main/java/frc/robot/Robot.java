@@ -310,6 +310,10 @@ public class Robot extends TimedRobot {
     //sensor values vvv
     SmartDashboard.putNumber("encoderDegrees_rightArmSide", encoderDegrees_rightArmSide);
     SmartDashboard.putNumber("Current PSI:", potentiometer.get());
+    SmartDashboard.putNumber("frontLeftAbs Offset", frontLeftAbsEncoder.getAbsolutePosition());
+    SmartDashboard.putNumber("frontRightAbs Offset", frontRightAbsEncoder.getAbsolutePosition());
+    SmartDashboard.putNumber("backLeftAbs Offset", backLeftAbsEncoder.getAbsolutePosition());
+    SmartDashboard.putNumber("backRightAbs Offset", backRightAbsEncoder.getAbsolutePosition());
   }
   
   @Override
