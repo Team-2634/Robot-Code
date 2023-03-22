@@ -304,11 +304,11 @@ public class Robot extends TimedRobot {
     //currentDistance = currentMotorTurn ? rightFront.getSelectedSensorPosition() : leftFront.getSelectedSensorPosition();
     
     if (Math.abs(targetXdistance_Metres - currentDistanceX) > tolerance) {
-      outputXSpeed = drive.calculate(currentDistanceX, targetXdistance_Metres)/maxSpeedMpS;
+      outputXSpeed = drive.calculate(currentDistanceX, targetXdistance_Metres)/(maxSpeedMpS*100);
       //swerveDrive(outputXSpeed, 0, 0);
     }
     if (Math.abs(targetYdistance_Metres - currentDistanceY) > tolerance) {
-      outputYSpeed = drive.calculate(currentDistanceY, targetYdistance_Metres)/maxSpeedMpS;
+      outputYSpeed = drive.calculate(currentDistanceY, targetYdistance_Metres)/(maxSpeedMpS*100);
       //swerveDrive(0, outputYSpeed, 0);
     }
     if (Math.abs(targetYaw_deg - currentYaw) > tolerance) {
