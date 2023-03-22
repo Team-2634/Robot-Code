@@ -81,7 +81,7 @@ public class Robot extends TimedRobot {
   public final double kTurningEncoderTicksToMetresPerSec = kDriveEncoderRot2Meter/2048;
   public final double kTurningEncoderTicksToRad = kTurningEncoderRot2Rad/2048;
 
-  double encoderLeftFrontDrive_Meteres;
+  double encoderLeftFrontDriveDisplacement_Meteres;
   double encoderleftFrontSteer_Rad;
 
   double driveSensitivity = 0.4; //do not change above 1
@@ -148,6 +148,10 @@ public class Robot extends TimedRobot {
     frontRightSteer.setSelectedSensorPosition(0);
     backLeftSteer.setSelectedSensorPosition(0);
     backRightSteer.setSelectedSensorPosition(0);
+
+    frontLeftDrive.setSelectedSensorPosition(0);
+    //leftArmSide.setSelectedSensorPosition(0);
+    //armTalonExtenstion.setSelectedSensorPosition(0);
   }
 
   public void setMotorBreaks () {
@@ -288,14 +292,15 @@ public class Robot extends TimedRobot {
   }
 
   public void drive_PID(double targetXdistance_Metres, double targetYdistance_Metres, double targetYaw_deg, double tolerance) {
+    resetEncoders();
     double currentDistanceY;
-    currentDistanceY = encoderleftFrontSteer_Rad;
+    currentDistanceY = encoderLeftFrontDriveDisplacement_Meteres;
     double outputYSpeed=0;
 
     double currentDistanceX;
-    currentDistanceX = encoderLeftFrontDrive_Meteres;
+    currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
     double outputXSpeed=0;
-
+    //if angle drive no work then need angle manuelly aka a^2 + b^2 = c^2... :O and thhis will go into current distance and target distance for both x and y
     double currentYaw;
     currentYaw = navxYaw_Deg;
     double outputYaw;
@@ -339,7 +344,7 @@ public class Robot extends TimedRobot {
     }
   }
 /////^
-//!!!^ change armLift aand extenstion functions calculation and chek drive again
+//!!!^ do the math
 /////^
   public void autoBalance() {
     double outputPitch=0;
@@ -429,8 +434,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Arm_Distance_metres", extenstionEncoder_Metres);
 
     //encoder drive variables vvv
-    encoderLeftFrontDrive_Meteres = frontLeftDrive.getSelectedSensorPosition()*kTurningEncoderTicksToMetresPerSec;
-    SmartDashboard.putNumber("Drive_Distance_Metres: ", encoderLeftFrontDrive_Meteres);
+    encoderLeftFrontDriveDisplacement_Meteres = frontLeftDrive.getSelectedSensorPosition()*kTurningEncoderTicksToMetresPerSec;
+    SmartDashboard.putNumber("Drive_Distance_Metres: ", encoderLeftFrontDriveDisplacement_Meteres);
     encoderleftFrontSteer_Rad = frontLeftSteer.getSelectedSensorPosition()*kTurningEncoderTicksToRad;
     SmartDashboard.putNumber("Orientation: ", encoderleftFrontSteer_Rad);
 
