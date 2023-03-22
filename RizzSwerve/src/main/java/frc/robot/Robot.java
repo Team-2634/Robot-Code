@@ -10,6 +10,10 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
 import com.kauailabs.navx.frc.AHRS;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.controller.PIDController;
@@ -112,6 +116,9 @@ public class Robot extends TimedRobot {
   private final double Scale = 250, offset = -25;
   private final AnalogPotentiometer potentiometer = new AnalogPotentiometer(0, Scale, offset);
   boolean bButtonPressed = false;
+  private final CANSparkMax claw_Wheels = new CANSparkMax(11, MotorType.kBrushless);
+  double max_claw_WheelSpeed = 100;
+  double constant_claw_WheelSpeed = 0.2;
 
   //navx2 vvv
   final double kp_Pitch = 0.1; 
@@ -157,6 +164,7 @@ public class Robot extends TimedRobot {
     leftArmSide.setNeutralMode(NeutralMode.Brake);
     rightArmSide.setNeutralMode(NeutralMode.Brake);
     armTalonExtenstion.setNeutralMode(NeutralMode.Brake);
+    //claw_Wheels.setIdleMode(IdleMode.kBrake);
   }
 
   public void invertMotors () {
@@ -244,7 +252,7 @@ public class Robot extends TimedRobot {
     } 
   }
 
-  public void robotArm(double armDown, double armUp, Boolean claw_xBox, Boolean extendArm, Boolean retractArm) {
+  public void robotArm(double armDown, double armUp, Boolean claw_xBox, Boolean extendArm, Boolean retractArm, boolean claw_expel) {
     //arm angle vvv
     if (armDown >= 0.5) {
       armRotate.tankDrive(armSpeed_Fast,-armSpeed_Fast); //adjusted armSPeed and reArmSPeed
@@ -271,6 +279,10 @@ public class Robot extends TimedRobot {
       armTalonExtenstion.set(-armTalonExtenstionSpeed);
     } else {
       armTalonExtenstion.set(0);
+    }
+
+    if (claw_expel == true){
+      claw_Wheels.set(-max_claw_WheelSpeed);
     }
   }
 
@@ -403,6 +415,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
+    // claw vvv
+    claw_Wheels.set(constant_claw_WheelSpeed);
+
     // limit arm vvv
     encoderDegrees_rightArmSide = rightArmSide.getSelectedSensorPosition()/maxDegree; // add gear ratio
     SmartDashboard.putNumber("encoderDegrees_rightArmSide", encoderDegrees_rightArmSide);
@@ -472,7 +487,7 @@ public class Robot extends TimedRobot {
         }
         swerveDrive(contXSpeed, contYSpeed, contTurnSpeed);
       }
-  });
+   });
   
   Thread armThread = new Thread(() -> {
       while (true) {
@@ -481,9 +496,10 @@ public class Robot extends TimedRobot {
           boolean claw_xBox = arm_xBoxCont.getBButtonPressed();
           boolean extendArm = arm_xBoxCont.getLeftBumper();
           boolean retractArm = arm_xBoxCont.getRightBumper();
-          robotArm(armDown, armUp, claw_xBox, extendArm, retractArm);
+          boolean expelCube = arm_xBoxCont.getAButton();
+          robotArm(armDown, armUp, claw_xBox, extendArm, retractArm, expelCube);
       }
-  });
+   });
   
   swerveThread.start();
   armThread.start();
@@ -503,5 +519,4 @@ public class Robot extends TimedRobot {
     robotArm(armDown, armUp, claw_xBox, extendArm, retractArm);
      */
   }
-
 }
