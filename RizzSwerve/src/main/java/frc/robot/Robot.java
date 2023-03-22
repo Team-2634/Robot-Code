@@ -13,7 +13,6 @@ import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.controller.PIDController;
@@ -111,6 +110,7 @@ public class Robot extends TimedRobot {
   double encoderDegrees_rightArmSide;
 
   //Claw and pnuematics aka claw vvv  
+  /*
   private final DoubleSolenoid dSolenoidClaw = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 3, 0);
   private final Compressor compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
   private final double Scale = 250, offset = -25;
@@ -119,7 +119,7 @@ public class Robot extends TimedRobot {
   private final CANSparkMax claw_Wheels = new CANSparkMax(11, MotorType.kBrushless);
   double max_claw_WheelSpeed = 100;
   double constant_claw_WheelSpeed = 0.2;
-
+ */
   //navx2 vvv
   final double kp_Pitch = 0.1; 
   final double kp_Yaw = 0.1;
@@ -263,6 +263,7 @@ public class Robot extends TimedRobot {
     } 
 
     //b Button aka CLAW vvv
+    /*
      if (claw_xBox == true) {
       bButtonPressed = !bButtonPressed;
     } 
@@ -271,7 +272,7 @@ public class Robot extends TimedRobot {
     } else if (bButtonPressed == false){
       dSolenoidClaw.set(Value.kReverse);
     }
-
+ */
     // arm extendo vvv
     if (extendArm == true){
       armTalonExtenstion.set(armTalonExtenstionSpeed);
@@ -280,10 +281,10 @@ public class Robot extends TimedRobot {
     } else {
       armTalonExtenstion.set(0);
     }
-
+/*
     if (claw_expel == true){
       claw_Wheels.set(-max_claw_WheelSpeed);
-    }
+    } */
   }
 
   public void drive_PID(double targetXdistance_Metres, double targetYdistance_Metres, double targetYaw_deg, double tolerance) {
@@ -401,7 +402,7 @@ public class Robot extends TimedRobot {
     navx.calibrate();
 
     navx.reset();
-
+/*
     double currentPsi = potentiometer.get();
     int psiCap = 117;
     if (currentPsi <= psiCap) {
@@ -409,14 +410,14 @@ public class Robot extends TimedRobot {
     } else if (currentPsi > 119) {
         compressor.disable();
     }
-    
+     */
     resetEncoders();
   } 
 
   @Override
   public void robotPeriodic() {
     // claw vvv
-    claw_Wheels.set(constant_claw_WheelSpeed);
+   // claw_Wheels.set(constant_claw_WheelSpeed);
 
     // limit arm vvv
     encoderDegrees_rightArmSide = rightArmSide.getSelectedSensorPosition()/maxDegree; // add gear ratio
@@ -445,7 +446,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Roll_Deg", navxRoll_Deg);
 
     //Pnuematics vvv
-    SmartDashboard.putNumber("Current PSI:", potentiometer.get());
+   // SmartDashboard.putNumber("Current PSI:", potentiometer.get());
 
     //encoders vvv
     SmartDashboard.putNumber("frontLeftAbs Offset", frontLeftAbsEncoder.getAbsolutePosition());
