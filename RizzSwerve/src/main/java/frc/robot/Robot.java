@@ -36,7 +36,7 @@ public class Robot extends TimedRobot {
   double maxDegree = 360; // if your over 360 then your driving to much
   
   //these are used for swerve vvv
-  final double kp = 0.3;
+  final double kp = 0.5;
   final double ki = 0.01;
   final double kd = 0.01;
 
@@ -102,6 +102,7 @@ public class Robot extends TimedRobot {
   private final DifferentialDrive armRotate = new DifferentialDrive(leftArmSide, rightArmSide); 
   double liftGearRatio = 36;
   final WPI_TalonFX armTalonExtenstion = new WPI_TalonFX(10);
+  double extenstionEncoderTOMetres = 12.0 * Math.PI *  Units.inchesToMeters(2.75); //2 inch 3 8ths insides
   double extenstionEncoder_Metres;
   double maxArmDeg = 60;
   double minArmDeg = -5;
@@ -118,7 +119,7 @@ public class Robot extends TimedRobot {
   boolean bButtonPressed = false;
   //private final CANSparkMax claw_Wheels = new CANSparkMax(2, MotorType.kBrushless);
   double max_claw_WheelSpeed = 10;
-  double constant_claw_WheelSpeed = 0.2;
+  double constant_claw_WheelSpeed = 0.05;
   double currentPsi;
  
   //navx2 vvv
@@ -392,7 +393,6 @@ public class Robot extends TimedRobot {
     double backRightTurnPower = pidBackRightTurn.calculate(backRightAbsAngle, 0);
 
     frontLeftSteer.set(frontLeftTurnPower);
-    SmartDashboard.putNumber("frontLeftTurnPower", frontLeftTurnPower);
     frontRightSteer.set(frontRightTurnPower);
     backLeftSteer.set(backLeftTurnPower);
     backRightSteer.set(backRightTurnPower);
@@ -419,20 +419,19 @@ public class Robot extends TimedRobot {
         compressor.enableDigital(); 
     } else if (currentPsi > 119) {
         compressor.disable();
-    }
-     
+    } 
   } 
 
   @Override
   public void robotPeriodic() {
-    if(timer.get() <= 5){
+    //if(timer.get() <= 5){
     absolutePosition();
     straightenModules();
     resetEncoders();
-    }
+    //}
 
    // claw vvv
-  // claw_Wheels.set(constant_claw_WheelSpeed);
+   // claw_Wheels.set(constant_claw_WheelSpeed);
 
     // limit arm vvv
     encoderDegrees_rightArmSide = rightArmSide.getSelectedSensorPosition()/(maxDegree*liftGearRatio);
@@ -440,7 +439,7 @@ public class Robot extends TimedRobot {
     //limitArmRotation(encoderDegrees_rightArmSide);  
 
     //armExtenstion
-    extenstionEncoder_Metres = armTalonExtenstion.getSelectedSensorPosition()*kTurningEncoderTicksToMetresPerSec;
+    extenstionEncoder_Metres = armTalonExtenstion.getSelectedSensorPosition()*extenstionEncoderTOMetres;
     SmartDashboard.putNumber("Arm_Distance_metres", extenstionEncoder_Metres);
 
     //encoder drive variables vvv
