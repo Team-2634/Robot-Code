@@ -1,5 +1,5 @@
 package frc.robot;
-
+// arm extend measurement 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -37,8 +37,8 @@ public class Robot extends TimedRobot {
   
   //these are used for swerve vvv
   final double kp = 0.3;
-  final double ki = 0.0;
-  final double kd = 0.0;
+  final double ki = 0.01;
+  final double kd = 0.01;
 
   PIDController pidFrontLeftTurn = new PIDController(kp, ki, kd);
   PIDController pidFrontRightTurn = new PIDController(kp, ki, kd);
@@ -63,10 +63,10 @@ public class Robot extends TimedRobot {
   public final WPI_CANCoder backRightAbsEncoder = new WPI_CANCoder(1);
 
   //put in the unique angle offsets
-  final public double frontLeftAbsOffset = 9.4;
-  final public double frontRightAbsOffset = 29.53;
-  final public double backLeftAbsOffset = 285.20;
-  final public double backRightAbsOffset = 51.32;
+  final public double frontLeftAbsOffset = 197.19;
+  final public double frontRightAbsOffset = 31.8;
+  final public double backLeftAbsOffset = 285.205;
+  final public double backRightAbsOffset = 50.4;
 
   public double frontLeftAbsAngle = 0;
   public double frontRightAbsAngle = 0;
@@ -83,8 +83,8 @@ public class Robot extends TimedRobot {
 
   double encoderLeftFrontDriveDisplacement_Meteres;
   double encoderleftFrontSteer_Rad;
-
-  double driveSensitivity = 0.4; //do not change above 1
+  double XdriveSensitivity = 0.35;
+  double YdriveSensitivity = 0.4; //do not change above 1
   double turningSensitivity = 2;
   double maxSpeedMpS = 5; // metres/sec
 
@@ -117,7 +117,7 @@ public class Robot extends TimedRobot {
   private final AnalogPotentiometer potentiometer = new AnalogPotentiometer(0, Scale, offset);
   boolean bButtonPressed = false;
   //private final CANSparkMax claw_Wheels = new CANSparkMax(2, MotorType.kBrushless);
-  double max_claw_WheelSpeed = 100;
+  double max_claw_WheelSpeed = 10;
   double constant_claw_WheelSpeed = 0.2;
   double currentPsi;
  
@@ -248,6 +248,8 @@ public class Robot extends TimedRobot {
   }
 
   public void limitationArm(double getArmDegValue, double setDegree) {
+    //max deg = -6
+    // min deg = 0
     if (getArmDegValue <= maxArmDeg){
       armRotate.tankDrive(armSpeed_Fast, -armSpeed_Fast);
     }
@@ -378,14 +380,11 @@ public class Robot extends TimedRobot {
   }
 
   public void straightenModules() {
-
-    absolutePosition();
-
     //while loop might break things by over going the 20ms cycle time. Redo this part if it doesn't work
-    while (Math.abs(frontLeftAbsAngle)>0.05 || 
-    Math.abs(frontRightAbsAngle)>0.05 || 
-    Math.abs(backLeftAbsAngle)>0.05 || 
-    Math.abs(backRightAbsAngle)>0.05) {
+    if (Math.abs(frontLeftAbsAngle)>0.0 || 
+    Math.abs(frontRightAbsAngle)>0.0 || 
+    Math.abs(backLeftAbsAngle)>0.0 || 
+    Math.abs(backRightAbsAngle)>0.0) {
 
     double frontLeftTurnPower = pidFrontLeftTurn.calculate(frontLeftAbsAngle, 0);
     double frontRightTurnPower = pidFrontRightTurn.calculate(frontRightAbsAngle, 0);
@@ -393,7 +392,7 @@ public class Robot extends TimedRobot {
     double backRightTurnPower = pidBackRightTurn.calculate(backRightAbsAngle, 0);
 
     frontLeftSteer.set(frontLeftTurnPower);
-    SmartDashboard.putNumber("frontLeftTurnPower", backRightTurnPower);
+    SmartDashboard.putNumber("frontLeftTurnPower", frontLeftTurnPower);
     frontRightSteer.set(frontRightTurnPower);
     backLeftSteer.set(backLeftTurnPower);
     backRightSteer.set(backRightTurnPower);
@@ -403,16 +402,18 @@ public class Robot extends TimedRobot {
   //execution Functions vvvvv
   @Override
   public void robotInit() {
+    timer.reset();
+    timer.start();
     //camera vvv
     UsbCamera camera = CameraServer.startAutomaticCapture();
     // others vvv
     setMotorBreaks();
     invertMotors();
     continouousInput();
-    straightenModules();
     navx.calibrate();
 
     currentPsi = potentiometer.get();
+    SmartDashboard.putNumber("currentPSI", currentPsi);
     int psiCap = 117;
     if (currentPsi <= psiCap) {
         compressor.enableDigital(); 
@@ -420,11 +421,16 @@ public class Robot extends TimedRobot {
         compressor.disable();
     }
      
-    resetEncoders();
   } 
 
   @Override
   public void robotPeriodic() {
+    if(timer.get() <= 5){
+    absolutePosition();
+    straightenModules();
+    resetEncoders();
+    }
+
    // claw vvv
   // claw_Wheels.set(constant_claw_WheelSpeed);
 
@@ -452,7 +458,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Roll_Deg", navxRoll_Deg);
 
     //Pnuematics vvv
-    SmartDashboard.putNumber("Current PSI:", currentPsi);
+    //SmartDashboard.putNumber("Current PSI:", currentPsi);
 
     //encoders vvv
     SmartDashboard.putNumber("frontLeftAbs Offset", frontLeftAbsEncoder.getAbsolutePosition());
@@ -477,9 +483,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+       
     //swerve vvv (uses driving_xBoxCont)
-    double contXSpeed = removeDeadzone(1) * maxSpeedMpS * driveSensitivity;
-    double contYSpeed = removeDeadzone(0) * maxSpeedMpS * driveSensitivity;
+    double contXSpeed = removeDeadzone(1) * XdriveSensitivity;
+    double contYSpeed = removeDeadzone(0) * YdriveSensitivity;
     double contTurnSpeed = removeDeadzone(4) * turningSensitivity;
     swerveDrive(contXSpeed, contYSpeed, contTurnSpeed);
 
