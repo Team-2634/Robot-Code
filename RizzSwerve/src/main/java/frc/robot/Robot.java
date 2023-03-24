@@ -1,4 +1,18 @@
 package frc.robot;
+/**
+ * 1. Fix the compressors problem which is clearly a programming issues...
+	2. Field oriented drive, if this is not working by 4pm tmr. I think it should be abandoned in favor of driver practice and arm limit fixs
+	3. Arm limits and driver modifications
+	4. Monday is auto code test and fix
+
+    to do:
+    make sure compress good
+    make sure swerver good
+    try other swerve filed thingy
+    arm limits
+    autoCode
+    play with pid
+ */
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -22,8 +36,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.SPI;
@@ -100,37 +114,49 @@ public class Robot extends TimedRobot {
     SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
             m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
-    // these are for the arm vvv
+    // these are for the arm  liftvvv
     public final WPI_TalonFX leftArmSide = new WPI_TalonFX(9);
     public final WPI_TalonFX rightArmSide = new WPI_TalonFX(8);
     private final DifferentialDrive armRotate = new DifferentialDrive(leftArmSide, rightArmSide);
-    double liftGearRatio = 36;
+    double liftArmSide_GearRatio = 36;
+	double armRotate_ToDegrees =(liftArmSide_GearRatio * (Math.PI*360)) / 2048;
+    double armDegree_current;
+    double maxArmAngleDeg = 60;
+    double minArmAngleDeg= -5;
+    double speed_armRotation = 0.50;
+
+	// arm extend vvv
     final WPI_TalonFX armTalonExtenstion = new WPI_TalonFX(10);
+	double armExtenstion_gearRatio= 12.0;
+    double armTalonExtenstionSpeed = 0.5; 
+    double armExtenstion_ToMetres = (armExtenstion_gearRatio*((Math.PI * Units.inchesToMeters(2.75))))/2048; // metres 
+    double extenstionEncoder_Metres;
     double kp_armE = 0.5, ki_armE, kd_armD; 
     final PIDController pidArmExtensController = new PIDController(kp, ki, kd);
-    double extenstionEncoderTOMetres = (12.0 * Math.PI * Units.inchesToMeters(2.75)) * 2048; // 2 inch 3 8ths insides
-    double extenstionEncoder_Metres;
-    double maxArmDeg = 60;
-    double minArmDeg = -5;
-    double armSpeed_Fast = 0.50;
-    double armSpeed_Slow = 0.45;
-    double armTalonExtenstionSpeed = 0.5; 
+
+	//claw_Wheels vvv
+    private final CANSparkMax claw_Wheels = new CANSparkMax(13, MotorType.kBrushless);
+    double ClawIntake_WheelSpeed = -1; 
+    double ClawExpel_WheelSpeed = 0.50; 
+
+	/*
+    encoderRad_rightArmSide = rightArmSide.getSelectedSensorPosition() * armAngle_ToRad; //Units.radiansToDegrees(encoderRad_rightArmSide);
     double armAngle_ToRad = (liftGearRatio * 2 * Math.PI) / 2048;
     double encoderDegrees_rightArmSide;
-    double encoderRad_rightArmSide;
+    double encoderRad_rightArmSide; 
+	*/
 
-    // Claw and pnuematics aka claw vvv
-    private final DoubleSolenoid dSolenoidClaw = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 5, 4);
+    // pnuematics vvv
     private final Compressor compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
-    private final double Scale = 250, offset = -25;
-    private final AnalogPotentiometer potentiometer = new AnalogPotentiometer(0, Scale, offset);
-    boolean air_ButtonPressed = false;
-    private final CANSparkMax claw_Wheels = new CANSparkMax(13, MotorType.kBrushless);
-    double maxClawIntake_WheelSpeed = -1; 
-    double maxClawExpel_WheelSpeed = 0.50; 
+	private final DigitalInput pressureSwitch = new DigitalInput(0);
+    private final DoubleSolenoid dSolenoidClaw = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 5, 4);
+	boolean dSolenoidClaw_ButtonPressed = false;
+
+    /*
     double constant_claw_WheelSpeed = 0.05;
     double currentPsi;
     double comrpessor_Preauusre;
+	*/
 
     // navx2 vvv
     final double kp_Pitch = 0.1;
@@ -266,24 +292,22 @@ public class Robot extends TimedRobot {
         backRightDrive.set(backRightOptimized.speedMetersPerSecond / maxSpeedMpS);
     }
 
-    public void limitationArm(double getArmDegValue, double setDegree) {
-        // max deg = -6
-        // min deg = 0
-        if (getArmDegValue <= maxArmDeg) {
-            armRotate.tankDrive(armSpeed_Fast, -armSpeed_Fast);
+    public void limitationArm(double getCurrent_ArmAngleDeg, double setDegree) {
+        if (getCurrent_ArmAngleDeg <= maxArmAngleDeg) {
+            armRotate.tankDrive(speed_armRotation, -speed_armRotation);
         }
-        if (getArmDegValue >= minArmDeg) {
-            armRotate.tankDrive(-armSpeed_Slow, armSpeed_Slow);
+        if (getCurrent_ArmAngleDeg >= minArmAngleDeg) {
+            armRotate.tankDrive(-speed_armRotation, speed_armRotation);
         }
     }
 
     public void robotArm(double armDown, double armUp, Boolean claw_xBox, Boolean extendArm, Boolean retractArm,
-            boolean claw_expel, boolean intake) {
-        // arm angle vvv
+            boolean claw_expel, boolean claw_intake) {
+        // arm angle roation vvv
         if (armDown >= 0.5) {
-            armRotate.tankDrive(armSpeed_Fast, -armSpeed_Fast);
+            armRotate.tankDrive(speed_armRotation, -speed_armRotation);
         } else if (armUp >= 0.5) {
-            armRotate.tankDrive(-armSpeed_Slow, armSpeed_Slow);
+            armRotate.tankDrive(-speed_armRotation, speed_armRotation);
         } else {
             armRotate.tankDrive(0, 0);
         }
@@ -306,19 +330,19 @@ public class Robot extends TimedRobot {
 
         // b Button aka CLAW vvv
         if (claw_xBox == true) {
-            air_ButtonPressed = !air_ButtonPressed;
+            dSolenoidClaw_ButtonPressed = !dSolenoidClaw_ButtonPressed;
         }
-        if (air_ButtonPressed == true) {
+        if (dSolenoidClaw_ButtonPressed == true) {
             dSolenoidClaw.set(Value.kForward);
-        } else if (air_ButtonPressed == false) {
+        } else if (dSolenoidClaw_ButtonPressed == false) {
             dSolenoidClaw.set(Value.kReverse);
         }
 
         // wheels claw vvv
-        if (intake == true) {
-            claw_Wheels.set(maxClawIntake_WheelSpeed);
+        if (claw_intake == true) {
+            claw_Wheels.set(ClawIntake_WheelSpeed);
         } else if (claw_expel == true) {
-            claw_Wheels.set(maxClawExpel_WheelSpeed);
+            claw_Wheels.set(ClawExpel_WheelSpeed);
         } else {
             claw_Wheels.set(0);
         } 
@@ -363,7 +387,7 @@ public class Robot extends TimedRobot {
 
     public void armLift_LowerAuto(double targetDistanceDegrees, double tolerance) {
         double output;
-        double currentDistance = encoderDegrees_rightArmSide;
+        double currentDistance = armDegree_current;
         if (Math.abs(targetDistanceDegrees - currentDistance) > tolerance) {
             output = drive.calculate(currentDistance, targetDistanceDegrees);
             armRotate.tankDrive(output, -output);
@@ -437,19 +461,8 @@ public class Robot extends TimedRobot {
     // execution Functions vvvvv
     @Override
     public void robotInit() {
-        //timer.reset();
-        //timer.start();
-        /*
-        pidBackLeftTurn.reset();
-        pidBackRightTurn.reset();
-        pidFrontLeftTurn.reset();
-        pidFrontRightTurn.reset();
-         */
-
-        // camera vvv
-        UsbCamera camera = CameraServer.startAutomaticCapture();
-
         // start vvv
+        UsbCamera camera = CameraServer.startAutomaticCapture();
         setMotorBreaks();
         invertMotors();
         continouousInput();
@@ -465,17 +478,24 @@ public class Robot extends TimedRobot {
             resetEncoders();
         }*/
 
+		//compressor vvv
+		if (pressureSwitch.get()) {
+            compressor.disable();
+        } else {
+            compressor.enableDigital();
+        }
+		SmartDashboard.putBoolean("pressureSwitch.get", pressureSwitch.get());
+
         // claw vvv
         // claw_Wheels.set(constant_claw_WheelSpeed);
 
         // limit arm vvv
-        encoderRad_rightArmSide = rightArmSide.getSelectedSensorPosition() * armAngle_ToRad;
-        encoderDegrees_rightArmSide = Units.radiansToDegrees(encoderRad_rightArmSide);
-        SmartDashboard.putNumber("encoderDegrees_rightArmSide", encoderDegrees_rightArmSide);
+        armDegree_current = rightArmSide.getSelectedSensorPosition()/armRotate_ToDegrees;
+        SmartDashboard.putNumber("encoderDegrees_rightArmSide", armDegree_current);
         // limitArmRotation(encoderDegrees_rightArmSide);
 
         // armExtenstion
-        extenstionEncoder_Metres = armTalonExtenstion.getSelectedSensorPosition() / extenstionEncoderTOMetres;
+        extenstionEncoder_Metres = armTalonExtenstion.getSelectedSensorPosition() * armExtenstion_ToMetres;
         SmartDashboard.putNumber("Arm_Distance_metres", extenstionEncoder_Metres);
 
         // encoder drive variables vvv
@@ -490,9 +510,6 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("Pitch_deg", navxPitch_Deg);
         navxRoll_Deg = navx.getRoll();
         SmartDashboard.putNumber("Roll_Deg", navxRoll_Deg);
-        SmartDashboard.putNumber("navx",navx.getAngle());
-        double nvaxFULL = navx.getGyroFullScaleRangeDPS();
-        SmartDashboard.putNumber("navx FULL SCAE", nvaxFULL);
 
         // encoders vvv
         SmartDashboard.putNumber("frontLeftAbs Offset", frontLeftAbsEncoder.getAbsolutePosition());
@@ -501,8 +518,10 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("backRightAbs Offset", backRightAbsEncoder.getAbsolutePosition());
 
         //pid charts vvv
-        SmartDashboard.putNumber("pid error", pidFrontLeftTurn.getPositionError());
-        SmartDashboard.putNumber("pid error", pidFrontLeftTurn.getVelocityError());
+        SmartDashboard.putNumber("frontLeft_PIDError (AKA DRIVE)", pidFrontLeftTurn.getPositionError());
+        SmartDashboard.putNumber("ArmExtens_PIDError", pidArmExtensController.getPositionError());
+        SmartDashboard.putNumber("pidPitch_PIDError", pidPitch.getPositionError());
+        SmartDashboard.putNumber("pidYaw_PIDError", pidYaw.getPositionError());
     }
 
     @Override
@@ -553,36 +572,36 @@ public class Robot extends TimedRobot {
 
 
         /*
-         * Thread swerveThread = new Thread(() -> {
-         * while (true) {
-         * double contXSpeed = removeDeadzone(1) * driveSensitivity;
-         * double contYSpeed = removeDeadzone(0) * driveSensitivity;
-         * double contTurnSpeed = removeDeadzone(4) * turningSensitivity;
-         * 
-         * //turn field oriented on/off
-         * if(false){
-         * double angleRad = Math.toRadians(navx.getAngle());
-         * SmartDashboard.putNumber("getGyroAngle", navx.getAngle());
-         * contXSpeed = contXSpeed * Math.cos(angleRad) + contYSpeed *
-         * Math.sin(angleRad);
-         * //is the negative necessary?
-         * contYSpeed = -contXSpeed * Math.sin(angleRad) + contYSpeed *
-         * Math.cos(angleRad);
-         * }
-         * swerveDrive(contXSpeed, contYSpeed, contTurnSpeed);
-         * }
-         * });
-         * 
-         * Thread armThread = new Thread(() -> {
-         * while (true) {
-         * double armDown = arm_xBoxCont.getLeftTriggerAxis();
-         * double armUp = arm_xBoxCont.getRightTriggerAxis();
-         * boolean claw_xBox = arm_xBoxCont.getBButtonPressed();
-         * boolean extendArm = arm_xBoxCont.getLeftBumper();
-         * boolean retractArm = arm_xBoxCont.getRightBumper();
-         * boolean expelCube = arm_xBoxCont.getAButton();
-         * robotArm(armDown, armUp, claw_xBox, extendArm, retractArm, expelCube);
-         * }
+         Thread swerveThread = new Thread(() -> {
+         while (true) {
+         double contXSpeed = removeDeadzone(1) * driveSensitivity;
+         double contYSpeed = removeDeadzone(0) * driveSensitivity;
+         double contTurnSpeed = removeDeadzone(4) * turningSensitivity;
+         
+         //turn field oriented on/off
+         if(false){
+         double angleRad = Math.toRadians(navx.getAngle());
+         SmartDashboard.putNumber("getGyroAngle", navx.getAngle());
+         contXSpeed = contXSpeed * Math.cos(angleRad) + contYSpeed *
+         Math.sin(angleRad);
+         //is the negative necessary?
+         contYSpeed = -contXSpeed * Math.sin(angleRad) + contYSpeed *
+         Math.cos(angleRad);
+         }
+         swerveDrive(contXSpeed, contYSpeed, contTurnSpeed);
+         }
+         });
+         
+         Thread armThread = new Thread(() -> {
+         while (true) {
+         double armDown = arm_xBoxCont.getLeftTriggerAxis();
+         double armUp = arm_xBoxCont.getRightTriggerAxis();
+         boolean claw_xBox = arm_xBoxCont.getBButtonPressed();
+         boolean extendArm = arm_xBoxCont.getLeftBumper();
+         boolean retractArm = arm_xBoxCont.getRightBumper();
+         boolean expelCube = arm_xBoxCont.getAButton();
+         robotArm(armDown, armUp, claw_xBox, extendArm, retractArm, expelCube);
+         }
          * });
          * 
          * swerveThread.start();
