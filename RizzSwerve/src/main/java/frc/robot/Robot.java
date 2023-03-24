@@ -1,4 +1,7 @@
 package frc.robot;
+
+//IF YOU NO PROGRAMMING NO TOUCH THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 /**
  * 1. Fix the compressors problem which is clearly a programming issues...
 	2. Field oriented drive, if this is not working by 4pm tmr. I think it should be abandoned in favor of driver practice and arm limit fixs
@@ -21,6 +24,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
@@ -37,7 +42,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.CompressorConfigType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -122,16 +129,18 @@ public class Robot extends TimedRobot {
     double liftArmSide_GearRatio = 36;
 	double armRotate_ToDegrees =(liftArmSide_GearRatio * (Math.PI*360)) / 2048;
     double armDegree_current;
+    double kp_armAngle = 0.5, ki_armAngle = 0.05, kd_armAngle = 0.05;
+    final PIDController PID_armAngle = new PIDController(kp_armAngle, ki_armAngle, kd_armAngle);
     double maxArmAngleDeg = 60;
     double minArmAngleDeg= -5;
     double speed_armRotation = 0.50;
 
 	// arm extend vvv
     final WPI_TalonFX armTalonExtenstion = new WPI_TalonFX(10);
-	double armExtenstion_gearRatio= 12.0;
+	double armExtenstion_gearRatio= 36.0;
     double armTalonExtenstionSpeed = 0.5; 
     double armExtenstion_ToMetres = (armExtenstion_gearRatio*((Math.PI * Units.inchesToMeters(2.75))))/2048; // metres 
-    double extenstionEncoder_Metres;
+    double extenstionEncoder_CurrentMetres;
     double kp_armE = 0.5, ki_armE, kd_armD; 
     final PIDController pidArmExtensController = new PIDController(kp, ki, kd);
 
@@ -140,24 +149,12 @@ public class Robot extends TimedRobot {
     double ClawIntake_WheelSpeed = -1; 
     double ClawExpel_WheelSpeed = 0.50; 
 
-	/*
-    encoderRad_rightArmSide = rightArmSide.getSelectedSensorPosition() * armAngle_ToRad; //Units.radiansToDegrees(encoderRad_rightArmSide);
-    double armAngle_ToRad = (liftGearRatio * 2 * Math.PI) / 2048;
-    double encoderDegrees_rightArmSide;
-    double encoderRad_rightArmSide; 
-	*/
-
     // pnuematics vvv
-    private final Compressor compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
-	private final DigitalInput pressureSwitch = new DigitalInput(0);
+    //private final Compressor compressor = new Compressor(0, PneumaticsModuleType.CTREPCM); 
+    private final double Scale = 250, offset = -25;
+	//private final AnalogPotentiometer pressureSwitch = new AnalogPotentiometer(0, Scale, offset);
     private final DoubleSolenoid dSolenoidClaw = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 5, 4);
 	boolean dSolenoidClaw_ButtonPressed = false;
-
-    /*
-    double constant_claw_WheelSpeed = 0.05;
-    double currentPsi;
-    double comrpessor_Preauusre;
-	*/
 
     // navx2 vvv
     final double kp_Pitch = 0.1;
@@ -313,6 +310,13 @@ public class Robot extends TimedRobot {
             armRotate.tankDrive(0, 0);
         }
 
+        if (armDown == 0 || armUp == 0) {
+            armLift_LowerAuto(armDegree_current, 0.05);
+            SmartDashboard.putString("Working angle lock: ", "true");
+        } else {
+            SmartDashboard.putString("Working angle lock: ", "false");
+        }
+ 
         // arm extendo vvv
         if (extendArm == true) {
             armTalonExtenstion.set(armTalonExtenstionSpeed);
@@ -320,13 +324,6 @@ public class Robot extends TimedRobot {
             armTalonExtenstion.set(-armTalonExtenstionSpeed);
         } else {
             armTalonExtenstion.set(0);
-        }
-
-        if (extendArm == false || retractArm == false) {
-            armExtender_Auto(extenstionEncoder_Metres, 0.05);
-            SmartDashboard.putString("Working extenstion lock: ", "true");
-        } else {
-            SmartDashboard.putString("Working extenstion lock: ", "false");
         }
 
         // b Button aka CLAW vvv
@@ -390,14 +387,14 @@ public class Robot extends TimedRobot {
         double output;
         double currentDistance = armDegree_current;
         if (Math.abs(targetDistanceDegrees - currentDistance) > tolerance) {
-            output = drive.calculate(currentDistance, targetDistanceDegrees);
+            output = PID_armAngle.calculate(currentDistance, targetDistanceDegrees);
             armRotate.tankDrive(output, -output);
         }
     }
 
     public void armExtender_Auto(double targetDistanceMetres, double tolerance) {
         double output;
-        double currentDistance = extenstionEncoder_Metres;
+        double currentDistance = extenstionEncoder_CurrentMetres;
         if (Math.abs(targetDistanceMetres - currentDistance) > tolerance) {
             output = pidArmExtensController.calculate(currentDistance, targetDistanceMetres);
             armTalonExtenstion.set(output);
@@ -463,12 +460,12 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         // start vvv
-        UsbCamera camera = CameraServer.startAutomaticCapture();
+        //UsbCamera camera = CameraServer.startAutomaticCapture();
         setMotorBreaks();
         invertMotors();
         continouousInput();
-        navx.calibrate();
-        navx.reset();
+        // navx.calibrate();
+        // navx.reset();
     }
 
     @Override
@@ -480,12 +477,17 @@ public class Robot extends TimedRobot {
         }*/
 
 		//compressor vvv
+        /*
 		if (pressureSwitch.get()) {
             compressor.disable();
         } else {
             compressor.enableDigital();
         }
-		SmartDashboard.putBoolean("pressureSwitch.get", pressureSwitch.get());
+        */
+        /*
+		SmartDashboard.putNumber("pressureSwitch.get", pressureSwitch.get());
+        pressureSwitch.get();
+         */
 
         // claw vvv
         // claw_Wheels.set(constant_claw_WheelSpeed);
@@ -496,8 +498,8 @@ public class Robot extends TimedRobot {
         // limitArmRotation(encoderDegrees_rightArmSide);
 
         // armExtenstion
-        extenstionEncoder_Metres = armTalonExtenstion.getSelectedSensorPosition() * armExtenstion_ToMetres;
-        SmartDashboard.putNumber("Arm_Distance_metres", extenstionEncoder_Metres);
+        extenstionEncoder_CurrentMetres = armTalonExtenstion.getSelectedSensorPosition() * armExtenstion_ToMetres;
+        SmartDashboard.putNumber("Arm_Distance_metres", extenstionEncoder_CurrentMetres);
 
         // encoder drive variables vvv
         encoderLeftFrontDriveDisplacement_Meteres = frontLeftDrive.getSelectedSensorPosition()
@@ -511,28 +513,35 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("Pitch_deg", navxPitch_Deg);
         navxRoll_Deg = navx.getRoll();
         SmartDashboard.putNumber("Roll_Deg", navxRoll_Deg);
+        SmartDashboard.putData(navx);
 
         // encoders vvv
         SmartDashboard.putNumber("frontLeftAbs Offset", frontLeftAbsEncoder.getAbsolutePosition());
+        SmartDashboard.putNumber("frontLeftAbs Offset", frontLeftAbsEncoder.getAbsolutePosition());
+        SmartDashboard.putNumber("frontRightAbs Offset", frontRightAbsEncoder.getAbsolutePosition());
         SmartDashboard.putNumber("frontRightAbs Offset", frontRightAbsEncoder.getAbsolutePosition());
         SmartDashboard.putNumber("backLeftAbs Offset", backLeftAbsEncoder.getAbsolutePosition());
+        SmartDashboard.putNumber("backLeftAbs Offset", backLeftAbsEncoder.getAbsolutePosition());
         SmartDashboard.putNumber("backRightAbs Offset", backRightAbsEncoder.getAbsolutePosition());
+        //SmartDashboard.putNumber("backRightAbs Offset", backRightAbsEncoder.get());
 
         //pid charts vvv
         SmartDashboard.putNumber("frontLeft_PIDError (AKA DRIVE)", pidFrontLeftTurn.getPositionError());
         SmartDashboard.putNumber("ArmExtens_PIDError", pidArmExtensController.getPositionError());
         SmartDashboard.putNumber("pidPitch_PIDError", pidPitch.getPositionError());
         SmartDashboard.putNumber("pidYaw_PIDError", pidYaw.getPositionError());
+        SmartDashboard.putNumber("pid armAngle", PID_armAngle.getPositionError());
+
     }
 
     @Override
     public void autonomousInit() {
-        drive_PID(2, 0, 0, 0.5);
+        //drive_PID(2, 0, 0, 0.5);
     }
 
     @Override
     public void autonomousPeriodic() {
-        autoBalance();
+        // autoBalance();
     }
 
     @Override
@@ -559,7 +568,7 @@ public class Robot extends TimedRobot {
             */
         //swerveDrive(contXSpeedField, contYSpeedField, contTurnSpeed);
         swerveDrive(contXSpeed, contYSpeed, contTurnSpeed);
-
+/*
         //robot arm
         double armDown = arm_xBoxCont.getRightTriggerAxis();
         double armUp = arm_xBoxCont.getLeftTriggerAxis();
@@ -569,8 +578,7 @@ public class Robot extends TimedRobot {
         boolean expel = arm_xBoxCont.getAButton();
         boolean intake = arm_xBoxCont.getXButton();
         robotArm(armDown, armUp, claw_xBox, extendArm, retractArm, expel, intake);
-         
-
+         */
 
         /*
          Thread swerveThread = new Thread(() -> {
