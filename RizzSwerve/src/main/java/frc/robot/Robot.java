@@ -9,6 +9,7 @@ package frc.robot;
     make sure compress good
     make sure swerver good
     try other swerve filed thingy
+use pics as with graph to get auto straighten if possible (don't spend to much tome on this)
     arm limits
     autoCode
     play with pid
