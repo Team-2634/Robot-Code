@@ -45,6 +45,18 @@ import com.kauailabs.navx.frc.AHRS;
  */
 public class Robot extends TimedRobot {
 
+  
+  private final DoubleSolenoid dSolenoidClaw = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 5, 4);
+  private final Compressor compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
+  private final double Scale = 250, offset = -25;
+  private final AnalogPotentiometer potentiometer = new AnalogPotentiometer(0, Scale, offset);
+  boolean air_ButtonPressed = false;
+  double maxClawIntake_WheelSpeed = -1; 
+  double maxClawExpel_WheelSpeed = 0.50; 
+  //double constant_claw_WheelSpeed = 0.05;
+  double currentPsi;
+  double comrpessor_Preauusre;
+
   //private AHRS navx;
   private final XboxController xbox = new XboxController(0);
 
@@ -58,15 +70,15 @@ public class Robot extends TimedRobot {
   PIDController pidBackLeftTurn = new PIDController(kp, ki, kd);
   PIDController pidBackRightTurn = new PIDController(kp, ki, kd);
   
-  public final WPI_TalonFX frontLeftDrive = new WPI_TalonFX(2);
-  public final WPI_TalonFX frontRightDrive = new WPI_TalonFX(4);
-  public final WPI_TalonFX backLeftDrive = new WPI_TalonFX(6);
-  public final WPI_TalonFX backRightDrive= new WPI_TalonFX(8); 
+  public final WPI_TalonFX frontLeftDrive = new WPI_TalonFX(7);
+  public final WPI_TalonFX frontRightDrive = new WPI_TalonFX(1);
+  public final WPI_TalonFX backLeftDrive = new WPI_TalonFX(5);
+  public final WPI_TalonFX backRightDrive = new WPI_TalonFX(3);
 
-  public final WPI_TalonFX frontLeftSteer = new WPI_TalonFX(1);
-  public final WPI_TalonFX frontRightSteer = new WPI_TalonFX(3);
-  public final WPI_TalonFX backLeftSteer = new WPI_TalonFX(5);
-  public final WPI_TalonFX backRightSteer = new WPI_TalonFX(7); 
+  public final WPI_TalonFX frontLeftSteer = new WPI_TalonFX(6);
+  public final WPI_TalonFX frontRightSteer = new WPI_TalonFX(0);
+  public final WPI_TalonFX backLeftSteer = new WPI_TalonFX(4);
+  public final WPI_TalonFX backRightSteer = new WPI_TalonFX(2);
 /* 
   public final Encoder frontLeftAbsolute = new Encoder(0, 1);
   public final Encoder frontRightAbsolute = new Encoder(0, 1);
@@ -152,6 +164,15 @@ public class Robot extends TimedRobot {
     pidFrontRightTurn.enableContinuousInput(-Math.PI, Math.PI);
     pidBackLeftTurn.enableContinuousInput(-Math.PI, Math.PI);
     pidBackRightTurn.enableContinuousInput(-Math.PI, Math.PI);
+
+    currentPsi = potentiometer.get();
+
+        int psiCap = 117;
+        if (Math.abs(currentPsi) <= psiCap) {
+            compressor.enableDigital();
+        } else if (Math.abs(currentPsi) > 119) {
+            compressor.disable();
+        }
 
   }
   
