@@ -28,17 +28,13 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.AnalogPotentiometer;
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.CompressorConfigType;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.SPI;
 
 public class Robot extends TimedRobot {
     // Constants vvvvv
-    Timer timer = new Timer();
+    static Timer timer = new Timer();
     final XboxController driving_xBoxCont = new XboxController(0);
     final XboxController arm_xBoxCont = new XboxController(1);
     double maxDegree = 360; // if your over 360 then your driving to much
@@ -73,7 +69,6 @@ public class Robot extends TimedRobot {
     public final WPI_CANCoder backLeftAbsEncoder = new WPI_CANCoder(2);
     public final WPI_CANCoder backRightAbsEncoder = new WPI_CANCoder(1);
 
-    // put in the unique angle offsets
     final public double frontLeftAbsOffset = 197.19;
     final public double frontRightAbsOffset = 31.8;
     final public double backLeftAbsOffset = 285.205;
@@ -113,7 +108,7 @@ public class Robot extends TimedRobot {
     public final WPI_TalonFX rightArmSide = new WPI_TalonFX(8);
     private final DifferentialDrive armRotate = new DifferentialDrive(leftArmSide, rightArmSide);
     double liftArmSide_GearRatio = 36*(60/15);
-	double armRotate_ToRad= ((1.0/liftArmSide_GearRatio) * 2 * Math.PI)/2048;//(2048/liftArmSide_GearRatio)*360;
+	double armRotate_ToRad= ((1.0/liftArmSide_GearRatio) * 2 * Math.PI)/2048;
     double armRad_current;
     double kp_armAngle = 0.5, ki_armAngle = 0.05, kd_armAngle = 0.05;
     final PIDController PID_armAngle = new PIDController(kp_armAngle, ki_armAngle, kd_armAngle);
@@ -125,7 +120,7 @@ public class Robot extends TimedRobot {
     final WPI_TalonFX armTalonExtenstion = new WPI_TalonFX(10);
 	double armExtenstion_gearRatio= 36.0;
     double armTalonExtenstionSpeed = 0.80; 
-    double armExtenstion_ToMetres = (armExtenstion_gearRatio*((Math.PI * Units.inchesToMeters(2.75))))/2048; // metres 
+    double armExtenstion_ToMetres = (armExtenstion_gearRatio*Math.PI*Units.inchesToMeters(2.75))/2048; // metres 
     double extenstionEncoder_CurrentMetres;
     double kp_armE = 0.5, ki_armE, kd_armD; 
     final PIDController pidArmExtensController = new PIDController(kp, ki, kd);
@@ -325,9 +320,8 @@ public class Robot extends TimedRobot {
         } 
     }
 
-    public void drive_PID(double targetXdistance_Metres, double targetYdistance_Metres, double targetYaw_deg,
+    public void drive_PID(double targetXdistance_Metres, double targetYdistance_Metres, double target_RadDis,
             double tolerance) {
-        frontLeftDrive.setSelectedSensorPosition(0);
 
         double currentDistanceY;
         currentDistanceY = encoderLeftFrontDriveDisplacement_Meteres;
@@ -336,30 +330,24 @@ public class Robot extends TimedRobot {
         double currentDistanceX;
         currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
         double outputXSpeed = 0;
-        // if angle drive no work then need angle manuelly and thhis will go into
-        // current distance and target distance for both x and y
-        double currentYaw;
-        currentYaw = navxYaw_Deg;
-        double outputYaw;
-        double outputYaw_Rad = 0;
 
-        // currentDistance = currentMotorTurn ? rightFront.getSelectedSensorPosition() :
-        // leftFront.getSelectedSensorPosition();
+        double currentSteer_Rad;
+        currentSteer_Rad = encoderleftFrontSteer_Rad;
+        double outputYaw_RadPerSec = 0;
 
         if (Math.abs(targetXdistance_Metres - currentDistanceX) > tolerance) {
-            outputXSpeed = drive.calculate(currentDistanceX, targetXdistance_Metres) / (maxSpeedMpS * 100);
+            outputXSpeed = drive.calculate(currentDistanceX, targetXdistance_Metres) ;
             // swerveDrive(outputXSpeed, 0, 0);
         }
         if (Math.abs(targetYdistance_Metres - currentDistanceY) > tolerance) {
-            outputYSpeed = drive.calculate(currentDistanceY, targetYdistance_Metres) / (maxSpeedMpS * 100);
+            outputYSpeed = drive.calculate(currentDistanceY, targetYdistance_Metres);
             // swerveDrive(0, outputYSpeed, 0);
         }
-        if (Math.abs(targetYaw_deg - currentYaw) > tolerance) {
-            outputYaw = pidYaw.calculate(currentYaw, targetYaw_deg);
-            outputYaw_Rad = Math.toRadians(outputYaw);
+        if (Math.abs(target_RadDis - currentSteer_Rad) > tolerance) {
+            outputYaw_RadPerSec = drive.calculate(currentSteer_Rad, target_RadDis);
             // swerveDrive(0, 0, outputYaw_Rad);
         }
-        swerveDrive(outputXSpeed, outputYSpeed, outputYaw_Rad);
+        swerveDrive(outputXSpeed, outputYSpeed, outputYaw_RadPerSec);
     }
 
     public void armLift_LowerAuto(double targetDistanceRads, double tolerance) {
@@ -475,6 +463,9 @@ public class Robot extends TimedRobot {
                 * kTurningEncoderTicksToMetresPerSec;
         SmartDashboard.putNumber("Drive_Distance_Metres: ", encoderLeftFrontDriveDisplacement_Meteres);
 
+        encoderleftFrontSteer_Rad = frontLeftSteer.getSelectedSensorPosition()*kTurningEncoderTicksToRad;
+        SmartDashboard.putNumber("Drive_Rotation_Radians: ", encoderleftFrontSteer_Rad);
+
         // navX2 vvv
         navxYaw_Deg = navx.getYaw();
         SmartDashboard.putNumber("Yaw_Deg", navxYaw_Deg);
@@ -491,25 +482,37 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("backRightAbs Offset", backRightAbsEncoder.getAbsolutePosition());
         //SmartDashboard.putNumber("backRightAbs Offset", backRightAbsEncoder.get());
 
-        //pid charts vvv
-        SmartDashboard.putNumber("frontLeft_PIDError (AKA DRIVE)", pidFrontLeftTurn.getPositionError());
-        SmartDashboard.putNumber("ArmExtens_PIDError", pidArmExtensController.getPositionError());
-        SmartDashboard.putNumber("pidPitch_PIDError", pidPitch.getPositionError());
-        SmartDashboard.putNumber("pidYaw_PIDError", pidYaw.getPositionError());
-        SmartDashboard.putNumber("pid armAngle", PID_armAngle.getPositionError());
+        //pid charts vvv\
 
+        //auto vvv
+        SmartDashboard.putNumber("drive PID (atm used for x, y and turn of autonomous)", drive.getPositionError());
+
+        // aline vvv
         SmartDashboard.putNumber("pid frontLeft Error", pidFrontLeftTurn.getPositionError());
-
     }
 
     @Override
     public void autonomousInit() {
-        //drive_PID(2, 0, 0, 0.5);
+        timer.reset();
+        timer.start();
     }
 
     @Override
     public void autonomousPeriodic() {
+        if (timer.get() <= 20){
+        drive_PID(2, 0, 0, 0.5); //fwd
+        Timer.delay(3);
+        drive_PID(0, 2, 0, 0.5); //right
+        Timer.delay(3);
+        drive_PID(0, 0, 3, 0.5); //turn
+        Timer.delay(3);
+
+        /*
+         robotArm():
+         */
+    } else {
         // autoBalance();
+    }
     }
 
     @Override
