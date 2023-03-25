@@ -440,6 +440,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotPeriodic() {
+SmartDashboard.putNumber("timer.get()",timer.get();)
         /*if (timer.get() <= 2) {
             absolutePosition();
             straightenModules();
@@ -480,10 +481,8 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("frontRightAbs Offset", frontRightAbsEncoder.getAbsolutePosition());
         SmartDashboard.putNumber("backLeftAbs Offset", backLeftAbsEncoder.getAbsolutePosition());
         SmartDashboard.putNumber("backRightAbs Offset", backRightAbsEncoder.getAbsolutePosition());
-        //SmartDashboard.putNumber("backRightAbs Offset", backRightAbsEncoder.get());
 
-        //pid charts vvv\
-
+        //pid charts vvv
         //auto vvv
         SmartDashboard.putNumber("drive PID (atm used for x, y and turn of autonomous)", drive.getPositionError());
 
