@@ -559,43 +559,5 @@ public class Robot extends TimedRobot {
         boolean expel = arm_xBoxCont.getAButton();
         boolean intake = arm_xBoxCont.getXButton();
         robotArm(armDown, armUp, claw_xBox, extendArm, retractArm, expel, intake);
-         
-
-        /*
-         Thread swerveThread = new Thread(() -> {
-         while (true) {
-         double contXSpeed = removeDeadzone(1) * driveSensitivity;
-         double contYSpeed = removeDeadzone(0) * driveSensitivity;
-         double contTurnSpeed = removeDeadzone(4) * turningSensitivity;
-         
-         //turn field oriented on/off
-         if(false){
-         double angleRad = Math.toRadians(navx.getAngle());
-         SmartDashboard.putNumber("getGyroAngle", navx.getAngle());
-         contXSpeed = contXSpeed * Math.cos(angleRad) + contYSpeed *
-         Math.sin(angleRad);
-         //is the negative necessary?
-         contYSpeed = -contXSpeed * Math.sin(angleRad) + contYSpeed *
-         Math.cos(angleRad);
-         }
-         swerveDrive(contXSpeed, contYSpeed, contTurnSpeed);
-         }
-         });
-         
-         Thread armThread = new Thread(() -> {
-         while (true) {
-         double armDown = arm_xBoxCont.getLeftTriggerAxis();
-         double armUp = arm_xBoxCont.getRightTriggerAxis();
-         boolean claw_xBox = arm_xBoxCont.getBButtonPressed();
-         boolean extendArm = arm_xBoxCont.getLeftBumper();
-         boolean retractArm = arm_xBoxCont.getRightBumper();
-         boolean expelCube = arm_xBoxCont.getAButton();
-         robotArm(armDown, armUp, claw_xBox, extendArm, retractArm, expelCube);
-         }
-         * });
-         * 
-         * swerveThread.start();
-         * armThread.start();
-         */
     }
 }
