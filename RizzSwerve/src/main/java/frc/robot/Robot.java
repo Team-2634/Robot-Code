@@ -333,7 +333,7 @@ public class Robot extends TimedRobot {
         double outputYSpeed = 0;
 
         double currentSteer_Rad;
-        currentSteer_Rad = encoderleftFrontSteer_Rad;
+        currentSteer_Rad = encoderleftFrontSteer_Rad; //double angleRad = Math.toRadians(navx.getAngle());
         double outputYaw_RadPerSec = 0;
 
         if (Math.abs(targetXdistance_Metres - currentDistanceX) > tolerance) {
