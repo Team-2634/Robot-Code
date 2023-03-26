@@ -1,11 +1,5 @@
 package frc.robot;
 
-//IF YOU NO PROGRAMMING NO TOUCH THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-/**
-	4. Monday is auto code test and fix
- */
-
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -34,7 +28,12 @@ import edu.wpi.first.wpilibj.SPI;
 
 public class Robot extends TimedRobot {
     // Constants vvvvv
-    static Timer timer = new Timer();
+    //Timer timer = new Timer();
+    double autonomousStartTime;
+    private double targetDistance_auto;
+    private double targetRad_auto;
+    private boolean maintainDistance;
+    private double maintainDuration;
     final XboxController driving_xBoxCont = new XboxController(0);
     final XboxController arm_xBoxCont = new XboxController(1);
     double maxDegree = 360; // if your over 360 then your driving to much
@@ -118,9 +117,9 @@ public class Robot extends TimedRobot {
 
 	// arm extend vvv
     final WPI_TalonFX armTalonExtenstion = new WPI_TalonFX(10);
-	double armExtenstion_gearRatio= 36.0;
+	double armExtenstion_gearRatio= 1 /36.0;
     double armTalonExtenstionSpeed = 0.80; 
-    double armExtenstion_ToMetres = (armExtenstion_gearRatio*Math.PI*Units.inchesToMeters(2.75))/2048; // metres 
+    double armExtenstion_ToMetres = (armExtenstion_gearRatio*Math.PI*Units.inchesToMeters(2.75))/2048.0; // metres 
     double extenstionEncoder_CurrentMetres;
     double kp_armE = 0.5, ki_armE, kd_armD; 
     final PIDController pidArmExtensController = new PIDController(kp, ki, kd);
@@ -321,15 +320,17 @@ public class Robot extends TimedRobot {
     }
 
     public void drive_PID(double targetXdistance_Metres, double targetYdistance_Metres, double target_RadDis,
-            double tolerance) {
+                          double tolerance) {
+                            
+        frontLeftDrive.setSelectedSensorPosition(0);
+                        
+        double currentDistanceX;
+        currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
+        double outputXSpeed = 0;
 
         double currentDistanceY;
         currentDistanceY = encoderLeftFrontDriveDisplacement_Meteres;
         double outputYSpeed = 0;
-
-        double currentDistanceX;
-        currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
-        double outputXSpeed = 0;
 
         double currentSteer_Rad;
         currentSteer_Rad = encoderleftFrontSteer_Rad;
@@ -440,7 +441,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotPeriodic() {
-SmartDashboard.putNumber("timer.get()",timer.get();)
         /*if (timer.get() <= 2) {
             absolutePosition();
             straightenModules();
@@ -492,26 +492,38 @@ SmartDashboard.putNumber("timer.get()",timer.get();)
 
     @Override
     public void autonomousInit() {
-        timer.reset();
-        timer.start();
+        autonomousStartTime = Timer.getFPGATimestamp();
     }
 
     @Override
     public void autonomousPeriodic() {
-        if (timer.get() <= 20){
-        drive_PID(2, 0, 0, 0.5); //fwd
-        Timer.delay(3);
-        drive_PID(0, 2, 0, 0.5); //right
-        Timer.delay(3);
-        drive_PID(0, 0, 3, 0.5); //turn
-        Timer.delay(3);
-
-        /*
-         robotArm():
-         */
-    } else {
-        // autoBalance();
+        double elapsedTime = Timer.getFPGATimestamp() - autonomousStartTime;
+        if (!maintainDistance) {
+            if (elapsedTime <= 5){
+                targetDistance_auto = 2;
+                drive_PID(targetDistance_auto, 0, 0, 0.5); //fwd 2 metres
+            } else if (elapsedTime <= 10){
+                targetDistance_auto = 2;
+                drive_PID(0, targetDistance_auto, 0, 0.5); //right 2 metres
+            } else if (elapsedTime <= 15){
+                targetRad_auto = 3;
+                drive_PID(0, 0, targetRad_auto, 0.5); //turn 3 rads per second
+            } else {
+                //autoBalance();
+            }
+        } else {
+            // Maintain the current target distance for the specified duration
+            drive_PID(targetDistance_auto, 0, 0, 0.5);
+            if (elapsedTime >= maintainDuration) {
+                maintainDistance = false;
+            }
+        }
     }
+
+    // Method to maintain the current target distance for a specified duration
+    public void maintainDistance(double duration) {
+        maintainDistance = true;
+        maintainDuration = duration;
     }
 
     @Override
