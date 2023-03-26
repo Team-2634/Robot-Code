@@ -37,6 +37,7 @@ public class Robot extends TimedRobot {
     final XboxController driving_xBoxCont = new XboxController(0);
     final XboxController arm_xBoxCont = new XboxController(1);
     double maxDegree = 360; // if your over 360 then your driving to much
+    private boolean isFirstTime = true;
 
     double contXSpeedField;
     double contYSpeedField;
@@ -144,6 +145,7 @@ public class Robot extends TimedRobot {
     double navxYaw_Deg;
     double navxPitch_Deg;
     double navxRoll_Deg;
+    double angleRad;
     // constants ^^^^^
     // our functions vvvvvv
 
@@ -319,10 +321,12 @@ public class Robot extends TimedRobot {
         } 
     }
 
-    public void drive_PID(double targetXdistance_Metres, double targetYdistance_Metres, double target_RadDis,
-                          double tolerance) {
+    public void drive_PID(double targetXdistance_Metres, double targetYdistance_Metres, double target_RadDis, double tolerance) {
                             
-        frontLeftDrive.setSelectedSensorPosition(0);
+        if (isFirstTime) {
+            frontLeftDrive.setSelectedSensorPosition(0);
+            isFirstTime = false;
+        }
                         
         double currentDistanceX;
         currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
@@ -333,8 +337,8 @@ public class Robot extends TimedRobot {
         double outputYSpeed = 0;
 
         double currentSteer_Rad;
-        currentSteer_Rad = encoderleftFrontSteer_Rad; //double angleRad = Math.toRadians(navx.getAngle());
-        double outputYaw_RadPerSec = 0;
+        currentSteer_Rad = angleRad;
+        double outputYaw_RadPerSec  = 0;
 
         if (Math.abs(targetXdistance_Metres - currentDistanceX) > tolerance) {
             outputXSpeed = drive.calculate(currentDistanceX, targetXdistance_Metres) ;
@@ -345,10 +349,12 @@ public class Robot extends TimedRobot {
             // swerveDrive(0, outputYSpeed, 0);
         }
         if (Math.abs(target_RadDis - currentSteer_Rad) > tolerance) {
-            outputYaw_RadPerSec = drive.calculate(currentSteer_Rad, target_RadDis);
+            outputYaw_RadPerSec  = drive.calculate(currentSteer_Rad, target_RadDis);
             // swerveDrive(0, 0, outputYaw_Rad);
         }
-        swerveDrive(outputXSpeed, outputYSpeed, outputYaw_RadPerSec);
+        contXSpeedField = outputXSpeed * Math.cos(angleRad) - outputYSpeed * Math.sin(angleRad);
+        contYSpeedField = outputXSpeed * Math.sin(angleRad) + outputYSpeed * Math.cos(angleRad);
+        swerveDrive(contXSpeedField, contYSpeedField, outputYaw_RadPerSec);
     }
 
     public void armLift_LowerAuto(double targetDistanceRads, double tolerance) {
@@ -378,8 +384,10 @@ public class Robot extends TimedRobot {
         double targetAnglePitch = 0;
         double targetAngleYaw = 0;
         double tolerance = 5;
-        currentPitch = navx.getPitch();
-        currentYaw = navx.getYaw();
+        currentPitch = navxPitch_Deg;
+        currentYaw = navxYaw_Deg;
+        double maxDriveDistance = 1.22; // maximum allowed drive distance before robot is considered to be off the platform
+        double currentDriveDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
 
         if (Math.abs(targetAnglePitch - currentPitch) > tolerance) {
             outputPitch = pidPitch.calculate(currentPitch, targetAnglePitch);
@@ -388,7 +396,11 @@ public class Robot extends TimedRobot {
             outputYaw = pidYaw.calculate(currentYaw, targetAngleYaw);
             outputYawRad = Math.toRadians(outputYaw);
         }
-        swerveDrive(outputPitch, 0, outputYawRad);
+        if (Math.abs(currentDriveDistanceX) > maxDriveDistance) {
+            swerveDrive(0, 0, 0); // stop robot from moving if it has driven too far
+        } else {
+            swerveDrive(outputPitch, 0, outputYawRad);
+        }
     }
 
     public void absolutePosition() {
@@ -436,7 +448,6 @@ public class Robot extends TimedRobot {
         navx.calibrate();
         navx.reset();
         resetEncoders();
-         
     }
 
     @Override
@@ -470,6 +481,8 @@ public class Robot extends TimedRobot {
         // navX2 vvv
         navxYaw_Deg = navx.getYaw();
         SmartDashboard.putNumber("Yaw_Deg", navxYaw_Deg);
+        angleRad = Math.toRadians(navx.getAngle());
+        SmartDashboard.putNumber("getGyroAngle", navx.getAngle());
         navxPitch_Deg = navx.getPitch();
         SmartDashboard.putNumber("Pitch_deg", navxPitch_Deg);
         navxRoll_Deg = navx.getRoll();
@@ -506,7 +519,7 @@ public class Robot extends TimedRobot {
                 targetDistance_auto = 2;
                 drive_PID(0, targetDistance_auto, 0, 0.5); //right 2 metres
             } else if (elapsedTime <= 15){
-                targetRad_auto = 3;
+                targetRad_auto = 3.14159;
                 drive_PID(0, 0, targetRad_auto, 0.5); //turn 3 rads per second
             } else {
                 //autoBalance();
@@ -540,10 +553,7 @@ public class Robot extends TimedRobot {
          
          //turn field oriented on/off
         if(true){
-             double angleRad = Math.toRadians(navx.getAngle());
-             SmartDashboard.putNumber("getGyroAngle", navx.getAngle());
              contXSpeedField = contXSpeed * Math.cos(angleRad) - contYSpeed * Math.sin(angleRad);
-             //is the negative necessary? -sorta
              contYSpeedField = contXSpeed * Math.sin(angleRad) + contYSpeed * Math.cos(angleRad);
             }
             
