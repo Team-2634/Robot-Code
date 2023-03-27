@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj.SPI;
 
 public class Robot extends TimedRobot {
     // Constants vvvvv
-    //Timer timer = new Timer();
+    Timer timer = new Timer();
     double autonomousStartTime;
     double targetDistance_Xauto = 0;
     double targetDistance_Yauto = 0;
@@ -39,6 +39,8 @@ public class Robot extends TimedRobot {
     final XboxController arm_xBoxCont = new XboxController(1);
     double maxDegree = 360; // if your over 360 then your driving to much
     private boolean isFirstTime = true;
+    double talonEncoder_TicksPerRev = 2048;
+    double neoEncoder_TicksPerRev = 42;
 
     double contXSpeedField;
     double contYSpeedField;
@@ -60,10 +62,24 @@ public class Robot extends TimedRobot {
     public final WPI_TalonFX backLeftDrive = new WPI_TalonFX(5);
     public final WPI_TalonFX backRightDrive = new WPI_TalonFX(3);
 
+/*
+    public final CANSparkMax frontLeftDrive = new CANSparkMax(17, MotorType.kBrushless);
+    public final CANSparkMax frontRightDrive = new CANSparkMax(10, MotorType.kBrushless);
+    public final CANSparkMax backLeftDrive = new CANSparkMax(4, MotorType.kBrushless);
+    public final CANSparkMax backRightDrive = new CANSparkMax(18, MotorType.kBrushless);
+ */
+
     public final WPI_TalonFX frontLeftSteer = new WPI_TalonFX(6);
     public final WPI_TalonFX frontRightSteer = new WPI_TalonFX(0);
     public final WPI_TalonFX backLeftSteer = new WPI_TalonFX(4);
     public final WPI_TalonFX backRightSteer = new WPI_TalonFX(2);
+    
+/*
+    public final CANSparkMax frontLeftSteer = new CANSparkMax(17, MotorType.kBrushless);
+    public final CANSparkMax frontRightSteer = new CANSparkMax(10, MotorType.kBrushless);
+    public final CANSparkMax backLeftSteer = new CANSparkMax(4, MotorType.kBrushless);
+    public final CANSparkMax backRightSteer = new CANSparkMax(18, MotorType.kBrushless);
+ */
 
     public final WPI_CANCoder frontLeftAbsEncoder = new WPI_CANCoder(3);
     public final WPI_CANCoder frontRightAbsEncoder = new WPI_CANCoder(0);
@@ -86,8 +102,9 @@ public class Robot extends TimedRobot {
                                                                       // factor
     public final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * Math.PI * kWheelDiameterMeters;
     public final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
-    public final double kTurningEncoderTicksToMetresPerSec = kDriveEncoderRot2Meter / 2048;
-    public final double kTurningEncoderTicksToRad = kTurningEncoderRot2Rad / 2048;
+    public final double kTurningEncoderTicksToMetresPerSec = kDriveEncoderRot2Meter / talonEncoder_TicksPerRev;
+
+    public final double kTurningEncoderTicksToRad = kTurningEncoderRot2Rad / talonEncoder_TicksPerRev;
 
     double encoderLeftFrontDriveDisplacement_Meteres;
     double encoderleftFrontSteer_Rad;
@@ -115,7 +132,7 @@ public class Robot extends TimedRobot {
     final PIDController PID_armAngle = new PIDController(kp_armAngle, ki_armAngle, kd_armAngle);
     double maxArmAngleRad = -2;
     double minArmAngleRad= 1;
-    double speed_armRotation = 0.50;
+    double speed_armRotation = 0.55;
     // flag to indicate if arm angle is being limited
     private boolean armAngleLimited = false;
 
@@ -336,11 +353,11 @@ public class Robot extends TimedRobot {
     }
 
     public void drive_PID(double targetXdistance_Metres, double targetYdistance_Metres, double target_RadDis, double tolerance) {
-                            
-        if (isFirstTime) {
+                      
+        if (isFirstTime == true) {
             frontLeftDrive.setSelectedSensorPosition(0);
             isFirstTime = false;
-        }
+        } 
                         
         double currentDistanceX;
         currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
@@ -525,7 +542,7 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         autonomousStartTime = Timer.getFPGATimestamp();
     }
-
+ 
     @Override
     public void autonomousPeriodic() {
         double elapsedTime = Timer.getFPGATimestamp() - autonomousStartTime;
