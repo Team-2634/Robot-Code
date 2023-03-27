@@ -115,6 +115,8 @@ public class Robot extends TimedRobot {
     double maxArmAngleRad = -2;
     double minArmAngleRad= 1;
     double speed_armRotation = 0.50;
+    // flag to indicate if arm angle is being limited
+    private boolean armAngleLimited = false;
 
 	// arm extend vvv
     final WPI_TalonFX armTalonExtenstion = new WPI_TalonFX(10);
@@ -272,22 +274,33 @@ public class Robot extends TimedRobot {
     public void limitationArm(double getCurrent_ArmAngleRad) {
         if (getCurrent_ArmAngleRad <= maxArmAngleRad) {
             armRotate.tankDrive(-speed_armRotation, speed_armRotation); //go down
+            //armLift_LowerAuto(-1.5, 0);
+            armAngleLimited = true; // set flag to indicate arm angle is being limited
         }
         if (getCurrent_ArmAngleRad >= minArmAngleRad) {
             armRotate.tankDrive(speed_armRotation, -speed_armRotation); //go up
+            //armLift_LowerAuto(, 0);
+            armAngleLimited = true; // set flag to indicate arm angle is being limited
+        }
+        // disable arm angle limit flag if arm angle is within limits vvv
+        if (getCurrent_ArmAngleRad > maxArmAngleRad && getCurrent_ArmAngleRad < minArmAngleRad) {
+            armAngleLimited = false; // reset flag
         }
     }
 
     public void robotArm(double armDown, double armUp, Boolean claw_xBox, Boolean extendArm, Boolean retractArm,
             boolean claw_expel, boolean claw_intake) {
-        // arm angle roation vvv
 
+        // check if arm angle is being limited
+        if (armAngleLimited) {
+            return; // exit function if arm angle is being limited
+        }
+
+        // arm angle roation vvv
         if (armDown >= 0.5) {
             armRotate.tankDrive(speed_armRotation, -speed_armRotation);
-            //armLift_LowerAuto(armDegree_current, 0.0);
         } else if (armUp >= 0.5) {
             armRotate.tankDrive(-speed_armRotation, speed_armRotation);
-            //armLift_LowerAuto(armDegree_current, 0.0);
         } else {
             armRotate.tankDrive(0, 0);
         }
@@ -465,6 +478,7 @@ public class Robot extends TimedRobot {
         armRad_current = rightArmSide.getSelectedSensorPosition()*armRotate_ToRad;
         SmartDashboard.putNumber("encoderRad_rightArmSide", armRad_current);
         limitationArm(armRad_current);
+        SmartDashboard.putBoolean("armAngleLimited: ", armAngleLimited);
 
         // armExtenstion
         extenstionEncoder_CurrentMetres = armTalonExtenstion.getSelectedSensorPosition() * armExtenstion_ToMetres;
