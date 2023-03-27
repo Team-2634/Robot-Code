@@ -33,8 +33,6 @@ public class Robot extends TimedRobot {
     double targetDistance_Xauto = 0;
     double targetDistance_Yauto = 0;
     double targetRad_auto = 0;
-    private boolean maintainDistance;
-    private double maintainDuration;
     final XboxController driving_xBoxCont = new XboxController(0);
     final XboxController arm_xBoxCont = new XboxController(1);
     double maxDegree = 360; // if your over 360 then your driving to much
