@@ -30,8 +30,9 @@ public class Robot extends TimedRobot {
     // Constants vvvvv
     //Timer timer = new Timer();
     double autonomousStartTime;
-    private double targetDistance_auto;
-    private double targetRad_auto;
+    double targetDistance_Xauto = 0;
+    double targetDistance_Yauto = 0;
+    double targetRad_auto = 0;
     private boolean maintainDistance;
     private double maintainDuration;
     final XboxController driving_xBoxCont = new XboxController(0);
@@ -370,12 +371,19 @@ public class Robot extends TimedRobot {
         swerveDrive(contXSpeedField, contYSpeedField, outputYaw_RadPerSec);
     }
 
-    public void armLift_LowerAuto(double targetDistanceRads, double tolerance) {
+    public void armLift_LowerAuto(double targetDistanceRads, double tolerance, boolean down) {
         double output;
         double currentDistance = armRad_current;
         if (Math.abs(targetDistanceRads - currentDistance) > tolerance) {
             output = PID_armAngle.calculate(currentDistance, targetDistanceRads);
             armRotate.tankDrive(output, -output);
+            /* 
+            if (down == false){
+                armRotate.tankDrive(-output, output);
+            } else if (down == true ){
+                armRotate.tankDrive(output, -output);
+            }
+            */
         }
     }
 
@@ -425,8 +433,6 @@ public class Robot extends TimedRobot {
     }
 
     public void straightenModules() {
-        // while loop might break things by over going the 20ms cycle time. Redo this
-        // part if it doesn't work
         if (Math.abs(frontLeftAbsAngle) > 0.0 ||
                 Math.abs(frontRightAbsAngle) > 0.0 ||
                 Math.abs(backLeftAbsAngle) > 0.0 ||
@@ -452,8 +458,6 @@ public class Robot extends TimedRobot {
     // execution Functions vvvvv
     @Override
     public void robotInit() {
-        
-        //start vvv
         UsbCamera camera = CameraServer.startAutomaticCapture();
         setMotorBreaks();
         invertMotors();
@@ -527,11 +531,11 @@ public class Robot extends TimedRobot {
         double elapsedTime = Timer.getFPGATimestamp() - autonomousStartTime;
         if (!maintainDistance) {
             if (elapsedTime <= 5){
-                targetDistance_auto = 2;
-                drive_PID(targetDistance_auto, 0, 0, 0.5); //fwd 2 metres
+                targetDistance_Xauto = 2;
+                 drive_PID(targetDistance_Xauto, 0, 0, 0.5); //fwd 2 metres
             } else if (elapsedTime <= 10){
-                targetDistance_auto = 2;
-                drive_PID(0, targetDistance_auto, 0, 0.5); //right 2 metres
+                targetDistance_Yauto = 2;
+                drive_PID(0, targetDistance_Yauto, 0, 0.5); //right 2 metres
             } else if (elapsedTime <= 15){
                 targetRad_auto = 3.14159;
                 drive_PID(0, 0, targetRad_auto, 0.5); //turn 3 rads per second
@@ -540,7 +544,7 @@ public class Robot extends TimedRobot {
             }
         } else {
             // Maintain the current target distance for the specified duration
-            drive_PID(targetDistance_auto, 0, 0, 0.5);
+            drive_PID(targetDistance_Xauto, targetDistance_Yauto, targetRad_auto, 0.5);
             if (elapsedTime >= maintainDuration) {
                 maintainDistance = false;
             }
