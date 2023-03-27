@@ -125,7 +125,7 @@ public class Robot extends TimedRobot {
     public final WPI_TalonFX leftArmSide = new WPI_TalonFX(9);
     public final WPI_TalonFX rightArmSide = new WPI_TalonFX(8);
     private final DifferentialDrive armRotate = new DifferentialDrive(leftArmSide, rightArmSide);
-    double liftArmSide_GearRatio = 36*(60/15);
+    double liftArmSide_GearRatio = 64*(60/15);
 	double armRotate_ToRad= ((1.0/liftArmSide_GearRatio) * 2 * Math.PI)/2048;
     double armRad_current;
     double kp_armAngle = 0.5, ki_armAngle = 0.05, kd_armAngle = 0.05;
@@ -546,25 +546,17 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
         double elapsedTime = Timer.getFPGATimestamp() - autonomousStartTime;
-        if (!maintainDistance) {
-            if (elapsedTime <= 5){
-                targetDistance_Xauto = 2;
-                 drive_PID(targetDistance_Xauto, 0, 0, 0.5); //fwd 2 metres
-            } else if (elapsedTime <= 10){
-                targetDistance_Yauto = 2;
-                drive_PID(0, targetDistance_Yauto, 0, 0.5); //right 2 metres
-            } else if (elapsedTime <= 15){
-                targetRad_auto = 3.14159;
-                drive_PID(0, 0, targetRad_auto, 0.5); //turn 3 rads per second
-            } else {
-                //autoBalance();
-            }
+         if (elapsedTime <= 5){
+            targetDistance_Xauto = 2;
+             drive_PID(targetDistance_Xauto, 0, 0, 0.5); //fwd 2 metres
+        } else if (elapsedTime <= 10){
+            targetDistance_Yauto = 2;
+            drive_PID(0, targetDistance_Yauto, 0, 0.5); //right 2 metres
+        } else if (elapsedTime <= 15){
+            targetRad_auto = 3.14159;
+            drive_PID(0, 0, targetRad_auto, 0.5); //turn 3 rads per second
         } else {
-            // Maintain the current target distance for the specified duration
-            drive_PID(targetDistance_Xauto, targetDistance_Yauto, targetRad_auto, 0.5);
-            if (elapsedTime >= maintainDuration) {
-                maintainDistance = false;
-            }
+            //autoBalance();
         }
     }
 
