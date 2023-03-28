@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -119,6 +120,12 @@ public class Robot extends TimedRobot {
     SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
             m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
+    
+    //here we setup arcade/diff
+    MotorControllerGroup leftSideTalon = new MotorControllerGroup(frontLeftDrive, backLeftDrive);
+    MotorControllerGroup rightSideTalon = new MotorControllerGroup(frontRightDrive, backRightDrive);
+    DifferentialDrive autonomousScuffed = new DifferentialDrive(leftSideTalon,rightSideTalon);
+
     // these are for the arm  liftvvv
     public final WPI_TalonFX leftArmSide = new WPI_TalonFX(9);
     public final WPI_TalonFX rightArmSide = new WPI_TalonFX(8);
@@ -130,7 +137,7 @@ public class Robot extends TimedRobot {
     final PIDController PID_armAngle = new PIDController(kp_armAngle, ki_armAngle, kd_armAngle);
     double maxArmAngleRad = -2;
     double minArmAngleRad= 1;
-    double speed_armRotation = 0.55;
+    double speed_armRotation = 0.75;
     // flag to indicate if arm angle is being limited
     private boolean armAngleLimited = false;
 
@@ -305,7 +312,7 @@ public class Robot extends TimedRobot {
     }
 
     public void robotArm(double armDown, double armUp, Boolean claw_xBox, Boolean extendArm, Boolean retractArm,
-            boolean claw_expel, boolean claw_intake) {
+            boolean claw_expel, boolean claw_intake, boolean clawIntake_and_Extend) {
 
         // check if arm angle is being limited
         if (armAngleLimited) {
@@ -348,10 +355,14 @@ public class Robot extends TimedRobot {
         } else {
             claw_Wheels.set(0);
         } 
+
+        if (clawIntake_and_Extend == true){
+            claw_Wheels.set(ClawIntake_WheelSpeed);
+            armTalonExtenstion.set(armTalonExtenstionSpeed);
+        }
     }
 
-    public void drive_PID(double targetXdistance_Metres, double targetYdistance_Metres, double target_RadDis, double tolerance) {
-                      
+    public void drive_PID(double targetXdistance_Metres, double targetYdistance_Metres) {
         if (isFirstTime == true) {
             frontLeftDrive.setSelectedSensorPosition(0);
             isFirstTime = false;
@@ -359,31 +370,32 @@ public class Robot extends TimedRobot {
                         
         double currentDistanceX;
         currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
-        double outputXSpeed = 0;
+        double outputXSpeed;
 
         double currentDistanceY;
         currentDistanceY = encoderLeftFrontDriveDisplacement_Meteres;
-        double outputYSpeed = 0;
+        double outputYSpeed;
 
-        double currentSteer_Rad;
-        currentSteer_Rad = angleRad;
-        double outputYaw_RadPerSec  = 0;
+        // double currentSteer_Rad;
+        // currentSteer_Rad = angleRad;
+        // double outputYaw_RadPerSec;
 
-        if (Math.abs(targetXdistance_Metres - currentDistanceX) > tolerance) {
+        // if (Math.abs(targetXdistance_Metres - currentDistanceX)) {
             outputXSpeed = drive.calculate(currentDistanceX, targetXdistance_Metres) ;
             // swerveDrive(outputXSpeed, 0, 0);
-        }
-        if (Math.abs(targetYdistance_Metres - currentDistanceY) > tolerance) {
+        //}
+        //if (Math.abs(targetYdistance_Metres - currentDistanceY) > tolerance) {
             outputYSpeed = drive.calculate(currentDistanceY, targetYdistance_Metres);
             // swerveDrive(0, outputYSpeed, 0);
-        }
-        if (Math.abs(target_RadDis - currentSteer_Rad) > tolerance) {
-            outputYaw_RadPerSec  = drive.calculate(currentSteer_Rad, target_RadDis);
+        //}
+        //if (Math.abs(target_RadDis - currentSteer_Rad) > tolerance) {
+            //outputYaw_RadPerSec  = drive.calculate(currentSteer_Rad, target_RadDis);
             // swerveDrive(0, 0, outputYaw_Rad);
-        }
-        contXSpeedField = outputXSpeed * Math.cos(angleRad) - outputYSpeed * Math.sin(angleRad);
-        contYSpeedField = outputXSpeed * Math.sin(angleRad) + outputYSpeed * Math.cos(angleRad);
-        swerveDrive(contXSpeedField, contYSpeedField, outputYaw_RadPerSec);
+        //}
+        //contXSpeedField = outputXSpeed * Math.cos(angleRad) - outputYSpeed * Math.sin(angleRad);
+        //contYSpeedField = outputXSpeed * Math.sin(angleRad) + outputYSpeed * Math.cos(angleRad);
+        //swerveDrive(outputXSpeed, 0, 0);
+        autonomousScuffed.arcadeDrive(-outputXSpeed, -outputYSpeed);
     }
 
     public void armLift_LowerAuto(double targetDistanceRads, double tolerance, boolean down) {
@@ -538,34 +550,54 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+        drive.setIntegratorRange(-0.1, 0.1);
+        drive.setTolerance(0.1);
+
         autonomousStartTime = Timer.getFPGATimestamp();
+        // double elapsedTime = Timer.getFPGATimestamp() - autonomousStartTime;
+        //  if (elapsedTime <= 5){
+        //     targetDistance_Xauto = -2;
+        //      drive_PID(targetDistance_Xauto, 0, 0, 0.5); //fwd 2 metres
+        // } else if (elapsedTime <= 10){
+        //     targetDistance_Yauto = -2;
+        //     drive_PID(0, targetDistance_Yauto, 0, 0.5); //right 2 metres
+        // } else if (elapsedTime <= 15){
+        //     targetRad_auto = 3.14159;
+        //     drive_PID(0, 0, targetRad_auto, 0.5); //turn 3 rads per second
+        // } else {
+            //autoBalance();
+        // }
     }
  
     @Override
     public void autonomousPeriodic() {
-        double elapsedTime = Timer.getFPGATimestamp() - autonomousStartTime;
-         if (elapsedTime <= 5){
+        // double elapsedTime = Timer.getFPGATimestamp() - autonomousStartTime;
+        //  if (elapsedTime <= 5){
             targetDistance_Xauto = 2;
-             drive_PID(targetDistance_Xauto, 0, 0, 0.5); //fwd 2 metres
-        } else if (elapsedTime <= 10){
-            targetDistance_Yauto = 2;
-            drive_PID(0, targetDistance_Yauto, 0, 0.5); //right 2 metres
-        } else if (elapsedTime <= 15){
-            targetRad_auto = 3.14159;
-            drive_PID(0, 0, targetRad_auto, 0.5); //turn 3 rads per second
-        } else {
+             drive_PID(targetDistance_Xauto, 0); //fwd 2 metres
+             // } else if (elapsedTime <= 10){
+        //     targetDistance_Yauto = -2;
+        //     drive_PID(0, targetDistance_Yauto, 0, 0.5); //right 2 metres
+        // } else if (elapsedTime <= 15){
+        //     targetRad_auto = 3.14159;
+        //     drive_PID(0, 0, targetRad_auto, 0.5); //turn 3 rads per second
+        // } else {
             //autoBalance();
-        }
-    }
+        // }
+        
+    
+    SmartDashboard.putBoolean("at setpoint",drive.atSetpoint());
+}
 
     // Method to maintain the current target distance for a specified duration
-    public void maintainDistance(double duration) {
-        maintainDistance = true;
-        maintainDuration = duration;
-    }
+    // public void maintainDistance(double duration) {
+    //     maintainDistance = true;
+    //     maintainDuration = duration;
+    // }
 
     @Override
     public void teleopInit() {
+        navx.reset();
     }
 
     @Override
@@ -593,6 +625,7 @@ public class Robot extends TimedRobot {
         boolean retractArm = arm_xBoxCont.getRightBumper();
         boolean expel = arm_xBoxCont.getAButton();
         boolean intake = arm_xBoxCont.getXButton();
-        robotArm(armDown, armUp, claw_xBox, extendArm, retractArm, expel, intake);
+        boolean clawIntake_and_Extend = arm_xBoxCont.getYButton();
+        robotArm(armDown, armUp, claw_xBox, extendArm, retractArm, expel, intake, clawIntake_and_Extend);
     }
 }
