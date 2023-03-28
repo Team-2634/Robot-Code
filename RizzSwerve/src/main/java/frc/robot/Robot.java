@@ -570,7 +570,7 @@ public class Robot extends TimedRobot {
         // aline vvv
         SmartDashboard.putNumber("pid frontLeft Error", pidFrontLeftTurn.getPositionError());
     }
-    
+    /*
     @Override
     public void autonomousInit() {
         
@@ -655,7 +655,7 @@ boolean armMove2 = false;
         System.out.println("Exit Autonamous");
         autonomousScuffed.close();
     } 
-
+ */
     @Override
     public void teleopInit() {
         navx.reset();
