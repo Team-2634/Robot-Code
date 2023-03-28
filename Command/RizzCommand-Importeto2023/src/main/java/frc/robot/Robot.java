@@ -12,8 +12,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    //frunkContainer = new FrunkRobotContainer();
-    rizzlerContainer = new RizzlerRobotContainer();
+    frunkContainer = new FrunkRobotContainer();
+    //rizzlerContainer = new RizzlerRobotContainer();
   }
 
   @Override
