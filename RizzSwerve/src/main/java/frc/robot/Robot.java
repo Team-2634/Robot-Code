@@ -24,6 +24,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.SPI;
 
@@ -53,8 +54,6 @@ public class Robot extends TimedRobot {
     PIDController pidFrontRightTurn = new PIDController(kp, ki, kd);
     PIDController pidBackLeftTurn = new PIDController(kp, ki, kd);
     PIDController pidBackRightTurn = new PIDController(kp, ki, kd);
-
-    PIDController drive = new PIDController(kp, ki, kd);
 
     public final WPI_TalonFX frontLeftDrive = new WPI_TalonFX(7);
     public final WPI_TalonFX frontRightDrive = new WPI_TalonFX(1);
@@ -120,12 +119,6 @@ public class Robot extends TimedRobot {
     SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
             m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
-    
-    //here we setup arcade/diff
-    MotorControllerGroup leftSideTalon = new MotorControllerGroup(frontLeftDrive, backLeftDrive);
-    MotorControllerGroup rightSideTalon = new MotorControllerGroup(frontRightDrive, backRightDrive);
-    DifferentialDrive autonomousScuffed = new DifferentialDrive(leftSideTalon,rightSideTalon);
-
     // these are for the arm  liftvvv
     public final WPI_TalonFX leftArmSide = new WPI_TalonFX(9);
     public final WPI_TalonFX rightArmSide = new WPI_TalonFX(8);
@@ -135,7 +128,7 @@ public class Robot extends TimedRobot {
     double armRad_current;
     double kp_armAngle = 0.5, ki_armAngle = 0.05, kd_armAngle = 0.05;
     final PIDController PID_armAngle = new PIDController(kp_armAngle, ki_armAngle, kd_armAngle);
-    double maxArmAngleRad = -2;
+    double maxArmAngleRad = -2; //-2 default
     double minArmAngleRad= 1;
     double speed_armRotation = 0.75;
     // flag to indicate if arm angle is being limited
@@ -143,6 +136,8 @@ public class Robot extends TimedRobot {
 
 	// arm extend vvv
     final WPI_TalonFX armTalonExtenstion = new WPI_TalonFX(10);
+    double maxArmExtend_Metres = 0.65;
+    private boolean armExtendLimited = false;
 	double armExtenstion_gearRatio= 1 /36.0;
     double armTalonExtenstionSpeed = 0.80; 
     double armExtenstion_ToMetres = (armExtenstion_gearRatio*Math.PI*Units.inchesToMeters(2.75))/2048.0; // metres 
@@ -173,6 +168,10 @@ public class Robot extends TimedRobot {
     double angleRad;
     // constants ^^^^^
     // our functions vvvvvv
+
+    //arcade vvv
+    DifferentialDrive autonomousScuffed;
+    PIDController drive = new PIDController(kp, ki, kd);
 
     public void resetEncoders() {
         frontLeftSteer.setSelectedSensorPosition(0);
@@ -294,7 +293,7 @@ public class Robot extends TimedRobot {
         backRightDrive.set(backRightOptimized.speedMetersPerSecond / maxSpeedMpS);
     }
 
-    public void limitationArm(double getCurrent_ArmAngleRad) {
+    public void limitationArmRise(double getCurrent_ArmAngleRad) {
         if (getCurrent_ArmAngleRad <= maxArmAngleRad) {
             armRotate.tankDrive(-speed_armRotation, speed_armRotation); //go down
             //armLift_LowerAuto(-1.5, 0);
@@ -311,11 +310,25 @@ public class Robot extends TimedRobot {
         }
     }
 
+    public void limitationArmExtend(double getCurrent_ArmExtendMetres) {
+        if (getCurrent_ArmExtendMetres >= maxArmExtend_Metres) {
+            armTalonExtenstion.set(-armTalonExtenstionSpeed);
+        } 
+        // disable arm angle limit flag if arm angle is within limits vvv
+        if (getCurrent_ArmExtendMetres < maxArmExtend_Metres) {
+            armExtendLimited = false; // reset flag
+        }
+    }
+
     public void robotArm(double armDown, double armUp, Boolean claw_xBox, Boolean extendArm, Boolean retractArm,
             boolean claw_expel, boolean claw_intake, boolean clawIntake_and_Extend) {
 
         // check if arm angle is being limited
         if (armAngleLimited) {
+            return; // exit function if arm angle is being limited
+        }
+
+        if (armExtendLimited) {
             return; // exit function if arm angle is being limited
         }
 
@@ -362,30 +375,29 @@ public class Robot extends TimedRobot {
         }
     }
 
-    public void drive_PID(double targetXdistance_Metres, double targetYdistance_Metres) {
+    public boolean drive_PID(double targetXdistance_Metres, double targetYdistance_Metres) {
+
         if (isFirstTime == true) {
+            System.out.println("Starting Movement 1");
             frontLeftDrive.setSelectedSensorPosition(0);
             isFirstTime = false;
         } 
                         
         double currentDistanceX;
         currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
-        double outputXSpeed;
-
+        
         double currentDistanceY;
         currentDistanceY = encoderLeftFrontDriveDisplacement_Meteres;
-        double outputYSpeed;
-
         // double currentSteer_Rad;
         // currentSteer_Rad = angleRad;
         // double outputYaw_RadPerSec;
-
+        
         // if (Math.abs(targetXdistance_Metres - currentDistanceX)) {
-            outputXSpeed = drive.calculate(currentDistanceX, targetXdistance_Metres) ;
+           double outputXSpeed = drive.calculate(currentDistanceX, targetXdistance_Metres) ;
             // swerveDrive(outputXSpeed, 0, 0);
         //}
         //if (Math.abs(targetYdistance_Metres - currentDistanceY) > tolerance) {
-            outputYSpeed = drive.calculate(currentDistanceY, targetYdistance_Metres);
+          // double outputYSpeed = drive.calculate(currentDistanceY, targetYdistance_Metres);
             // swerveDrive(0, outputYSpeed, 0);
         //}
         //if (Math.abs(target_RadDis - currentSteer_Rad) > tolerance) {
@@ -395,23 +407,31 @@ public class Robot extends TimedRobot {
         //contXSpeedField = outputXSpeed * Math.cos(angleRad) - outputYSpeed * Math.sin(angleRad);
         //contYSpeedField = outputXSpeed * Math.sin(angleRad) + outputYSpeed * Math.cos(angleRad);
         //swerveDrive(outputXSpeed, 0, 0);
-        autonomousScuffed.arcadeDrive(-outputXSpeed, -outputYSpeed);
+        autonomousScuffed.arcadeDrive(-outputXSpeed, 0);
+
+        if (drive.atSetpoint()){
+            autonomousScuffed.arcadeDrive(0, 0);
+            System.out.println("drive Pid Fini");
+            return true;
+        }
+        return false;
+       
     }
 
-    public void armLift_LowerAuto(double targetDistanceRads, double tolerance, boolean down) {
-        double output;
-        double currentDistance = armRad_current;
-        if (Math.abs(targetDistanceRads - currentDistance) > tolerance) {
-            output = PID_armAngle.calculate(currentDistance, targetDistanceRads);
+    public void armLift_LowerAuto(double targetDistanceRads
+                                //, boolean down
+                                ) {
+    double output;
+    double currentDistance = armRad_current;
+        output = PID_armAngle.calculate(currentDistance, targetDistanceRads);
+        armRotate.tankDrive(output, -output);
+        /* 
+        if (down == false){
+            armRotate.tankDrive(-output, output);
+        } else if (down == true ){
             armRotate.tankDrive(output, -output);
-            /* 
-            if (down == false){
-                armRotate.tankDrive(-output, output);
-            } else if (down == true ){
-                armRotate.tankDrive(output, -output);
-            }
-            */
         }
+        */
     }
 
     public void armExtender_Auto(double targetDistanceMetres, double tolerance) {
@@ -508,12 +528,14 @@ public class Robot extends TimedRobot {
         // limit arm vvv
         armRad_current = rightArmSide.getSelectedSensorPosition()*armRotate_ToRad;
         SmartDashboard.putNumber("encoderRad_rightArmSide", armRad_current);
-        limitationArm(armRad_current);
+        limitationArmRise(armRad_current);
         SmartDashboard.putBoolean("armAngleLimited: ", armAngleLimited);
 
         // armExtenstion
         extenstionEncoder_CurrentMetres = armTalonExtenstion.getSelectedSensorPosition() * armExtenstion_ToMetres;
         SmartDashboard.putNumber("Arm_Distance_metres", extenstionEncoder_CurrentMetres);
+        limitationArmExtend(extenstionEncoder_CurrentMetres);
+        SmartDashboard.putBoolean("armExtendLimited: ", armExtendLimited);
 
         // encoder drive variables vvv
         encoderLeftFrontDriveDisplacement_Meteres = frontLeftDrive.getSelectedSensorPosition()
@@ -543,21 +565,33 @@ public class Robot extends TimedRobot {
         //pid charts vvv
         //auto vvv
         SmartDashboard.putNumber("drive PID (atm used for x, y and turn of autonomous)", drive.getPositionError());
+        SmartDashboard.putNumber("PID_armAngle", PID_armAngle.getPositionError());
 
         // aline vvv
         SmartDashboard.putNumber("pid frontLeft Error", pidFrontLeftTurn.getPositionError());
     }
-
+    
     @Override
     public void autonomousInit() {
-        drive.setIntegratorRange(-0.1, 0.1);
+        
+        MotorControllerGroup leftSideTalon = new MotorControllerGroup(frontLeftDrive, backLeftDrive);
+        MotorControllerGroup rightSideTalon = new MotorControllerGroup(frontRightDrive, backRightDrive);
+        autonomousScuffed = new DifferentialDrive(leftSideTalon,rightSideTalon);
+        
+        drive.setIntegratorRange(-0.5, 0.5);
         drive.setTolerance(0.1);
 
-        autonomousStartTime = Timer.getFPGATimestamp();
+        drive.setIntegratorRange(-0.50, 0.50); // change to ideal auto arm speed
+        drive.setTolerance(0.1);
+        
+        timer.reset();
+        timer.start();
+        //Timer.getFPGATimestamp();
         // double elapsedTime = Timer.getFPGATimestamp() - autonomousStartTime;
         //  if (elapsedTime <= 5){
         //     targetDistance_Xauto = -2;
-        //      drive_PID(targetDistance_Xauto, 0, 0, 0.5); //fwd 2 metres
+                //      drive_PID(targetDistance_Xauto, 0, 0, 0.5); //fwd 2 metres
+        
         // } else if (elapsedTime <= 10){
         //     targetDistance_Yauto = -2;
         //     drive_PID(0, targetDistance_Yauto, 0, 0.5); //right 2 metres
@@ -567,14 +601,34 @@ public class Robot extends TimedRobot {
         // } else {
             //autoBalance();
         // }
+        frontLeftDrive.setSensorPhase(true);
+        //rightArmSide.setSensorPhase(true);
+        System.out.println("Init Autonamous");
     }
  
-    @Override
+boolean driveFwd1 = false;
+boolean armMove1 = false;
+boolean armMove2 = false;
+@Override
     public void autonomousPeriodic() {
         // double elapsedTime = Timer.getFPGATimestamp() - autonomousStartTime;
         //  if (elapsedTime <= 5){
-            targetDistance_Xauto = 2;
-             drive_PID(targetDistance_Xauto, 0); //fwd 2 metres
+            if (timer.get() <= 10){
+                if(!driveFwd1){
+                    driveFwd1 = drive_PID(2, 0); //fwd 2 metres
+                }
+                if(!armMove1){
+                    //armLift_LowerAuto(0.5);
+                }
+
+                if(armMove1 && !armMove2){
+                    //armLift_LowerAuto(0.5);
+                }
+
+            } else {
+                //autoBalance();
+                //armLift_LowerAuto(0.5, 0);
+            }
              // } else if (elapsedTime <= 10){
         //     targetDistance_Yauto = -2;
         //     drive_PID(0, targetDistance_Yauto, 0, 0.5); //right 2 metres
@@ -584,22 +638,29 @@ public class Robot extends TimedRobot {
         // } else {
             //autoBalance();
         // }
-        
     
-    SmartDashboard.putBoolean("at setpoint",drive.atSetpoint());
-}
+        SmartDashboard.putBoolean("at setpoint",drive.atSetpoint());
+            
+        // Method to maintain the current target distance for a specified duration
+        // public void maintainDistance(double duration) {
+        //     maintainDistance = true;
+        //     maintainDuration = duration;
+        // }
+    }
 
-    // Method to maintain the current target distance for a specified duration
-    // public void maintainDistance(double duration) {
-    //     maintainDistance = true;
-    //     maintainDuration = duration;
-    // }
+    @Override
+    public void autonomousExit(){
+        frontLeftDrive.setSensorPhase(false);
+        rightArmSide.setSensorPhase(false);
+        System.out.println("Exit Autonamous");
+        autonomousScuffed.close();
+    } 
 
     @Override
     public void teleopInit() {
         navx.reset();
     }
-
+    
     @Override
     public void teleopPeriodic() {
 
