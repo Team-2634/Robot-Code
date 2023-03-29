@@ -688,5 +688,6 @@ boolean armMove2 = false;
         boolean intake = arm_xBoxCont.getXButton();
         boolean clawIntake_and_Extend = arm_xBoxCont.getYButton();
         robotArm(armDown, armUp, claw_xBox, extendArm, retractArm, expel, intake, clawIntake_and_Extend);
+        /* */
     }
 }
