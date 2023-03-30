@@ -181,10 +181,6 @@ public class Robot extends TimedRobot {
     // constants ^^^^^
     // our functions vvvvvv
 
-    // arcade vvv
-    /* 
-    DifferentialDrive autonomousScuffed;
-    */
     PIDController drive = new PIDController(0.5, 0.0, 0.05);
 
     public void resetEncoders() {
