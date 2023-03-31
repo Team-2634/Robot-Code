@@ -137,7 +137,7 @@ public class Robot extends TimedRobot {
     double kp_armAngle = 0.5, ki_armAngle = 0.05, kd_armAngle = 0.05;
     final PIDController PID_armAngle = new PIDController(kp_armAngle, ki_armAngle, kd_armAngle);
     double maxArmAngleRad = -1.95; // -2 default
-    double minArmAngleRad = 0.0175;
+    double minArmAngleRad = 0.015;
     double speed_armRotation = 0.75;
     // flag to indicate if arm angle is being limited
     private boolean armAngleLimited = false;
@@ -608,10 +608,27 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+        timerAuto.reset();
+        timerAuto.start();
     }
- 
+ Timer timerAuto = new Timer();
     @Override
     public void autonomousPeriodic() {
+        //drive to balance vvv
+        if (timerAuto.get() < 1.265){
+            swerveDrive(-0.7, 0, 0);
+        }else{
+            swerveDrive(0, 0, 0);
+        }
+
+        // or drive fwd past line vvv
+        /*
+        if (timerAuto.get() < 2){
+            swerveDrive(-0.35, 0, 0);
+        }else{
+            swerveDrive(0, 0, 0);
+        }
+        */
     }
 
     @Override
