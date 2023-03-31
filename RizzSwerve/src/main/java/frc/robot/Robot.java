@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
@@ -23,10 +25,13 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.AnalogTrigger;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Solenoid;
 
 public class Robot extends TimedRobot {
     // Constants vvvvv
@@ -136,7 +141,7 @@ public class Robot extends TimedRobot {
     double armRad_current;
     double kp_armAngle = 0.5, ki_armAngle = 0.05, kd_armAngle = 0.05;
     final PIDController PID_armAngle = new PIDController(kp_armAngle, ki_armAngle, kd_armAngle);
-    double maxArmAngleRad = -1.95; // -2 default
+    double maxArmAngleRad = -1.95; // -1.95
     double minArmAngleRad = 0.015;
     double speed_armRotation = 0.75;
     // flag to indicate if arm angle is being limited
@@ -144,13 +149,13 @@ public class Robot extends TimedRobot {
 
     // arm extend vvv
     final WPI_TalonFX armTalonExtenstion = new WPI_TalonFX(10);
-    double maxArmExtend_Metres = 0.79;
+    double maxArmExtend_Metres = 0.79;  
     double minArmExtend_Metres = 0.005;
     private boolean armExtendLimited = false;
     double armExtenstion_gearRatio = 1 / 36.0;
     double armTalonExtenstionSpeed_Out = 0.83;
     double armTalonExtenstionSpeed_In = 0.83;
-    double armTalonExtenstionSpeed_autoExtend = 0.23;
+    double armTalonExtenstionSpeed_autoExtend = 0.20;
     double armTalonExtenstionSpeed_autoRetreat = 0.10;
     double armExtenstion_ToMetres = (armExtenstion_gearRatio * Math.PI * Units.inchesToMeters(2.75)) / 2048.0; // metres
     double extenstionEncoder_CurrentMetres;
@@ -160,6 +165,7 @@ public class Robot extends TimedRobot {
     // claw_Wheels vvv
     private final CANSparkMax claw_Wheels = new CANSparkMax(13, MotorType.kBrushless);
     double ClawIntake_WheelSpeed = -1;
+    double ClawIntake_WheelSpeed_SLOW = -0.10;
     double ClawExpel_WheelSpeed = 0.50;
 
     // pnuematics vvv
@@ -323,14 +329,15 @@ public class Robot extends TimedRobot {
     }
 
     public void limitationArmExtend(double getCurrent_ArmExtendMetres) {
-        if (getCurrent_ArmExtendMetres >= maxArmExtend_Metres) {
-            armTalonExtenstion.set(-armTalonExtenstionSpeed_autoRetreat);
-            armExtendLimited = true;
-        }
-
-        if (getCurrent_ArmExtendMetres <= minArmExtend_Metres) {
+        /*
+        if (getCurrent_ArmExtendMetres < minArmExtend_Metres) {
             armTalonExtenstion.set(armTalonExtenstionSpeed_autoExtend);
             armExtendLimited = true; // set flag to indicate arm angle is being limited
+        }
+ */
+        if (getCurrent_ArmExtendMetres > maxArmExtend_Metres) {
+            armTalonExtenstion.set(-armTalonExtenstionSpeed_autoRetreat);
+            armExtendLimited = true;
         }
 
         if (getCurrent_ArmExtendMetres < maxArmExtend_Metres) {
@@ -339,7 +346,7 @@ public class Robot extends TimedRobot {
     }
 
     public void robotArm(double armDown, double armUp, Boolean claw_xBox, Boolean extendArm, Boolean retractArm,
-            boolean claw_expel, boolean claw_intake, boolean clawIntake_and_Extend) {
+            boolean claw_expel, boolean claw_intake, boolean clawIntake_and_Extend, boolean slowClawWheels) {
 
         // check if arm angle is being limited
         if (armAngleLimited) {
@@ -363,7 +370,11 @@ public class Robot extends TimedRobot {
         if (extendArm == true) {
             armTalonExtenstion.set(armTalonExtenstionSpeed_Out);
         } else if (retractArm == true) {
-            armTalonExtenstion.set(-armTalonExtenstionSpeed_In);
+            if (extendLimitSwitch.get()){
+                armTalonExtenstion.set(-armTalonExtenstionSpeed_In);
+            } else if (!extendLimitSwitch.get()) {
+                armTalonExtenstion.set(0);
+            }
         } else {
             armTalonExtenstion.set(0);
         }
@@ -390,6 +401,10 @@ public class Robot extends TimedRobot {
         if (clawIntake_and_Extend == true) {
             claw_Wheels.set(ClawIntake_WheelSpeed);
             armTalonExtenstion.set(armTalonExtenstionSpeed_Out);
+        }
+
+        if (slowClawWheels == true) {
+            claw_Wheels.set(ClawIntake_WheelSpeed_SLOW);
         }
     }
 
@@ -615,7 +630,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
         //drive to balance vvv
-        if (timerAuto.get() < 1.265){
+        if (timerAuto.get() < 2){
             swerveDrive(-0.7, 0, 0);
         }else{
             swerveDrive(0, 0, 0);
@@ -639,13 +654,27 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
     }
 
+    DigitalInput extendLimitSwitch = new DigitalInput(9);
+    /*public void setMotorSpeed_limitinExtendWHenToFar(double speed) {
+        if (speed < 0) {
+            if (extendLimitSwitch.get()) {
+                armTalonExtenstion.set(0);
+            } 
+        }
+    }
+*/
     @Override
     public void teleopPeriodic() {
+
         limitationArmRise(armRad_current);
         SmartDashboard.putBoolean("armAngleLimited: ", armAngleLimited);
 
         limitationArmExtend(extenstionEncoder_CurrentMetres);
-        SmartDashboard.putBoolean("armExtendLimited: ", armExtendLimited);
+        //SmartDashboard.putBoolean("armExtendLimited: ", armExtendLimited);
+        //setMotorSpeed_limitinExtendWHenToFar(-armTalonExtenstionSpeed_autoRetreat);
+
+        SmartDashboard.putBoolean("retractLimitSwitch: ", extendLimitSwitch.get());
+        System.out.println(extendLimitSwitch.get());
 
         // swerve vvv (uses driving_xBoxCont)
         double contXSpeed = removeDeadzone(1) * XdriveSensitivity;
@@ -661,6 +690,8 @@ public class Robot extends TimedRobot {
         swerveDrive(contXSpeedField, contYSpeedField, contTurnSpeed);
         // swerveDrive(contXSpeed, contYSpeed, contTurnSpeed);
 
+    
+
         // robot arm
         double armDown = arm_xBoxCont.getRightTriggerAxis();
         double armUp = arm_xBoxCont.getLeftTriggerAxis();
@@ -670,6 +701,7 @@ public class Robot extends TimedRobot {
         boolean expel = arm_xBoxCont.getAButton();
         boolean intake = arm_xBoxCont.getXButton();
         boolean clawIntake_and_Extend = arm_xBoxCont.getYButton();
-        robotArm(armDown, armUp, claw_xBox, extendArm, retractArm, expel, intake, clawIntake_and_Extend);
+        boolean slowClawWheels = driving_xBoxCont.getRightBumper();
+        robotArm(armDown, armUp, claw_xBox, extendArm, retractArm, expel, intake, clawIntake_and_Extend, slowClawWheels);
     }
 }
