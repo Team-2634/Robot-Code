@@ -136,7 +136,7 @@ public class Robot extends TimedRobot {
     double armRad_current;
     double kp_armAngle = 0.5, ki_armAngle = 0.05, kd_armAngle = 0.05;
     final PIDController PID_armAngle = new PIDController(kp_armAngle, ki_armAngle, kd_armAngle);
-    double maxArmAngleRad = -1.87; // -2 default
+    double maxArmAngleRad = -1.95; // -2 default
     double minArmAngleRad = 0.0175;
     double speed_armRotation = 0.75;
     // flag to indicate if arm angle is being limited
@@ -150,7 +150,7 @@ public class Robot extends TimedRobot {
     double armExtenstion_gearRatio = 1 / 36.0;
     double armTalonExtenstionSpeed_Out = 0.83;
     double armTalonExtenstionSpeed_In = 0.83;
-    double armTalonExtenstionSpeed_autoExtend = 0.20;
+    double armTalonExtenstionSpeed_autoExtend = 0.23;
     double armTalonExtenstionSpeed_autoRetreat = 0.10;
     double armExtenstion_ToMetres = (armExtenstion_gearRatio * Math.PI * Units.inchesToMeters(2.75)) / 2048.0; // metres
     double extenstionEncoder_CurrentMetres;
@@ -567,14 +567,10 @@ public class Robot extends TimedRobot {
         // limit arm vvv
         armRad_current = rightArmSide.getSelectedSensorPosition() * armRotate_ToRad;
         SmartDashboard.putNumber("encoderRad_rightArmSide", armRad_current);
-        limitationArmRise(armRad_current);
-        SmartDashboard.putBoolean("armAngleLimited: ", armAngleLimited);
 
         // armExtenstion
         extenstionEncoder_CurrentMetres = armTalonExtenstion.getSelectedSensorPosition() * armExtenstion_ToMetres;
         SmartDashboard.putNumber("Arm_Distance_metres", extenstionEncoder_CurrentMetres);
-        limitationArmExtend(extenstionEncoder_CurrentMetres);
-        SmartDashboard.putBoolean("armExtendLimited: ", armExtendLimited);
 
         // encoder drive variables vvv
         encoderLeftFrontDriveDisplacement_Meteres = frontLeftDrive.getSelectedSensorPosition()
@@ -612,7 +608,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        System.out.println("Init Autonamous");
     }
  
     @Override
@@ -621,7 +616,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousExit() {
-        System.out.println("Exit Autonamous");
     }
 
     @Override
@@ -630,6 +624,11 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
+        limitationArmRise(armRad_current);
+        SmartDashboard.putBoolean("armAngleLimited: ", armAngleLimited);
+
+        limitationArmExtend(extenstionEncoder_CurrentMetres);
+        SmartDashboard.putBoolean("armExtendLimited: ", armExtendLimited);
 
         // swerve vvv (uses driving_xBoxCont)
         double contXSpeed = removeDeadzone(1) * XdriveSensitivity;
