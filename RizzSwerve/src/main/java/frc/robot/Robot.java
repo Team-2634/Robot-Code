@@ -647,6 +647,35 @@ public class Robot extends TimedRobot {
     }
 }
 
+public void driveSwerve_EncoderIf(double targetX, double targetY, double targetR){
+
+    double currentDistanceX;
+    currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
+    double outPutX=0;
+
+    double currentDistanceY;
+    currentDistanceY = encoderLeftFrontDriveDisplacement_Meteres;
+    double outPutY=0;
+
+    double currentDistanceR;
+    currentDistanceR = angleRad;
+    double outPutR=0;
+
+    double toleranc = 0.1;
+    double xSpeed = 0.30;
+    double xSpeed_Rev = -0.30;
+    double ySpeed = 0.30;
+    double ySpeed_Rev = -0.30;
+    double zSpeed = 0.30;
+    double zSpeed_Rev = -0.30;
+    if (Math.abs(targetX-currentDistanceX) > toleranc) {
+        if (currentDistanceX < targetX) {
+            outPutX = xSpeed;
+        } 
+        if (currentDistanceX > targetX){
+            outPutX = -xSpeed;
+    }
+}
 
     @Override
     public void autonomousPeriodic() {
