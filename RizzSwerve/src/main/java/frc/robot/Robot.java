@@ -167,7 +167,7 @@ public class Robot extends TimedRobot {
     private final CANSparkMax claw_Wheels = new CANSparkMax(13, MotorType.kBrushless);
     double ClawIntake_WheelSpeed = -1;
     double ClawIntake_WheelSpeed_SLOW = -0.10;
-    double ClawExpel_WheelSpeed = 0.50;
+    double ClawExpel_WheelSpeed = 0.40;
 
     // pnuematics vvv
     private final DoubleSolenoid dSolenoidClaw = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 5, 4);
@@ -703,8 +703,9 @@ public class Robot extends TimedRobot {
             //driveSwerve_EncoderIf_fwd(3);
             armRotate_encoderIf_upAndDown(-1.90); //up
         }else if (timerAuto.get() < 0.8){
-
+            armExtend_encoderIf_outAndIn(0.78);
         }else{
+            dSolenoidClaw.set(Value.kForward); // open
             swerveDrive(0, 0, 0);
         }
 
