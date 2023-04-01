@@ -631,7 +631,8 @@ public class Robot extends TimedRobot {
     public void autonomousPeriodic() {
         //drive to balance vvv
         if (timerAuto.get() < 2){
-            swerveDrive(-0.7, 0, 0);
+            //swerveDrive(-0.7, 0, 0);
+            armRotate_EncoderIF();
         }else{
             swerveDrive(0, 0, 0);
         }
