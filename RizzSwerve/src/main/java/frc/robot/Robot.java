@@ -118,6 +118,7 @@ public class Robot extends TimedRobot {
     public final double kTurningEncoderTicksToRad = kTurningEncoderRot2Rad / talonEncoder_TicksPerRev;
 
     double encoderLeftFrontDriveDisplacement_Meteres;
+    double encoderRightFrontDriveDisplacement_Meteres;
     double encoderleftFrontSteer_Rad;
     double XdriveSensitivity = 1;
     double YdriveSensitivity = 1; // do not change above 1
@@ -456,7 +457,7 @@ public class Robot extends TimedRobot {
     }
  */
     
- public boolean armLift_LowerAuto(double targetDistanceRads
+ public boolean armLift_LowerAuto_PID(double targetDistanceRads
     // , boolean down
     ) {
         if (isFirstTime == true) {
@@ -590,7 +591,11 @@ public class Robot extends TimedRobot {
         // encoder drive variables vvv
         encoderLeftFrontDriveDisplacement_Meteres = frontLeftDrive.getSelectedSensorPosition()
                 * kTurningEncoderTicksToMetresPerSec;
-        SmartDashboard.putNumber("Drive_Distance_Metres: ", encoderLeftFrontDriveDisplacement_Meteres);
+        SmartDashboard.putNumber("Drive_Distance_Metres x axis: ", encoderLeftFrontDriveDisplacement_Meteres);
+
+        encoderRightFrontDriveDisplacement_Meteres = frontRightDrive.getSelectedSensorPosition()
+                * kTurningEncoderTicksToMetresPerSec;
+        SmartDashboard.putNumber("Drive_Distance_Metres yaxis: ", encoderRightFrontDriveDisplacement_Meteres);
 
         encoderleftFrontSteer_Rad = frontLeftSteer.getSelectedSensorPosition() * kTurningEncoderTicksToRad;
         SmartDashboard.putNumber("Drive_Rotation_Radians: ", encoderleftFrontSteer_Rad);
@@ -625,36 +630,72 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         timerAuto.reset();
         timerAuto.start();
+        frontRightDrive.setSelectedSensorPosition(0);
+        frontLeftDrive.setSelectedSensorPosition(0);
     }
  Timer timerAuto = new Timer();
 
- public void armRotate_EncoderIF(double targetY_Rad){
+ public void driveSwerve_EncoderIf_fwd(double targetX){
 
-    double outputY;
-    double currentDistanceY = armRad_current;
-    double armRotation_Speed = 0.20;
-    double armRotation_Speed_rEV = -0.10;
+    double currentDistanceX;
+    currentDistanceX = armRad_current;
+    double outPutX=0;
 
-    if (currentDistanceY < targetY_Rad) {
-        outputY = armRotation_Speed;
-        armRotate.tankDrive(outputY, -outputY);
-    } else if (currentDistanceY > targetY_Rad){
-        outputY = -armRotation_Speed;
-        armRotate.tankDrive(outputY, -outputY);
-    }else {
-        outputY=0;
-        armRotate.tankDrive(outputY, -outputY);
+    double toleranc = 0.1;
+    double xSpeed = 0.30;
+    double xSpeed_Rev = -0.30;
+    if (Math.abs(targetX-currentDistanceX) > toleranc) {
+        if (currentDistanceX < targetX) {
+            outPutX = xSpeed;
+        } 
+        if (currentDistanceX > targetX){
+            outPutX = -xSpeed;
+        }
     }
+    swerveDrive(outPutX, 0, 0);
 }
 
-public void driveSwerve_EncoderIf(double targetX, double targetY, double targetR){
+public void armRotate_encoderIf_upAndDown(double targetY){
+
+    double currentDistanceY;
+    currentDistanceY = armRad_current;
+    double outPutY=0;
+
+    double toleranc = 0.1;
+    double ySpeed = 0.60;
+    double ySpeed_Rev = -0.15;
+    if (Math.abs(targetY-currentDistanceY) > toleranc) {
+        if (currentDistanceY > targetY) {
+            outPutY = -ySpeed;
+        } 
+        if (currentDistanceY < targetY){
+            outPutY = ySpeed;
+        }
+    }
+    armRotate.tankDrive(-outPutY, outPutY);
+}
+
+
+    @Override
+    public void autonomousPeriodic() {
+        //drive to balance vvv
+        /* 
+        if (timerAuto.get() < 2){
+            //swerveDrive(-0.7, 0, 0);
+            armRotate_EncoderIF(0.436);
+        }else{
+            swerveDrive(0, 0, 0);
+        }
+
+
+public void driveSwerve_EncoderIf_fwd(double targetX, double targetY, double targetR){
 
     double currentDistanceX;
     currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
     double outPutX=0;
 
     double currentDistanceY;
-    currentDistanceY = encoderLeftFrontDriveDisplacement_Meteres;
+    currentDistanceY = -encoderRightFrontDriveDisplacement_Meteres;
     double outPutY=0;
 
     double currentDistanceR;
@@ -676,21 +717,29 @@ public void driveSwerve_EncoderIf(double targetX, double targetY, double targetR
             outPutX = -xSpeed;
     }
 }
-
-    @Override
-    public void autonomousPeriodic() {
-        //drive to balance vvv
-        /* 
-        if (timerAuto.get() < 2){
-            //swerveDrive(-0.7, 0, 0);
-            armRotate_EncoderIF(0.436);
-        }else{
-            swerveDrive(0, 0, 0);
-        }
+    if (Math.abs(targetX-currentDistanceX) > toleranc) {
+        if (currentDistanceY < targetY) {
+            outPutY = ySpeed;
+        } 
+        if (currentDistanceY > targetY){
+            outPutY = -ySpeed;
+    }
+}
+    if (Math.abs(targetX-currentDistanceX) > toleranc) {
+        if (currentDistanceR < targetR) {
+            outPutR = zSpeed;
+        } 
+        if (currentDistanceR > targetR){
+            outPutR = -zSpeed;
+    }
+}
+    swerveDrive(outPutX, outPutY, outPutR);
+}
 */
         // drive encoders vvv
         if (timerAuto.get() < 10){
-            driveSwerve_EncoderIf(3, 0, 0);
+            //driveSwerve_EncoderIf_fwd(3);
+            armRotate_encoderIf_upAndDown(-1.90); //up
         }else{
             swerveDrive(0, 0, 0);
         }
