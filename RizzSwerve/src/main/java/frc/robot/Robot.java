@@ -700,9 +700,10 @@ public class Robot extends TimedRobot {
 
         // drive encoders vvv
         if (timerAuto.get() < 1.7){
-            armRotate_encoderIf_upAndDown(-1.90); //up
-        }else if (timerAuto.get() < 0.8){
+            //armRotate_encoderIf_upAndDown(-1.90); //up
             armExtend_encoderIf_outAndIn(0.78);
+        }else if (timerAuto.get() < 0.8){
+            //armExtend_encoderIf_outAndIn(0.78);
         }else{
             dSolenoidClaw.set(Value.kForward); // open
             swerveDrive(0, 0, 0);
