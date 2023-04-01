@@ -700,7 +700,6 @@ public class Robot extends TimedRobot {
 
         // drive encoders vvv
         if (timerAuto.get() < 1.7){
-            //driveSwerve_EncoderIf_fwd(3);
             armRotate_encoderIf_upAndDown(-1.90); //up
         }else if (timerAuto.get() < 0.8){
             armExtend_encoderIf_outAndIn(0.78);
