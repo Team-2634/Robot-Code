@@ -653,28 +653,47 @@ public class Robot extends TimedRobot {
         }
     }
     swerveDrive(outPutX, 0, 0);
-}
+ }
 
-public void armRotate_encoderIf_upAndDown(double targetY){
+    public void armRotate_encoderIf_upAndDown(double targetY){
 
-    double currentDistanceY;
-    currentDistanceY = armRad_current;
-    double outPutY=0;
+        double currentDistanceY;
+        currentDistanceY = armRad_current;
+        double outPutY=0;
 
-    double toleranc = 0.1;
-    double ySpeed = 0.60;
-    double ySpeed_Rev = -0.15;
-    if (Math.abs(targetY-currentDistanceY) > toleranc) {
-        if (currentDistanceY > targetY) {
-            outPutY = -ySpeed;
-        } 
-        if (currentDistanceY < targetY){
-            outPutY = ySpeed;
+        double toleranc = 0.1;
+        double ySpeed = 0.60;
+        double ySpeed_Rev = -0.15;
+        if (Math.abs(targetY-currentDistanceY) > toleranc) {
+            if (currentDistanceY > targetY) {
+                outPutY = -ySpeed;
+            } 
+            if (currentDistanceY < targetY){
+                outPutY = ySpeed;
+            }
         }
+        armRotate.tankDrive(-outPutY, outPutY);
     }
-    armRotate.tankDrive(-outPutY, outPutY);
-}
 
+    public void armExtend_encoderIf_outAndIn(double targetExtend){
+
+        double currentDistance_Metres;
+        currentDistance_Metres = armRad_current;
+        double outPut_prec=0;
+
+        double toleranc = 0.1;
+        double xSpeed = 0.80;
+        double xSpeed_Rev = -0.15;
+        if (Math.abs(targetExtend-currentDistance_Metres) > toleranc) {
+            if (currentDistance_Metres < targetExtend) {
+                outPut_prec = xSpeed;
+            } 
+            if (currentDistance_Metres > targetExtend){
+                outPut_prec = -xSpeed;
+            }
+        }
+        armTalonExtenstion.set(outPut_prec);
+    }
 
     @Override
     public void autonomousPeriodic() {
