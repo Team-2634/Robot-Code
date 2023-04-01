@@ -153,8 +153,8 @@ public class Robot extends TimedRobot {
     double minArmExtend_Metres = 0.005;
     private boolean armExtendLimited = false;
     double armExtenstion_gearRatio = 1 / 36.0;
-    double armTalonExtenstionSpeed_Out = 0.83;
-    double armTalonExtenstionSpeed_In = 0.83;
+    double armTalonExtenstionSpeed_Out = 0.9; //0.83
+    double armTalonExtenstionSpeed_In = 0.9; //0.83.
     double armTalonExtenstionSpeed_autoExtend = 0.20;
     double armTalonExtenstionSpeed_autoRetreat = 0.10;
     double armExtenstion_ToMetres = (armExtenstion_gearRatio * Math.PI * Units.inchesToMeters(2.75)) / 2048.0; // metres
