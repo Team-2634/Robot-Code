@@ -678,6 +678,26 @@ public void armRotate_encoderIf_upAndDown(double targetY){
 
     @Override
     public void autonomousPeriodic() {
+
+        // drive encoders vvv
+        if (timerAuto.get() < 1.7){
+            //driveSwerve_EncoderIf_fwd(3);
+            armRotate_encoderIf_upAndDown(-1.90); //up
+        }else if (timerAuto.get() < 0.8){
+
+        }else{
+            swerveDrive(0, 0, 0);
+        }
+
+
+        // or drive fwd past line vvv
+        /*
+        if (timerAuto.get() < 2){
+            swerveDrive(-0.35, 0, 0);
+        }else{
+            swerveDrive(0, 0, 0);
+        }
+
         //drive to balance vvv
         /* 
         if (timerAuto.get() < 2){
@@ -734,23 +754,7 @@ public void driveSwerve_EncoderIf_fwd(double targetX, double targetY, double tar
     }
 }
     swerveDrive(outPutX, outPutY, outPutR);
-}
-*/
-        // drive encoders vvv
-        if (timerAuto.get() < 10){
-            //driveSwerve_EncoderIf_fwd(3);
-            armRotate_encoderIf_upAndDown(-1.90); //up
-        }else{
-            swerveDrive(0, 0, 0);
-        }
-        // or drive fwd past line vvv
-        /*
-        if (timerAuto.get() < 2){
-            swerveDrive(-0.35, 0, 0);
-        }else{
-            swerveDrive(0, 0, 0);
-        }
-        */
+}*/
     }
 
     @Override
