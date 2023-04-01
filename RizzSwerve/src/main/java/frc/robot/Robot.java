@@ -627,12 +627,31 @@ public class Robot extends TimedRobot {
         timerAuto.start();
     }
  Timer timerAuto = new Timer();
+
+ public void armRotate_EncoderIF(double targetY_Rad){
+
+    double outputY;
+    double currentDistanceY = armRad_current;
+    double armRotation_Speed = 0.20;
+    double armRotation_Speed_rEV = -0.10;
+
+    if (currentDistanceY < targetY_Rad) {
+        outputY = armRotation_Speed;
+        armRotate.tankDrive(outputY, -outputY);
+    } else if (currentDistanceY > targetY_Rad){
+        outputY = -armRotation_Speed;
+        armRotate.tankDrive(outputY, -outputY);
+    }else {
+        outputY=0;
+        armRotate.tankDrive(outputY, -outputY);
+    }
+}
     @Override
     public void autonomousPeriodic() {
         //drive to balance vvv
         if (timerAuto.get() < 2){
             //swerveDrive(-0.7, 0, 0);
-            armRotate_EncoderIF();
+            armRotate_EncoderIF(0.436);
         }else{
             swerveDrive(0, 0, 0);
         }
