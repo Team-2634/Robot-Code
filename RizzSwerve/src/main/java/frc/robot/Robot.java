@@ -521,7 +521,7 @@ public class Robot extends TimedRobot {
         frontLeftDrive.setSelectedSensorPosition(0);
     }
 
- public void driveSwerve_EncoderIf_fwd(double targetX){
+ public void driveSwerve_EncoderIf_FwdAndBwd(double targetX){
 
     double currentDistanceX;
     currentDistanceX = armRad_current;
