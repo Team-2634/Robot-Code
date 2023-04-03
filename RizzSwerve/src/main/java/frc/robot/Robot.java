@@ -629,7 +629,20 @@ public class Robot extends TimedRobot {
             swerveDrive(0, 0, 0);
         }
     
-        // auto code vvv
+        //test thingy vvv?
+/*
+        if (timerAuto.get() < 0.5){
+            swerveDrive(0.10, 0, 0);
+            swerveDrive(0, 0, 0.10);
+        }else if (timerAuto.get() < 1){
+            driveSwerve_EncoderIf_FwdAndBwd(0.5);
+            driveSwerve_EncoderIf_turnOnSpot(Math.PI);
+        }else{
+            swerveDrive(0, 0, 0);
+        }
+ */
+
+        // auto code vvv 
         /*
         if (timerAuto.get() < 1){
             driveSwerve_EncoderIf_turnOnSpot(Math.PI); //turn around
