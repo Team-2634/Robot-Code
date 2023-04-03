@@ -603,18 +603,38 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-        // drive encoders vvv
+
+        /* 
+         * please test are outAndIN
+         * if no work/goes wront direction please fix with added "-" or invert the function code
+         * then we got auto already coded 
+         * 
+         * auto vvv Note: we got 15 seconds aka plenty of time
+         * robot will start facing fwd so navx is reset during robotInit
+         * then it will: 
+         * turn around
+         * lift arm
+         * extend arm
+         * drop cone
+         * close claw
+         * retract arm
+         * lower arm
+         * drive back past the line but not to far as to be past the white line (Note: this and the next line of code should be able to happen at the same time)
+         * turn to face fwd for drivers 
+         * (note navx was reset during robot Init so fwd will always be fwd and whaterver auto does should not effect field orientation)
+        */
+
+        // extenstion encoders  testvvv
         if (timerAuto.get() < 1.7){
-            //armRotate_encoderIf_upAndDown(-1.90); //up
             armExtend_encoderIf_outAndIn(0.78);
         }else if (timerAuto.get() < 0.8){
-            //armExtend_encoderIf_outAndIn(0.78);
             armExtend_encoderIf_outAndIn(0.1);
         }else{
             dSolenoidClaw.set(Value.kForward); // open
             swerveDrive(0, 0, 0);
         }
     
+        // auto code vvv
         /*
         if (timerAuto.get() < 1){
             driveSwerve_EncoderIf_turnOnSpot(Math.PI); //turn around
