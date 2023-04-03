@@ -35,7 +35,9 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class Robot extends TimedRobot {
     // Constants vvvvv
-    Timer timer = new Timer();
+    DigitalInput extendLimitSwitch = new DigitalInput(9);
+    Timer timerRobot = new Timer();
+    Timer timerAuto = new Timer();
     double autonomousStartTime;
     double targetDistance_Xauto = 0;
     double targetDistance_Yauto = 0;
@@ -43,7 +45,6 @@ public class Robot extends TimedRobot {
     final XboxController driving_xBoxCont = new XboxController(0);
     final XboxController arm_xBoxCont = new XboxController(1);
     double maxDegree = 360; // if your over 360 then your driving to much
-    private boolean isFirstTime = true;
     double talonEncoder_TicksPerRev = 2048;
     double neoEncoder_TicksPerRev = 42;
 
@@ -409,120 +410,6 @@ public class Robot extends TimedRobot {
         }
     }
 
-/*
-    public boolean drive_PID(double targetXdistance_Metres, double targetYdistance_Metres) {
-
-        if (isFirstTime == true) {
-            System.out.println("Starting Movement 1");
-            frontLeftDrive.setSelectedSensorPosition(0);
-            isFirstTime = false;
-        }
-
-        double currentDistanceX;
-        currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
-
-        double currentDistanceY;
-        currentDistanceY = encoderLeftFrontDriveDisplacement_Meteres;
-        // double currentSteer_Rad;
-        // currentSteer_Rad = angleRad;
-        // double outputYaw_RadPerSec;
-
-        // if (Math.abs(targetXdistance_Metres - currentDistanceX)) {
-        double outputXSpeed = drive.calculate(currentDistanceX, targetXdistance_Metres);
-        // swerveDrive(outputXSpeed, 0, 0);
-        // }
-        // if (Math.abs(targetYdistance_Metres - currentDistanceY) > tolerance) {
-        // double outputYSpeed = drive.calculate(currentDistanceY,
-        // targetYdistance_Metres);
-        // swerveDrive(0, outputYSpeed, 0);
-        // }
-        // if (Math.abs(target_RadDis - currentSteer_Rad) > tolerance) {
-        // outputYaw_RadPerSec = drive.calculate(currentSteer_Rad, target_RadDis);
-        // swerveDrive(0, 0, outputYaw_Rad);
-        // }
-        // contXSpeedField = outputXSpeed * Math.cos(angleRad) - outputYSpeed *
-        // Math.sin(angleRad);
-        // contYSpeedField = outputXSpeed * Math.sin(angleRad) + outputYSpeed *
-        // Math.cos(angleRad);
-        // swerveDrive(outputXSpeed, 0, 0);
-        autonomousScuffed.arcadeDrive(-outputXSpeed, 0);
-
-        if (drive.atSetpoint()) {
-            autonomousScuffed.arcadeDrive(0, 0);
-            System.out.println("drive Pid Fini");
-            return true;
-        }
-        return false;
-
-    }
- */
-    
- public boolean armLift_LowerAuto_PID(double targetDistanceRads
-    // , boolean down
-    ) {
-        if (isFirstTime == true) {
-            System.out.println("Starting Movement arm1");
-            rightArmSide.setSelectedSensorPosition(0);
-            isFirstTime = false;
-        }
-
-        double output;
-        double currentDistance = armRad_current;
-        output = PID_armAngle.calculate(currentDistance, targetDistanceRads);
-        armRotate.tankDrive(output, -output);
-        /*
-         * if (down == false){
-         * armRotate.tankDrive(-output, output);
-         * } else if (down == true ){
-         * armRotate.tankDrive(output, -output);
-         * }
-         */
-        if (drive.atSetpoint()) {
-            armRotate.stopMotor();
-            System.out.println("arm Pid Fini");
-            return true;
-        }
-        return false;
-    }
-
-    public void armExtender_Auto(double targetDistanceMetres, double tolerance) {
-        double output;
-        double currentDistance = extenstionEncoder_CurrentMetres;
-        if (Math.abs(targetDistanceMetres - currentDistance) > tolerance) {
-            output = pidArmExtensController.calculate(currentDistance, targetDistanceMetres);
-            armTalonExtenstion.set(output);
-        }
-    }
-
-    public void autoBalance() {
-        double outputPitch = 0;
-        double outputYaw = 0;
-        double outputYawRad = 0;
-        double currentPitch;
-        double currentYaw;
-        double targetAnglePitch = 0;
-        double targetAngleYaw = 0;
-        double tolerance = 5;
-        currentPitch = navxPitch_Deg;
-        currentYaw = navxYaw_Deg;
-        double maxDriveDistance = 1.22; // maximum allowed drive distance before robot is considered to be off the
-                                        // platform
-        double currentDriveDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
-
-        if (Math.abs(targetAnglePitch - currentPitch) > tolerance) {
-            outputPitch = pidPitch.calculate(currentPitch, targetAnglePitch);
-        }
-        if (Math.abs(targetAngleYaw - currentYaw) > tolerance) {
-            outputYaw = pidYaw.calculate(currentYaw, targetAngleYaw);
-            outputYawRad = Math.toRadians(outputYaw);
-        }
-        if (Math.abs(currentDriveDistanceX) > maxDriveDistance) {
-            swerveDrive(0, 0, 0); // stop robot from moving if it has driven too far
-        } else {
-            swerveDrive(outputPitch, 0, outputYawRad);
-        }
-    }
-
     public void absolutePosition() {
         // return radians
         frontLeftAbsAngle = (frontLeftAbsEncoder.getAbsolutePosition() - frontLeftAbsOffset) * (Math.PI / 180);
@@ -633,7 +520,6 @@ public class Robot extends TimedRobot {
         frontRightDrive.setSelectedSensorPosition(0);
         frontLeftDrive.setSelectedSensorPosition(0);
     }
- Timer timerAuto = new Timer();
 
  public void driveSwerve_EncoderIf_fwd(double targetX){
 
@@ -697,84 +583,17 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-
         // drive encoders vvv
         if (timerAuto.get() < 1.7){
             //armRotate_encoderIf_upAndDown(-1.90); //up
             armExtend_encoderIf_outAndIn(0.78);
         }else if (timerAuto.get() < 0.8){
             //armExtend_encoderIf_outAndIn(0.78);
+            armExtend_encoderIf_outAndIn(0.05);
         }else{
             dSolenoidClaw.set(Value.kForward); // open
             swerveDrive(0, 0, 0);
         }
-
-
-        // or drive fwd past line vvv
-        /*
-        if (timerAuto.get() < 2){
-            swerveDrive(-0.35, 0, 0);
-        }else{
-            swerveDrive(0, 0, 0);
-        }
-
-        //drive to balance vvv
-        /* 
-        if (timerAuto.get() < 2){
-            //swerveDrive(-0.7, 0, 0);
-            armRotate_EncoderIF(0.436);
-        }else{
-            swerveDrive(0, 0, 0);
-        }
-
-
-public void driveSwerve_EncoderIf_fwd(double targetX, double targetY, double targetR){
-
-    double currentDistanceX;
-    currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
-    double outPutX=0;
-
-    double currentDistanceY;
-    currentDistanceY = -encoderRightFrontDriveDisplacement_Meteres;
-    double outPutY=0;
-
-    double currentDistanceR;
-    currentDistanceR = angleRad;
-    double outPutR=0;
-
-    double toleranc = 0.1;
-    double xSpeed = 0.30;
-    double xSpeed_Rev = -0.30;
-    double ySpeed = 0.30;
-    double ySpeed_Rev = -0.30;
-    double zSpeed = 0.30;
-    double zSpeed_Rev = -0.30;
-    if (Math.abs(targetX-currentDistanceX) > toleranc) {
-        if (currentDistanceX < targetX) {
-            outPutX = xSpeed;
-        } 
-        if (currentDistanceX > targetX){
-            outPutX = -xSpeed;
-    }
-}
-    if (Math.abs(targetX-currentDistanceX) > toleranc) {
-        if (currentDistanceY < targetY) {
-            outPutY = ySpeed;
-        } 
-        if (currentDistanceY > targetY){
-            outPutY = -ySpeed;
-    }
-}
-    if (Math.abs(targetX-currentDistanceX) > toleranc) {
-        if (currentDistanceR < targetR) {
-            outPutR = zSpeed;
-        } 
-        if (currentDistanceR > targetR){
-            outPutR = -zSpeed;
-    }
-}
-    swerveDrive(outPutX, outPutY, outPutR);
-}*/
     }
 
     @Override
@@ -785,15 +604,6 @@ public void driveSwerve_EncoderIf_fwd(double targetX, double targetY, double tar
     public void teleopInit() {
     }
 
-    DigitalInput extendLimitSwitch = new DigitalInput(9);
-    /*public void setMotorSpeed_limitinExtendWHenToFar(double speed) {
-        if (speed < 0) {
-            if (extendLimitSwitch.get()) {
-                armTalonExtenstion.set(0);
-            } 
-        }
-    }
-*/
     @Override
     public void teleopPeriodic() {
 
