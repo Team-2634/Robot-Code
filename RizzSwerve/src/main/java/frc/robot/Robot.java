@@ -541,6 +541,26 @@ public class Robot extends TimedRobot {
     swerveDrive(outPutX, 0, 0);
  }
 
+ public void driveSwerve_EncoderIf_turnOnSpot(double targetYaw_inRad){
+
+    double currentRoationYaw_inRad;
+    currentRoationYaw_inRad = angleRad;
+    double outPutRad=0;
+
+    double toleranc = 0.1;
+    double RotSpeed = 0.20;
+    double RotSpeed_Rev = -0.20;
+    if (Math.abs(targetYaw_inRad-currentRoationYaw_inRad) > toleranc) {
+        if (currentRoationYaw_inRad < targetYaw_inRad) {
+            outPutRad = RotSpeed;
+        } 
+        if (currentRoationYaw_inRad > targetYaw_inRad){
+            outPutRad = -RotSpeed;
+        }
+    }
+    swerveDrive(0, 0, outPutRad);
+ }
+
     public void armRotate_encoderIf_upAndDown(double targetY){
 
         double currentDistanceY;
@@ -589,11 +609,32 @@ public class Robot extends TimedRobot {
             armExtend_encoderIf_outAndIn(0.78);
         }else if (timerAuto.get() < 0.8){
             //armExtend_encoderIf_outAndIn(0.78);
-            armExtend_encoderIf_outAndIn(0.05);
+            armExtend_encoderIf_outAndIn(0.1);
         }else{
             dSolenoidClaw.set(Value.kForward); // open
             swerveDrive(0, 0, 0);
         }
+    
+        /*
+        if (timerAuto.get() < 1){
+            driveSwerve_EncoderIf_turnOnSpot(Math.PI); //turn around
+            armRotate_encoderIf_upAndDown(-1.90); //up
+        }else if (timerAuto.get() < 2){
+            armExtend_encoderIf_outAndIn(0.78); // out
+        } else if (timerAuto.get() < 3){
+            dSolenoidClaw.set(Value.kForward); // open
+        }else if (timerAuto.get() < 4){
+            dSolenoidClaw.set(Value.kReverse); // close
+            armExtend_encoderIf_outAndIn(0.1); //in
+        }else if (timerAuto.get() < 5){
+            armRotate_encoderIf_upAndDown(0.01); //down
+            driveSwerve_EncoderIf_FwdAndBwd(-3); // back up
+        } else if (timerAuto.get() < 6){
+            driveSwerve_EncoderIf_turnOnSpot(Math.PI); // turn around
+        } else {
+            swerveDrive(0, 0, 0);
+        }
+         */
     }
 
     @Override
