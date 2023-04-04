@@ -367,9 +367,9 @@ public class Robot extends TimedRobot {
         if (extendArm == true) {
             armTalonExtenstion.set(armTalonExtenstionSpeed_Out);
         } else if (retractArm == true) {
-            if (extendLimitSwitch.get()){
+            if (!extendLimitSwitch.get()){
                 armTalonExtenstion.set(-armTalonExtenstionSpeed_In);
-            } else if (!extendLimitSwitch.get()) {
+            } else if (extendLimitSwitch.get()) {
                 armTalonExtenstion.set(0);
             }
         } else {
@@ -516,24 +516,28 @@ public class Robot extends TimedRobot {
         frontLeftDrive.setSelectedSensorPosition(0);
     }
 
- public void driveSwerve_EncoderIf_FwdAndBwd(double targetX){
-
+ public boolean driveSwerve_EncoderIf_FwdAndBwd(double targetX){
     double currentDistanceX;
     currentDistanceX = armRad_current;
     double outPutX=0;
 
-    double toleranc = 0.1;
+    double tolerance = 0.1;
     double xSpeed = 0.30;
     double xSpeed_Rev = -0.30;
-    if (Math.abs(targetX-currentDistanceX) > toleranc) {
-        if (currentDistanceX < targetX) {
+    // if (Math.abs(targetX)-Math.abs(currentDistanceX) < tolerance) {
+        if (currentDistanceX < targetX + tolerance) {
             outPutX = xSpeed;
         } 
-        if (currentDistanceX > targetX){
+        else if (currentDistanceX > targetX - tolerance){
             outPutX = -xSpeed;
+        } else {
+            return true;
         }
-    }
+    // } else {
+        // return true;
+    // }
     swerveDrive(outPutX, 0, 0);
+    return false;
  }
 
  public void driveSwerve_EncoderIf_turnOnSpot(double targetYaw_inRad){
@@ -596,6 +600,7 @@ public class Robot extends TimedRobot {
         armTalonExtenstion.set(outPut_prec);
     }
 
+    boolean drive1 = true;
     @Override
     public void autonomousPeriodic() {
 
@@ -624,30 +629,15 @@ public class Robot extends TimedRobot {
          * turn to face fwd for drivers 
          * (note navx was reset during robot Init so fwd will always be fwd and whaterver auto does should not effect field orientation)
         */
-
-        // extenstion encoders  testvvv
-        if (timerAuto.get() < 1.7){
-            armExtend_encoderIf_outAndIn(0.78);
-        }else if (timerAuto.get() < 0.8){
-            armExtend_encoderIf_outAndIn(0.1);
-        }else{
-            dSolenoidClaw.set(Value.kForward); // open
+        if (timerAuto.get() < 10){
+            if(drive1){
+                drive1 = !driveSwerve_EncoderIf_FwdAndBwd(-2);
+            } else{
+                swerveDrive(0, 0, 0);   
+            }
+        } else {
             swerveDrive(0, 0, 0);
         }
-    
-        //test thingy vvv?
-/*
-        if (timerAuto.get() < 0.5){
-            swerveDrive(0.10, 0, 0);
-            swerveDrive(0, 0, 0.10);
-        }else if (timerAuto.get() < 1){
-            driveSwerve_EncoderIf_FwdAndBwd(0.5);
-            driveSwerve_EncoderIf_turnOnSpot(Math.PI);
-        }else{
-            swerveDrive(0, 0, 0);
-        }
- */ 
-
         // auto code vvv 
         /*
         if (timerAuto.get() < 1){
