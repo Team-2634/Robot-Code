@@ -656,7 +656,6 @@ public class Robot extends TimedRobot {
             swerveDrive(0, 0, 0);
         }
 
-
         // with out timer vvv
         /*
         if(drive1){
@@ -675,6 +674,13 @@ public class Robot extends TimedRobot {
             swerveDrive(0, 0, 0);
         }     
         */
+
+        /*
+        // while timer vvv
+        do{
+            driveSwerve_EncoderIf_FwdAndBwd_Original(-2);
+        } while (timerAuto.get() < 5);
+ */
 
         // auto code vvv 
         /*
