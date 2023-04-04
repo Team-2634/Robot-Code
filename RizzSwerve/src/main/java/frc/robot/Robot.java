@@ -516,9 +516,9 @@ public class Robot extends TimedRobot {
         frontLeftDrive.setSelectedSensorPosition(0);
     }
 
- public boolean driveSwerve_EncoderIf_FwdAndBwd(double targetX){
+ public boolean driveSwerve_EncoderIf_FwdAndBwd_Boolean(double targetX){
     double currentDistanceX;
-    currentDistanceX = armRad_current;
+    currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
     double outPutX=0;
 
     double tolerance = 0.1;
@@ -610,11 +610,6 @@ public class Robot extends TimedRobot {
         arm extend SPEED UP!!!
         slow speed mode for driving (and arm upo)
 
-        auto notes vvv
-         * please test are outAndIN
-         * if no work/goes wront direction please fix with added "-" or invert the function code
-         * then we got auto already coded 
-         * 
         auto vvv Note: we got 15 seconds aka plenty of time
          * robot will start facing fwd so navx is reset during robotInit
          * then it will: 
@@ -629,15 +624,28 @@ public class Robot extends TimedRobot {
          * turn to face fwd for drivers 
          * (note navx was reset during robot Init so fwd will always be fwd and whaterver auto does should not effect field orientation)
         */
+
+        // with timer vvv
         if (timerAuto.get() < 10){
             if(drive1){
-                drive1 = !driveSwerve_EncoderIf_FwdAndBwd(-2);
+                drive1 = !driveSwerve_EncoderIf_FwdAndBwd_Boolean(-2);
             } else{
                 swerveDrive(0, 0, 0);   
             }
         } else {
             swerveDrive(0, 0, 0);
         }
+
+        // with out timer vvv
+        if(drive1){
+            drive1 = !driveSwerve_EncoderIf_FwdAndBwd_Boolean(-2);
+        } else{
+            swerveDrive(0, 0, 0);   
+        }
+
+        // orignal 
+
+
         // auto code vvv 
         /*
         if (timerAuto.get() < 1){
