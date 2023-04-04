@@ -600,11 +600,17 @@ public class Robot extends TimedRobot {
     public void autonomousPeriodic() {
 
         /* 
+        notes for driving vvv
+        swerve speed up (turning!!!)
+        arm extend SPEED UP!!!
+        slow speed mode for driving (and arm upo)
+
+        auto notes vvv
          * please test are outAndIN
          * if no work/goes wront direction please fix with added "-" or invert the function code
          * then we got auto already coded 
          * 
-         * auto vvv Note: we got 15 seconds aka plenty of time
+        auto vvv Note: we got 15 seconds aka plenty of time
          * robot will start facing fwd so navx is reset during robotInit
          * then it will: 
          * turn around
