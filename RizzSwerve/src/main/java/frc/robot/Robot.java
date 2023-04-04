@@ -539,22 +539,22 @@ public class Robot extends TimedRobot {
     swerveDrive(outPutX, 0, 0);
     return false;
  }
-
  public void driveSwerve_EncoderIf_FwdAndBwd_Original(double targetX){
+
     double currentDistanceX;
     currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
     double outPutX=0;
 
-    double tolerance = 0.1;
+    double toleranc = 0.1;
     double xSpeed = 0.30;
     double xSpeed_Rev = -0.30;
-    if (Math.abs(targetX-currentDistanceX) > tolerance) {
+    if (Math.abs(targetX-currentDistanceX) > toleranc) {
         if (currentDistanceX < targetX) {
             outPutX = xSpeed;
         } 
-        else if (currentDistanceX > targetX){
+        if (currentDistanceX > targetX){
             outPutX = -xSpeed;
-        } 
+        }
     }
     swerveDrive(outPutX, 0, 0);
  }
@@ -620,6 +620,7 @@ public class Robot extends TimedRobot {
     }
 
     boolean drive1 = true;
+    
     @Override
     public void autonomousPeriodic() {
 
@@ -655,15 +656,25 @@ public class Robot extends TimedRobot {
             swerveDrive(0, 0, 0);
         }
 
+
         // with out timer vvv
+        /*
         if(drive1){
             drive1 = !driveSwerve_EncoderIf_FwdAndBwd_Boolean(-2);
         } else{
             swerveDrive(0, 0, 0);   
         }
+         */
 
+
+         /*
         // orignal 
-
+        if (timerAuto.get() < 10){
+            driveSwerve_EncoderIf_FwdAndBwd_Original(-2);
+        } else {
+            swerveDrive(0, 0, 0);
+        }     
+        */
 
         // auto code vvv 
         /*
