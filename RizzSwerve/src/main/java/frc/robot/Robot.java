@@ -540,6 +540,25 @@ public class Robot extends TimedRobot {
     return false;
  }
 
+ public void driveSwerve_EncoderIf_FwdAndBwd_Original(double targetX){
+    double currentDistanceX;
+    currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
+    double outPutX=0;
+
+    double tolerance = 0.1;
+    double xSpeed = 0.30;
+    double xSpeed_Rev = -0.30;
+    if (Math.abs(targetX-currentDistanceX) > tolerance) {
+        if (currentDistanceX < targetX) {
+            outPutX = xSpeed;
+        } 
+        else if (currentDistanceX > targetX){
+            outPutX = -xSpeed;
+        } 
+    }
+    swerveDrive(outPutX, 0, 0);
+ }
+
  public void driveSwerve_EncoderIf_turnOnSpot(double targetYaw_inRad){
 
     double currentRoationYaw_inRad;
