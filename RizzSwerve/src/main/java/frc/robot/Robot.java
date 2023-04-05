@@ -7,6 +7,12 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
@@ -47,14 +53,23 @@ public class Robot extends TimedRobot {
     double contYSpeedField;
 
     // these are used for swerve vvv
-    final double kp = 1;
-    final double ki = 0;
-    final double kd = 0.0000075;
+    final double kpDrive = 0.3;
+    final double kiDrive = 0.01;
+    final double kdDrive = 0.01;
 
-    PIDController pidFrontLeftTurn = new PIDController(kp, ki, kd);
-    PIDController pidFrontRightTurn = new PIDController(kp, ki, kd);
-    PIDController pidBackLeftTurn = new PIDController(kp, ki, kd);
-    PIDController pidBackRightTurn = new PIDController(kp, ki, kd);
+    final double kpAuto = 1;
+    final double kiAuto = 0;
+    final double kdAuto = 0.0000075;
+
+    PIDController pidFrontLeftTurn = new PIDController(kpDrive, kiDrive, kdDrive);
+    PIDController pidFrontRightTurn = new PIDController(kpDrive, kiDrive, kdDrive);
+    PIDController pidBackLeftTurn = new PIDController(kpDrive, kiDrive, kdDrive);
+    PIDController pidBackRightTurn = new PIDController(kpDrive, kiDrive, kdDrive);
+
+    PIDController pidFrontLeftTurnAuto = new PIDController(kpAuto, kiAuto, kdAuto);
+    PIDController pidFrontRightTurnAuto = new PIDController(kpAuto, kiAuto, kdAuto);
+    PIDController pidBackLeftTurnAuto = new PIDController(kpAuto, kiAuto, kdAuto);
+    PIDController pidBackRightTurnAuto = new PIDController(kpAuto, kiAuto, kdAuto);
 
     public final WPI_TalonFX frontLeftDrive = new WPI_TalonFX(7);
     public final WPI_TalonFX frontRightDrive = new WPI_TalonFX(1);
@@ -157,7 +172,7 @@ public class Robot extends TimedRobot {
     double armExtenstion_ToMetres = (armExtenstion_gearRatio * Math.PI * Units.inchesToMeters(2.75)) / 2048.0; // metres
     double extenstionEncoder_CurrentMetres;
     double kp_armE = 0.5, ki_armE = 0, kd_armD = 0;
-    final PIDController pidArmExtensController = new PIDController(kp, ki, kd);
+    final PIDController pidArmExtensController = new PIDController(kpAuto, kiAuto, kdAuto);
 
     // claw_Wheels vvv
     private final CANSparkMax claw_Wheels = new CANSparkMax(13, MotorType.kBrushless);
@@ -419,10 +434,10 @@ public class Robot extends TimedRobot {
                 Math.abs(backLeftAbsAngle) > 0.0 ||
                 Math.abs(backRightAbsAngle) > 0.0) {
 
-            double frontLeftTurnPower = pidFrontLeftTurn.calculate(frontLeftAbsAngle, 0);
-            double frontRightTurnPower = pidFrontRightTurn.calculate(frontRightAbsAngle, 0);
-            double backLeftTurnPower = pidBackLeftTurn.calculate(backLeftAbsAngle, 0);
-            double backRightTurnPower = pidBackRightTurn.calculate(backRightAbsAngle, 0);
+            double frontLeftTurnPower = pidFrontLeftTurnAuto.calculate(frontLeftAbsAngle, 0);
+            double frontRightTurnPower = pidFrontRightTurnAuto.calculate(frontRightAbsAngle, 0);
+            double backLeftTurnPower = pidBackLeftTurnAuto.calculate(backLeftAbsAngle, 0);
+            double backRightTurnPower = pidBackRightTurnAuto.calculate(backRightAbsAngle, 0);
 
             frontLeftSteer.set(frontLeftTurnPower);
             frontRightSteer.set(frontRightTurnPower);
@@ -508,30 +523,6 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("pid_backLeft_Error", pidBackLeftTurn.getPositionError());
         SmartDashboard.putNumber("pid_backRight_Error", pidBackRightTurn.getPositionError());
     }
-    /*
-     * public boolean driveSwerve_EncoderIf_FwdAndBwd_Boolean(double targetX) {
-     * double currentDistanceX;
-     * currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
-     * double outPutX = 0;
-     * 
-     * double tolerance = 0.1;
-     * double xSpeed = 0.30;
-     * double xSpeed_Rev = -0.05;
-     * // if (Math.abs(targetX)-Math.abs(currentDistanceX) < tolerance) {
-     * if (currentDistanceX < targetX + tolerance) {
-     * outPutX = xSpeed;
-     * } else if (currentDistanceX > targetX - tolerance) {
-     * outPutX = xSpeed_Rev;
-     * } else {
-     * return true;
-     * }
-     * // } else {
-     * // return true;
-     * // }
-     * swerveDrive(outPutX, 0, 0);
-     * return false;
-     * }
-     */
 
     public boolean driveSwerve_EncoderIf_FwdAndBwd_Original(double targetX) {
 
@@ -552,7 +543,7 @@ public class Robot extends TimedRobot {
                 outPutX = -xSpeed;
                 swerveDrive(outPutX, 0, 0);
                 return false;
-            } 
+            }
             return false;
         } else {
             swerveDrive(0, 0, 0);
@@ -584,7 +575,7 @@ public class Robot extends TimedRobot {
         }
     }
 
-    public void armRotate_encoderIf_upAndDown(double targetY) {
+    public boolean armRotate_encoderIf_upAndDown(double targetY) {
 
         double currentDistanceY;
         currentDistanceY = armRad_current;
@@ -596,15 +587,21 @@ public class Robot extends TimedRobot {
         if (Math.abs(targetY - currentDistanceY) > toleranc) {
             if (currentDistanceY > targetY) {
                 outPutY = -ySpeed;
+                armRotate.tankDrive(-outPutY, outPutY);
+                return false;
             }
             if (currentDistanceY < targetY) {
                 outPutY = ySpeed;
-            }
+                armRotate.tankDrive(-outPutY, outPutY);
+                return false;
+            }return false;
+        } else {
+            armRotate.tankDrive(0, 0);
+            return true;
         }
-        armRotate.tankDrive(-outPutY, outPutY);
     }
 
-    public void armExtend_encoderIf_outAndIn(double targetExtend) {
+    public boolean armExtend_encoderIf_outAndIn(double targetExtend) {
 
         double currentDistance_Metres;
         currentDistance_Metres = extenstionEncoder_CurrentMetres;
@@ -616,16 +613,25 @@ public class Robot extends TimedRobot {
         if (Math.abs(targetExtend - currentDistance_Metres) > toleranc) {
             if (currentDistance_Metres < targetExtend) {
                 outPut_prec = xSpeed;
+                armTalonExtenstion.set(outPut_prec);
+                return false;
             }
             if (currentDistance_Metres > targetExtend) {
                 if (!extendLimitSwitch.get()) {
                     outPut_prec = -xSpeed;
+                    armTalonExtenstion.set(outPut_prec);
+                    return false;
                 } else if (extendLimitSwitch.get()) {
                     armTalonExtenstion.set(0);
+                    return false;
                 }
             }
         }
-        armTalonExtenstion.set(outPut_prec);
+        else {
+            armTalonExtenstion.set(0);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -633,13 +639,15 @@ public class Robot extends TimedRobot {
         timerAuto.reset();
         timerAuto.start();
         dSolenoidClaw.set(Value.kReverse);
+
+        Collections.fill(commandFlags, Boolean.FALSE);
     }
 
-    boolean drive1 = true;
-    boolean[] commandFlags = new boolean[] { false, false, false, false, false, false, false, false, false, false };
+    List<Boolean> commandFlags = new ArrayList<Boolean>(Arrays.asList(new Boolean[10]));
 
     @Override
     public void autonomousPeriodic() {
+        // System.out.print(commandFlags.toString());
 
         /*
          * notes for driving vvv
@@ -692,29 +700,59 @@ public class Robot extends TimedRobot {
         // double minArmExtend_Metres = 0.005; // for auto 0.005
 
         if (timerInterval_Auto(0, 2)) {
+            System.out.println("straightening");
+
             absolutePosition();
             straightenModules();
-            resetEncoders();
+            // resetEncoders();
         }
 
         if (timerInterval_Auto(2, 200)) {
-            if (!commandFlags[1]) {
-               commandFlags[1] = driveSwerve_EncoderIf_FwdAndBwd_Original(1);
+
+            if (commandFlags.indexOf(false) == 0) {
+                resetEncoders();
+                commandFlags.set(0, true);
+                System.out.println("0 auto");
             }
-            if (!commandFlags[2]) {
-                commandFlags[2] = driveSwerve_EncoderIf_turnOnSpot(Math.PI/2);
+            if (commandFlags.indexOf(false) == 1) {
+                commandFlags.set(1, armRotate_encoderIf_upAndDown(-1.90));
             }
-            if (!commandFlags[3]) {
-                commandFlags[3] = driveSwerve_EncoderIf_FwdAndBwd_Original(1);
+            if (commandFlags.indexOf(false) == 2) {
+                commandFlags.set(2, armExtend_encoderIf_outAndIn(0.75));
             }
+            if (commandFlags.indexOf(false) == 3) {
+                dSolenoidClaw.set(Value.kReverse);
+                commandFlags.set(3, true);
+            }
+            if (commandFlags.indexOf(false) == 4) {
+                commandFlags.set(4, armExtend_encoderIf_outAndIn(0));
+            }
+            if (commandFlags.indexOf(false) == 5) {
+                dSolenoidClaw.set(Value.kForward);
+                commandFlags.set(5, true);
+            }
+            if (commandFlags.indexOf(false) == 6) {
+                commandFlags.set(6, armRotate_encoderIf_upAndDown(-0.1));
+            }
+
+            if (commandFlags.indexOf(false) == 7) {
+                commandFlags.set(7, driveSwerve_EncoderIf_FwdAndBwd_Original(3));
+            }
+            if (commandFlags.indexOf(false) == 8) {
+                commandFlags.set(8, driveSwerve_EncoderIf_turnOnSpot(Math.PI));
+            }
+            if (commandFlags.indexOf(false) == 9) {
+                commandFlags.set(9, driveSwerve_EncoderIf_FwdAndBwd_Original(-1));
+            }
+
         }
 
         // spin vvv
 
         // if (timerInterval_Auto(2.01, 20)) {
-        //     if (!commandFlags[1]) {
-        //         commandFlags[1] = driveSwerve_EncoderIf_turnOnSpot(Math.PI);
-        //     }
+        // if (!commandFlags[1]) {
+        // commandFlags[1] = driveSwerve_EncoderIf_turnOnSpot(Math.PI);
+        // }
         // }
         // auto arm vvv
         /*
