@@ -448,13 +448,12 @@ public class Robot extends TimedRobot {
     }
 
     double navxYaw_Rad;
+    double straightenTolerance = 1;
+
     @Override
     public void robotPeriodic() {
-        if (timerRobot.get() < 10 &&
-        (Math.abs(frontLeftAbsEncoder.getAbsolutePosition())<0.01))
-        absolutePosition();
-        straightenModules();
-        resetEncoders();
+
+        // }
 
         // claw vvv
         // claw_Wheels.set(constant_claw_WheelSpeed);
@@ -503,39 +502,38 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("drive PID (atm used for x, y and turn of autonomous)", drive.getPositionError());
         SmartDashboard.putNumber("PID_armAngle", PID_armAngle.getPositionError());
 
-        
-            // aline vvv
-            SmartDashboard.putNumber("pid_frontLeft_Error", pidFrontLeftTurn.getPositionError());
-            SmartDashboard.putNumber("pid_frontRight_Error", pidFrontRightTurn.getPositionError());
-            SmartDashboard.putNumber("pid_backLeft_Error", pidBackLeftTurn.getPositionError());
-            SmartDashboard.putNumber("pid_backRight_Error", pidBackRightTurn.getPositionError());
+        // aline vvv
+        SmartDashboard.putNumber("pid_frontLeft_Error", pidFrontLeftTurn.getPositionError());
+        SmartDashboard.putNumber("pid_frontRight_Error", pidFrontRightTurn.getPositionError());
+        SmartDashboard.putNumber("pid_backLeft_Error", pidBackLeftTurn.getPositionError());
+        SmartDashboard.putNumber("pid_backRight_Error", pidBackRightTurn.getPositionError());
     }
-/*
-    public boolean driveSwerve_EncoderIf_FwdAndBwd_Boolean(double targetX) {
-        double currentDistanceX;
-        currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
-        double outPutX = 0;
+    /*
+     * public boolean driveSwerve_EncoderIf_FwdAndBwd_Boolean(double targetX) {
+     * double currentDistanceX;
+     * currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
+     * double outPutX = 0;
+     * 
+     * double tolerance = 0.1;
+     * double xSpeed = 0.30;
+     * double xSpeed_Rev = -0.05;
+     * // if (Math.abs(targetX)-Math.abs(currentDistanceX) < tolerance) {
+     * if (currentDistanceX < targetX + tolerance) {
+     * outPutX = xSpeed;
+     * } else if (currentDistanceX > targetX - tolerance) {
+     * outPutX = xSpeed_Rev;
+     * } else {
+     * return true;
+     * }
+     * // } else {
+     * // return true;
+     * // }
+     * swerveDrive(outPutX, 0, 0);
+     * return false;
+     * }
+     */
 
-        double tolerance = 0.1;
-        double xSpeed = 0.30;
-        double xSpeed_Rev = -0.05;
-        // if (Math.abs(targetX)-Math.abs(currentDistanceX) < tolerance) {
-        if (currentDistanceX < targetX + tolerance) {
-            outPutX = xSpeed;
-        } else if (currentDistanceX > targetX - tolerance) {
-            outPutX = xSpeed_Rev;
-        } else {
-            return true;
-        }
-        // } else {
-        // return true;
-        // }
-        swerveDrive(outPutX, 0, 0);
-        return false;
-    }
- */
-
-    public void driveSwerve_EncoderIf_FwdAndBwd_Original(double targetX) {
+    public boolean driveSwerve_EncoderIf_FwdAndBwd_Original(double targetX) {
 
         double currentDistanceX;
         currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
@@ -547,30 +545,42 @@ public class Robot extends TimedRobot {
         if (Math.abs(targetX - currentDistanceX) > toleranc) {
             if (currentDistanceX < targetX) {
                 outPutX = xSpeed;
+                swerveDrive(outPutX, 0, 0);
+                return false;
             }
             if (currentDistanceX > targetX) {
                 outPutX = -xSpeed;
-            }
+                swerveDrive(outPutX, 0, 0);
+                return false;
+            } 
+            return false;
+        } else {
+            swerveDrive(0, 0, 0);
+            return true;
         }
-        swerveDrive(outPutX, 0, 0);
     }
 
-    public void driveSwerve_EncoderIf_turnOnSpot(double targetYaw_inRad) {
-
+    public boolean driveSwerve_EncoderIf_turnOnSpot(double targetYaw_inRad) {
         double currentRoationYaw_inRad;
         currentRoationYaw_inRad = navxYaw_Rad;
         double outPutRad = 0;
 
-        double tolerance = 0;
-        double RotSpeed = 0.20;
-        double RotSpeed_Rev = -0.10;
+        double tolerance = 0.1;
+        double RotSpeed = 10; // rads per sec
         if (Math.abs(targetYaw_inRad - currentRoationYaw_inRad) > tolerance) {
-            if (currentRoationYaw_inRad != targetYaw_inRad) {
+            if (currentRoationYaw_inRad < targetYaw_inRad) {
                 outPutRad = RotSpeed;
                 swerveDrive(0, 0, outPutRad);
-            }else {
-                swerveDrive(0, 0, 0);
+                return false;
+            } else if (currentRoationYaw_inRad > targetYaw_inRad) {
+                outPutRad = -RotSpeed;
+                swerveDrive(0, 0, outPutRad);
+                return false;
             }
+            return false;
+        } else {
+            swerveDrive(0, 0, 0);
+            return true;
         }
     }
 
@@ -626,14 +636,7 @@ public class Robot extends TimedRobot {
     }
 
     boolean drive1 = true;
-
-    public boolean timerInterval_Auto(double min, double max){
-        if (timerAuto.get() > min && timerAuto.get() < max){
-            return true;
-        } else {
-            return false;
-        }
-    }
+    boolean[] commandFlags = new boolean[] { false, false, false, false, false, false, false, false, false, false };
 
     @Override
     public void autonomousPeriodic() {
@@ -683,38 +686,55 @@ public class Robot extends TimedRobot {
          * }
          */
 
-    //double maxArmAngleRad = -1.95; 
-    //double minArmAngleRad = 0.015; 
-    //double maxArmExtend_Metres = 0.79; //-1.8 for auto
-    //double minArmExtend_Metres = 0.005;  // for auto 0.005
+        // double maxArmAngleRad = -1.95;
+        // double minArmAngleRad = 0.015;
+        // double maxArmExtend_Metres = 0.79; //-1.8 for auto
+        // double minArmExtend_Metres = 0.005; // for auto 0.005
 
-            //spin vvv
-            /*
-            if (timerInterval_Auto(0, 2)){
-                swerveDrive(0, 0, 0);
-            }else if (timerInterval_Auto(2.01, 20)){
-                driveSwerve_EncoderIf_turnOnSpot(Math.PI);
-            } 
- */
+        if (timerInterval_Auto(0, 2)) {
+            absolutePosition();
+            straightenModules();
+            resetEncoders();
+        }
+
+        if (timerInterval_Auto(2, 200)) {
+            if (!commandFlags[1]) {
+               commandFlags[1] = driveSwerve_EncoderIf_FwdAndBwd_Original(1);
+            }
+            if (!commandFlags[2]) {
+                commandFlags[2] = driveSwerve_EncoderIf_turnOnSpot(Math.PI/2);
+            }
+            if (!commandFlags[3]) {
+                commandFlags[3] = driveSwerve_EncoderIf_FwdAndBwd_Original(1);
+            }
+        }
+
+        // spin vvv
+
+        // if (timerInterval_Auto(2.01, 20)) {
+        //     if (!commandFlags[1]) {
+        //         commandFlags[1] = driveSwerve_EncoderIf_turnOnSpot(Math.PI);
+        //     }
+        // }
         // auto arm vvv
         /*
-        if (timerInterval_Auto(0, 4)){
-            armRotate_encoderIf_upAndDown(-1.90);
-        }else if (timerInterval_Auto(4.01, 6)){
-            armExtend_encoderIf_outAndIn(0.75);
-        }else if (timerInterval_Auto(6.01, 7)){
-            dSolenoidClaw.set(Value.kForward);
-        }else if (timerInterval_Auto(7.01, 9)){
-            armExtend_encoderIf_outAndIn(0);
-            dSolenoidClaw.set(Value.kReverse);
-        }else if (timerInterval_Auto(9.01, 13)){
-            armRotate_encoderIf_upAndDown(-0.1);
-            driveSwerve_EncoderIf_FwdAndBwd_Original(5.3);
-        }else if (timerInterval_Auto(13.01, 20)){
-            driveSwerve_EncoderIf_turnOnSpot(Math.PI);
-        }else {
-            swerveDrive(0, 0, 0);
-        }
+         * if (timerInterval_Auto(0, 4)){
+         * armRotate_encoderIf_upAndDown(-1.90);
+         * }else if (timerInterval_Auto(4.01, 6)){
+         * armExtend_encoderIf_outAndIn(0.75);
+         * }else if (timerInterval_Auto(6.01, 7)){
+         * dSolenoidClaw.set(Value.kForward);
+         * }else if (timerInterval_Auto(7.01, 9)){
+         * armExtend_encoderIf_outAndIn(0);
+         * dSolenoidClaw.set(Value.kReverse);
+         * }else if (timerInterval_Auto(9.01, 13)){
+         * armRotate_encoderIf_upAndDown(-0.1);
+         * driveSwerve_EncoderIf_FwdAndBwd_Original(5.3);
+         * }else if (timerInterval_Auto(13.01, 20)){
+         * driveSwerve_EncoderIf_turnOnSpot(Math.PI);
+         * }else {
+         * swerveDrive(0, 0, 0);
+         * }
          */
 
         // auto code vvv
@@ -788,5 +808,13 @@ public class Robot extends TimedRobot {
         boolean slowClawWheels = driving_xBoxCont.getRightBumper();
         robotArm(armDown, armUp, claw_xBox, extendArm, retractArm, expel, intake, clawIntake_and_Extend,
                 slowClawWheels);
+    }
+
+    public boolean timerInterval_Auto(double min, double max) {
+        if (timerAuto.get() > min && timerAuto.get() < max) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
