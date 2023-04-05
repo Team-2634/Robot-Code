@@ -457,6 +457,7 @@ public class Robot extends TimedRobot {
         invertMotors();
         continouousInput();
         navx.calibrate();
+        navx.reset();
         resetEncoders();
         frontRightDrive.setSelectedSensorPosition(0);
         frontLeftDrive.setSelectedSensorPosition(0);
@@ -524,7 +525,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("pid_backRight_Error", pidBackRightTurn.getPositionError());
     }
 
-    public boolean driveSwerve_EncoderIf_FwdAndBwd_Original(double targetX) {
+    public boolean driveSwerve_EncoderIf_FwdAndBwd(double targetX) {
 
         double currentDistanceX;
         currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
@@ -647,58 +648,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-        // System.out.print(commandFlags.toString());
-
-        /*
-         * notes for driving vvv
-         * swerve speed up (turning!!!)
-         * arm extend SPEED UP!!!
-         * slow speed mode for driving (and arm upo)
-         * 
-         * auto vvv Note: we got 15 seconds aka plenty of time
-         * robot will start facing fwd so navx is reset during robotInit
-         * then it will:
-         * turn around
-         * lift arm
-         * extend arm
-         * drop cone
-         * close claw
-         * retract arm
-         * lower arm
-         * drive back past the line but not to far as to be past the white line (Note:
-         * this and the next line of code should be able to happen at the same time)
-         * turn to face fwd for drivers
-         * (note navx was reset during robot Init so fwd will always be fwd and
-         * whaterver auto does should not effect field orientation)
-         */
-
-        // with timer vvv
-        /*
-         * if (timerAuto.get() < 10){
-         * if(drive1){
-         * drive1 = !driveSwerve_EncoderIf_FwdAndBwd_Boolean(-2);
-         * } else{
-         * swerveDrive(0, 0, 0);
-         * }
-         * } else {
-         * swerveDrive(0, 0, 0);
-         * }
-         */
-
-        // with out timer vvv
-        /*
-         * if(drive1){
-         * drive1 = !driveSwerve_EncoderIf_FwdAndBwd_Boolean(-2);
-         * } else{
-         * swerveDrive(0, 0, 0);
-         * }
-         */
-
-        // double maxArmAngleRad = -1.95;
-        // double minArmAngleRad = 0.015;
-        // double maxArmExtend_Metres = 0.79; //-1.8 for auto
-        // double minArmExtend_Metres = 0.005; // for auto 0.005
-
+        //using list vvv
+         /*
         if (timerInterval_Auto(0, 2)) {
             System.out.println("straightening");
 
@@ -744,57 +695,31 @@ public class Robot extends TimedRobot {
             if (commandFlags.indexOf(false) == 9) {
                 commandFlags.set(9, driveSwerve_EncoderIf_FwdAndBwd_Original(-1));
             }
-
         }
-
-        // spin vvv
-
-        // if (timerInterval_Auto(2.01, 20)) {
-        // if (!commandFlags[1]) {
-        // commandFlags[1] = driveSwerve_EncoderIf_turnOnSpot(Math.PI);
-        // }
-        // }
-        // auto arm vvv
-        /*
-         * if (timerInterval_Auto(0, 4)){
-         * armRotate_encoderIf_upAndDown(-1.90);
-         * }else if (timerInterval_Auto(4.01, 6)){
-         * armExtend_encoderIf_outAndIn(0.75);
-         * }else if (timerInterval_Auto(6.01, 7)){
-         * dSolenoidClaw.set(Value.kForward);
-         * }else if (timerInterval_Auto(7.01, 9)){
-         * armExtend_encoderIf_outAndIn(0);
-         * dSolenoidClaw.set(Value.kReverse);
-         * }else if (timerInterval_Auto(9.01, 13)){
-         * armRotate_encoderIf_upAndDown(-0.1);
-         * driveSwerve_EncoderIf_FwdAndBwd_Original(5.3);
-         * }else if (timerInterval_Auto(13.01, 20)){
-         * driveSwerve_EncoderIf_turnOnSpot(Math.PI);
-         * }else {
-         * swerveDrive(0, 0, 0);
-         * }
          */
 
-        // auto code vvv
-        /*
-         * if (timerAuto.get() < 1){
-         * driveSwerve_EncoderIf_turnOnSpot(Math.PI); //turn around
-         * armRotate_encoderIf_upAndDown(-1.90); //up
-         * }else if (timerAuto.get() < 2){
-         * armExtend_encoderIf_outAndIn(0.78); // out
-         * } else if (timerAuto.get() < 3){
-         * dSolenoidClaw.set(Value.kForward); // open
-         * }else if (timerAuto.get() < 4){
-         * dSolenoidClaw.set(Value.kReverse); // close
-         * armExtend_encoderIf_outAndIn(0.1); //in
-         * }else if (timerAuto.get() < 5){
-         * armRotate_encoderIf_upAndDown(0.01); //down
-         * driveSwerve_EncoderIf_FwdAndBwd(-3); // back up
-         * } else if (timerAuto.get() < 6){
-         * driveSwerve_EncoderIf_turnOnSpot(Math.PI); // turn around
-         * } else {
-         * swerveDrive(0, 0, 0);
-         * }
+         // no list auto vvv
+         /*
+        if (timerInterval_Auto(0, 4)){
+            driveSwerve_EncoderIf_turnOnSpot(Math.PI); // face nodes
+            armRotate_encoderIf_upAndDown(-1.90); //lift arm
+        }else if (timerInterval_Auto(4.01, 6)){
+            armExtend_encoderIf_outAndIn(0.75); // extend arm
+        }else if (timerInterval_Auto(6.01, 7)){
+            dSolenoidClaw.set(Value.kForward); //open claw
+        }else if (timerInterval_Auto(7.01, 9)){
+            armExtend_encoderIf_outAndIn(0); //retract
+            dSolenoidClaw.set(Value.kReverse); //close claw
+        }else if (timerInterval_Auto(9.01, 13)){
+            armRotate_encoderIf_upAndDown(-0.1); //lower arm
+            driveSwerve_EncoderIf_FwdAndBwd(5.3); //drive backwards past line
+        }else if (timerInterval_Auto(13.01, 20)){
+            driveSwerve_EncoderIf_turnOnSpot(Math.PI); // face to pick up cube
+        }else { //STOP!!!
+            swerveDrive(0, 0, 0);
+            armRotate.tankDrive(0, 0);
+            armTalonExtenstion.set(0);
+        }
          */
     }
 
@@ -804,7 +729,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        navx.reset();
     }
 
     @Override
