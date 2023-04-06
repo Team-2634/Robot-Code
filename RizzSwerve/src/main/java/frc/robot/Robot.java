@@ -538,11 +538,13 @@ public class Robot extends TimedRobot {
             if (currentDistanceX < targetX) {
                 outPutX = xSpeed;
                 swerveDrive(outPutX, 0, 0);
+                System.out.println("behind target");
                 return false;
             }
             if (currentDistanceX > targetX) {
                 outPutX = -xSpeed;
                 swerveDrive(outPutX, 0, 0);
+                System.out.println("in front of target");
                 return false;
             }
             return false;
@@ -557,7 +559,7 @@ public class Robot extends TimedRobot {
         currentRoationYaw_inRad = navxYaw_Rad;
         double outPutRad = 0;
 
-        double tolerance = 0.1;
+        double tolerance = 0.2;
         double RotSpeed = 10; // rads per sec
         if (Math.abs(targetYaw_inRad - currentRoationYaw_inRad) > tolerance) {
             if (currentRoationYaw_inRad < targetYaw_inRad) {
@@ -765,11 +767,14 @@ public class Robot extends TimedRobot {
             }
         */
          // no list auto vvv  for cone
-         if (timerInterval_Auto(2.01, 3.0)){
+         if (timerInterval_Auto(0, 0.50)){
             resetEncoders();
          }
-        if (timerInterval_Auto(3, 5)){
+        if (timerInterval_Auto(0.51, 4)){
             driveSwerve_EncoderIf_turnOnSpot(Math.PI-0.01); // face nodes
+        }else if (timerInterval_Auto(4.01, 5)){
+            driveSwerve_EncoderIf_FwdAndBwd(-0.3); //drive forwards to thingy
+            swerveDrive(, contYSpeedField, ClawExpel_WheelSpeed);
         }else if (timerInterval_Auto(5.01, 7)){
             armRotate_encoderIf_upAndDown(-1.80); //lift arm
         }else if (timerInterval_Auto(7.01, 9)){
@@ -781,37 +786,38 @@ public class Robot extends TimedRobot {
             dSolenoidClaw.set(Value.kReverse); //close claw
         }else if (timerInterval_Auto(11.01, 13)){
             armRotate_encoderIf_upAndDown(-0.1); //lower arm
-            driveSwerve_EncoderIf_FwdAndBwd(5.3); //drive backwards past line
         }else if (timerInterval_Auto(13.01, 15)){
-            driveSwerve_EncoderIf_turnOnSpot(Math.PI); // face to pick up cube
+            driveSwerve_EncoderIf_FwdAndBwd(2.3); //drive backwards past line
         }else { //STOP!!!
             swerveDrive(0, 0, 0);
-            armRotate.tankDrive(0, 0);
+            armRotate.tankDrive(0, 0);      
             armTalonExtenstion.set(0);
         }
 
         // no list auto vvv  for cube WIP
-        /*
-        if (timerInterval_Auto(2.01, 3.0)){
+        /* 
+         if (timerInterval_Auto(1.01, 2.0)){
             resetEncoders();
-            dSolenoidClaw.set(Value.kReverse);
+            dSolenoidClaw.set(Value.kForward); //open claw
          }
-        if (timerInterval_Auto(3, 5)){
+        if (timerInterval_Auto(2.01, 4)){
             driveSwerve_EncoderIf_turnOnSpot(Math.PI-0.01); // face nodes
+        }else if (timerInterval_Auto(4.01, 5)){
+            driveSwerve_EncoderIf_FwdAndBwd(-0.2); //drive backwards past line
         }else if (timerInterval_Auto(5.01, 7)){
             armRotate_encoderIf_upAndDown(-1.80); //lift arm
         }else if (timerInterval_Auto(7.01, 9)){
             armExtend_encoderIf_outAndIn(0.75); // extend arm
         }else if (timerInterval_Auto(9.01, 9.5)){
-            dSolenoidClaw.set(Value.kForward); //open claw
+            claw_Wheels.set(ClawExpel_WheelSpeed);
         }else if (timerInterval_Auto(9.51, 11)){
             armExtend_encoderIf_outAndIn(0); //retract
             dSolenoidClaw.set(Value.kReverse); //close claw
         }else if (timerInterval_Auto(11.01, 13)){
             armRotate_encoderIf_upAndDown(-0.1); //lower arm
-            driveSwerve_EncoderIf_FwdAndBwd(5.3); //drive backwards past line
+            driveSwerve_EncoderIf_turnOnSpot(0); // face to pick up cube
         }else if (timerInterval_Auto(13.01, 15)){
-            driveSwerve_EncoderIf_turnOnSpot(Math.PI); // face to pick up cube
+            driveSwerve_EncoderIf_FwdAndBwd(5.3); //drive backwards past line
         }else { //STOP!!!
             swerveDrive(0, 0, 0);
             armRotate.tankDrive(0, 0);
