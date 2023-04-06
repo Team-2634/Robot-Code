@@ -133,7 +133,7 @@ public class Robot extends TimedRobot {
     double encoderleftFrontSteer_Rad;
     double XdriveSensitivity = 1;
     double YdriveSensitivity = 1; // do not change above 1
-    double turningSensitivity = 20; // radians
+    double turningSensitivity = 25; // radians
     double maxSpeedMpS = 20; // metres/sec
 
     Translation2d m_frontLeftLocation = new Translation2d(0.340, 0.285);
@@ -165,8 +165,8 @@ public class Robot extends TimedRobot {
     double minArmExtend_Metres = 0.005;
     private boolean armExtendLimited = false;
     double armExtenstion_gearRatio = 1 / 36.0;
-    double armTalonExtenstionSpeed_Out = 0.9; // 0.83
-    double armTalonExtenstionSpeed_In = 0.9; // 0.83.
+    double armTalonExtenstionSpeed_Out = 0.95; // 0.83
+    double armTalonExtenstionSpeed_In = 0.95; // 0.83.
     double armTalonExtenstionSpeed_autoExtend = 0.20;
     double armTalonExtenstionSpeed_autoRetreat = 0.10;
     double armExtenstion_ToMetres = (armExtenstion_gearRatio * Math.PI * Units.inchesToMeters(2.75)) / 2048.0; // metres
@@ -248,19 +248,19 @@ public class Robot extends TimedRobot {
     }
 
     public double removeDeadzone(int axisInput) {
-        if (Math.abs(driving_xBoxCont.getRawAxis(axisInput)) < 0.1) {
+        if (Math.abs(driving_xBoxCont.getRawAxis(axisInput)) < 0.15) {
             return 0;
         }
         return driving_xBoxCont.getRawAxis(axisInput);
     }
 
-    public double removeDeadzone(int axisInput, int axisInput2) {
-        if (Math.abs(driving_xBoxCont.getRawAxis(axisInput)) < 0.1
-                && Math.abs(driving_xBoxCont.getRawAxis(axisInput2)) < 0.1) {
-            return 0;
-        }
-        return driving_xBoxCont.getRawAxis(axisInput);
-    }
+    // public double removeDeadzone(int axisInput, int axisInput2) {
+    //     if (Math.abs(driving_xBoxCont.getRawAxis(axisInput)) < 0.1
+    //             && Math.abs(driving_xBoxCont.getRawAxis(axisInput2)) < 0.1) {
+    //         return 0;
+    //     }
+    //     return driving_xBoxCont.getRawAxis(axisInput);
+    // }
 
     public void swerveDrive(double xSpeed, double ySpeed, double rotSpeed) {
         ChassisSpeeds desiredSpeeds = new ChassisSpeeds(xSpeed * maxSpeedMpS, ySpeed * maxSpeedMpS, rotSpeed);
@@ -526,6 +526,7 @@ public class Robot extends TimedRobot {
     }
 
     public boolean driveSwerve_EncoderIf_FwdAndBwd(double targetX) {
+        targetX = -targetX;
 
         double currentDistanceX;
         currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
@@ -556,11 +557,11 @@ public class Robot extends TimedRobot {
 
     public boolean driveSwerve_EncoderIf_turnOnSpot(double targetYaw_inRad) {
         double currentRoationYaw_inRad;
-        currentRoationYaw_inRad = navxYaw_Rad;
+        currentRoationYaw_inRad = botYaw_angleRad;
         double outPutRad = 0;
 
         double tolerance = 0.2;
-        double RotSpeed = 10; // rads per sec
+        double RotSpeed = 25; // rads per sec
         if (Math.abs(targetYaw_inRad - currentRoationYaw_inRad) > tolerance) {
             if (currentRoationYaw_inRad < targetYaw_inRad) {
                 outPutRad = RotSpeed;
@@ -650,6 +651,11 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
+        // autoTopCone(); //balance
+        autoTopAndBottom(); //not balance
+        
+        
+
         //using list vvv
          
         // if (timerInterval_Auto(0, 1)) {
@@ -766,35 +772,87 @@ public class Robot extends TimedRobot {
                 System.out.println("9 auto");
             }
         */
-         // no list auto vvv  for cone
-         if (timerInterval_Auto(0, 0.50)){
+    } 
+    public void autoMidBalance() {
+        // no list auto vvv  for cone
+        if (timerInterval_Auto(0, 0.50)){
             resetEncoders();
-         }
-        if (timerInterval_Auto(0.51, 4)){
+            System.out.println("encoders");
+            }
+        if (timerInterval_Auto(0.51, 2.5)){
             driveSwerve_EncoderIf_turnOnSpot(Math.PI-0.01); // face nodes
-        }else if (timerInterval_Auto(4.01, 5)){
-            driveSwerve_EncoderIf_FwdAndBwd(-0.3); //drive forwards to thingy
-            swerveDrive(, contYSpeedField, ClawExpel_WheelSpeed);
-        }else if (timerInterval_Auto(5.01, 7)){
+            System.out.println("turning");
+        }else if (timerInterval_Auto(2.51, 3.50)){
+            //riveSwerve_EncoderIf_FwdAndBwd(-0.3); //drive forwards to thingy
+            swerveDrive(-0.3, 0, 0);
+            System.out.println("forward");
+        }else if (timerInterval_Auto(3.51, 6)){
+            swerveDrive(0,0,0);
             armRotate_encoderIf_upAndDown(-1.80); //lift arm
-        }else if (timerInterval_Auto(7.01, 9)){
+            System.out.println("arm u;p");
+        }else if (timerInterval_Auto(6.01, 8)){
             armExtend_encoderIf_outAndIn(0.75); // extend arm
-        }else if (timerInterval_Auto(9.01, 9.5)){
+            System.out.println("extend");
+        }else if (timerInterval_Auto(8.01, 8.5)){
             dSolenoidClaw.set(Value.kForward); //open claw
-        }else if (timerInterval_Auto(9.51, 11)){
+            System.out.println("drop");
+        }else if (timerInterval_Auto(8.51, 10)){
             armExtend_encoderIf_outAndIn(0); //retract
             dSolenoidClaw.set(Value.kReverse); //close claw
-        }else if (timerInterval_Auto(11.01, 13)){
+            System.out.println("arm down");
+        }else if (timerInterval_Auto(10.01, 12)){
             armRotate_encoderIf_upAndDown(-0.1); //lower arm
-        }else if (timerInterval_Auto(13.01, 15)){
-            driveSwerve_EncoderIf_FwdAndBwd(2.3); //drive backwards past line
+            System.out.println("retract");
+        }else if (timerInterval_Auto(12.01, 15)){
+            driveSwerve_EncoderIf_FwdAndBwd(-2.3); //drive backwards past line
+            System.out.println("back it up");
         }else { //STOP!!!
             swerveDrive(0, 0, 0);
             armRotate.tankDrive(0, 0);      
             armTalonExtenstion.set(0);
+            System.out.println("stop");
         }
-
-        // no list auto vvv  for cube WIP
+    }
+    public void autoTopAndBottom() {
+        if (timerInterval_Auto(0, 0.50)){
+            resetEncoders();
+            System.out.println("encoders");
+            }
+        if (timerInterval_Auto(0.51, 2.5)){
+            driveSwerve_EncoderIf_turnOnSpot(Math.PI-0.01); // face nodes
+            System.out.println("turning");
+        }else if (timerInterval_Auto(2.51, 3.50)){
+            //riveSwerve_EncoderIf_FwdAndBwd(-0.3); //drive forwards to thingy
+            swerveDrive(-0.3, 0, 0);
+            System.out.println("forward");
+        }else if (timerInterval_Auto(3.51, 6)){
+            swerveDrive(0,0,0);
+            armRotate_encoderIf_upAndDown(-1.80); //lift arm
+            System.out.println("arm u;p");
+        }else if (timerInterval_Auto(6.01, 8)){
+            armExtend_encoderIf_outAndIn(0.75); // extend arm
+            System.out.println("extend");
+        }else if (timerInterval_Auto(8.01, 8.5)){
+            dSolenoidClaw.set(Value.kForward); //open claw
+            System.out.println("drop");
+        }else if (timerInterval_Auto(8.51, 10)){
+            armExtend_encoderIf_outAndIn(0); //retract
+            dSolenoidClaw.set(Value.kReverse); //close claw
+            System.out.println("arm down");
+        }else if (timerInterval_Auto(10.01, 12)){
+            armRotate_encoderIf_upAndDown(-0.1); //lower arm
+            System.out.println("retract");
+        }else if (timerInterval_Auto(12.01, 15)){
+            driveSwerve_EncoderIf_FwdAndBwd(-4.3); //drive backwards past line
+            System.out.println("back it up");
+        }else { //STOP!!!
+            swerveDrive(0, 0, 0);
+            armRotate.tankDrive(0, 0);      
+            armTalonExtenstion.set(0);
+            System.out.println("stop");
+        }
+    }
+ // no list auto vvv  for cube WIP
         /* 
          if (timerInterval_Auto(1.01, 2.0)){
             resetEncoders();
@@ -824,7 +882,6 @@ public class Robot extends TimedRobot {
             armTalonExtenstion.set(0);
         }
          */
-    }
 
     @Override
     public void autonomousExit() {
