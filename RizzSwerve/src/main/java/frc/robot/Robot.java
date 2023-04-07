@@ -211,6 +211,8 @@ public class Robot extends TimedRobot {
         armTalonExtenstion.setSelectedSensorPosition(0);
     }
 
+    }
+
     public void setMotorBreaks() {
         frontLeftDrive.setNeutralMode(NeutralMode.Brake);
         frontRightDrive.setNeutralMode(NeutralMode.Brake);
@@ -651,132 +653,13 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-        // autoMidBalancee(); //balance
+        // autoTopCone(); //balance
         autoTopAndBottom(); //not balance
-        
-        
-
-        //using list vvv
-         
-        // if (timerInterval_Auto(0, 1)) {
-        //     System.out.println("straightening");
-
-        //     absolutePosition();
-        //     straightenModules();
-        //     // resetEncoders();
-        // }
-/* 
-        if (timerInterval_Auto(2, 200)) {
-
-            if (commandFlags.indexOf(false) == 0) {
-                resetEncoders();
-
-                commandFlags.set(0, true);
-                System.out.println("0 auto");
-            }
-            if (commandFlags.indexOf(false) == 1) {
-                commandFlags.set(1, armRotate_encoderIf_upAndDown(-1.90));
-                System.out.println("1 auto");
-
-            }
-            if (commandFlags.indexOf(false) == 2) {
-                commandFlags.set(2, armExtend_encoderIf_outAndIn(0.75));
-                System.out.println("2 auto");
-            }
-            if (commandFlags.indexOf(false) == 3) {
-                dSolenoidClaw.set(Value.kReverse);
-                commandFlags.set(3, true);
-                System.out.println("3 auto");
-            }
-            if (commandFlags.indexOf(false) == 4) {
-                commandFlags.set(4, armExtend_encoderIf_outAndIn(0));
-                System.out.println("4 auto");
-            }
-            if (commandFlags.indexOf(false) == 5) {
-                dSolenoidClaw.set(Value.kForward);
-                commandFlags.set(5, true);
-                System.out.println("5 auto");
-            }
-            if (commandFlags.indexOf(false) == 6) {
-                commandFlags.set(6, armRotate_encoderIf_upAndDown(-0.1));
-                System.out.println("6 auto");
-            }
-
-            if (commandFlags.indexOf(false) == 7) {
-                commandFlags.set(7, driveSwerve_EncoderIf_FwdAndBwd(3));
-                System.out.println("7 auto");
-            }
-            if (commandFlags.indexOf(false) == 8) {
-                commandFlags.set(8, driveSwerve_EncoderIf_turnOnSpot(Math.PI/2));
-                System.out.println("8 auto");
-            }
-            if (commandFlags.indexOf(false) == 9) {
-                commandFlags.set(9, driveSwerve_EncoderIf_FwdAndBwd(-1));
-                System.out.println("9 auto");
-            }
-        }*/
-         
-        /* 
-            if (timerInterval_Auto(0, 2)) {
-                System.out.println("straightening");
-
-                absolutePosition();
-                straightenModules();
-                // resetEncoders();
-            }
-
-            if (commandFlags.indexOf(false) == 0) {
-                resetEncoders();
-
-                commandFlags.set(0, true);
-                System.out.println("0 auto");
-            }
-            if (commandFlags.indexOf(false) == 1) {
-                commandFlags.set(1, armRotate_encoderIf_upAndDown(-1.90));
-                System.out.println("1 auto");
-
-            }
-            if (commandFlags.indexOf(false) == 2) {
-                commandFlags.set(2, armExtend_encoderIf_outAndIn(0.75));
-                System.out.println("2 auto");
-            }
-            if (commandFlags.indexOf(false) == 3) {
-                dSolenoidClaw.set(Value.kReverse);
-                commandFlags.set(3, true);
-                System.out.println("3 auto");
-            }
-            if (commandFlags.indexOf(false) == 4) {
-                commandFlags.set(4, armExtend_encoderIf_outAndIn(0));
-                System.out.println("4 auto");
-            }
-            if (commandFlags.indexOf(false) == 5) {
-                dSolenoidClaw.set(Value.kForward);
-                commandFlags.set(5, true);
-                System.out.println("5 auto");
-            }
-            if (commandFlags.indexOf(false) == 6) {
-                commandFlags.set(6, armRotate_encoderIf_upAndDown(-0.1));
-                System.out.println("6 auto");
-            }
-
-            if (commandFlags.indexOf(false) == 7) {
-                commandFlags.set(7, driveSwerve_EncoderIf_FwdAndBwd(3));
-                System.out.println("7 auto");
-            }
-            if (commandFlags.indexOf(false) == 8) {
-                commandFlags.set(8, driveSwerve_EncoderIf_turnOnSpot(Math.PI/2));
-                System.out.println("8 auto");
-            }
-            if (commandFlags.indexOf(false) == 9) {
-                commandFlags.set(9, driveSwerve_EncoderIf_FwdAndBwd(-1));
-                System.out.println("9 auto");
-            }
-        */
     } 
+
     public void autoMidBalance() {
         // no list auto vvv  for cone
         if (timerInterval_Auto(0, 0.50)){
-            resetEncoders();
             System.out.println("encoders");
             }
         if (timerInterval_Auto(0.51, 2.5)){
@@ -813,9 +696,9 @@ public class Robot extends TimedRobot {
             System.out.println("stop");
         }
     }
+
     public void autoTopAndBottom() {
         if (timerInterval_Auto(0, 0.50)){
-            resetEncoders();
             System.out.println("encoders");
             }
         if (timerInterval_Auto(0.51, 2.5)){
@@ -852,36 +735,6 @@ public class Robot extends TimedRobot {
             System.out.println("stop");
         }
     }
- // no list auto vvv  for cube WIP
-        /* 
-         if (timerInterval_Auto(1.01, 2.0)){
-            resetEncoders();
-            dSolenoidClaw.set(Value.kForward); //open claw
-         }
-        if (timerInterval_Auto(2.01, 4)){
-            driveSwerve_EncoderIf_turnOnSpot(Math.PI-0.01); // face nodes
-        }else if (timerInterval_Auto(4.01, 5)){
-            driveSwerve_EncoderIf_FwdAndBwd(-0.2); //drive backwards past line
-        }else if (timerInterval_Auto(5.01, 7)){
-            armRotate_encoderIf_upAndDown(-1.80); //lift arm
-        }else if (timerInterval_Auto(7.01, 9)){
-            armExtend_encoderIf_outAndIn(0.75); // extend arm
-        }else if (timerInterval_Auto(9.01, 9.5)){
-            claw_Wheels.set(ClawExpel_WheelSpeed);
-        }else if (timerInterval_Auto(9.51, 11)){
-            armExtend_encoderIf_outAndIn(0); //retract
-            dSolenoidClaw.set(Value.kReverse); //close claw
-        }else if (timerInterval_Auto(11.01, 13)){
-            armRotate_encoderIf_upAndDown(-0.1); //lower arm
-            driveSwerve_EncoderIf_turnOnSpot(0); // face to pick up cube
-        }else if (timerInterval_Auto(13.01, 15)){
-            driveSwerve_EncoderIf_FwdAndBwd(5.3); //drive backwards past line
-        }else { //STOP!!!
-            swerveDrive(0, 0, 0);
-            armRotate.tankDrive(0, 0);
-            armTalonExtenstion.set(0);
-        }
-         */
 
     @Override
     public void autonomousExit() {
