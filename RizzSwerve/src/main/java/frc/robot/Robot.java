@@ -187,8 +187,8 @@ public class Robot extends TimedRobot {
     // navx2 vvv
     final double kp_Pitch = 0.1;
     //final double kp_Yaw = 0.1;
-    final double ki_Navx = 0.05;
-    final double kd_Navx = 0.05;
+    final double ki_Navx = 0.0;
+    final double kd_Navx = 0.0;
     AHRS navx = new AHRS(SPI.Port.kMXP);
     PIDController pidPitch = new PIDController(kp_Pitch, ki_Navx, kd_Navx);
     PIDController pidYaw = new PIDController(kp_Yaw, ki_Navx, kd_Navx);
