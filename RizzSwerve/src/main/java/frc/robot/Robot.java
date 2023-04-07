@@ -191,7 +191,7 @@ public class Robot extends TimedRobot {
     final double kd_Navx = 0.0;
     AHRS navx = new AHRS(SPI.Port.kMXP);
     PIDController pidPitch = new PIDController(kp_Pitch, ki_Navx, kd_Navx);
-    PIDController pidYaw = new PIDController(kp_Yaw, ki_Navx, kd_Navx);
+    //PIDController pidYaw = new PIDController(kp_Yaw, ki_Navx, kd_Navx);
     double navxYaw_Deg;
     double navxPitch_Deg;
     double navxRoll_Deg;
@@ -697,7 +697,7 @@ public class Robot extends TimedRobot {
         }else if (timerInterval_Auto(3.01, 6)){
             swerveDrive(0,0,0);
             armRotate_encoderIf_upAndDown(-1.80); //lift arm
-            System.out.println("arm u;p");
+            System.out.println("arm up");
         }else if (timerInterval_Auto(6.01, 8)){
             armExtend_encoderIf_outAndIn(0.75); // extend arm
             System.out.println("extend");
