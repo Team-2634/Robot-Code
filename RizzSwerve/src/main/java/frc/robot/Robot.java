@@ -185,7 +185,7 @@ public class Robot extends TimedRobot {
     boolean dSolenoidClaw_ButtonPressed = false;
 
     // navx2 vvv
-    final double kp_Pitch = 0.1;
+    final double kp_Pitch = 0.01;
     //final double kp_Yaw = 0.1;
     final double ki_Navx = 0.0;
     final double kd_Navx = 0.0;
@@ -196,11 +196,12 @@ public class Robot extends TimedRobot {
     double navxPitch_Deg;
     double navxRoll_Deg;
     double botYaw_angleRad;
+
+    
+    PIDController drive = new PIDController(0.5, 0.0, 0.05);
     // constants ^^^^^
     // our functions vvvvvv
-
-    PIDController drive = new PIDController(0.5, 0.0, 0.05);
-
+    
     public void resetEncoders() {
         frontLeftSteer.setSelectedSensorPosition(0);
         frontRightSteer.setSelectedSensorPosition(0);
