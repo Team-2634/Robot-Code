@@ -669,14 +669,14 @@ public class Robot extends TimedRobot {
     } 
 
     public void autoMidBalance() {
-        // no list auto vvv  for cone
-        if (timerInterval_Auto(0, 0.50)){
-            System.out.println("encoders");
-            }
-        if (timerInterval_Auto(0.51, 2.5)){
+        // // no list auto vvv  for cone
+        // if (timerInterval_Auto(0, 0.50)){
+        //     System.out.println("encoders"); 
+        //     }
+        if (timerInterval_Auto(0, 2)){
             driveSwerve_EncoderIf_turnOnSpot(Math.PI-0.01); // face nodes
             System.out.println("turning");
-        }else if (timerInterval_Auto(2.51, 3.50)){
+        }else if (timerInterval_Auto(2.01, 3.50)){
             //riveSwerve_EncoderIf_FwdAndBwd(-0.3); //drive forwards to thingy
             swerveDrive(-0.3, 0, 0);
             System.out.println("forward");
@@ -709,13 +709,13 @@ public class Robot extends TimedRobot {
     }
 
     public void autoTopAndBottom() {
-        if (timerInterval_Auto(0, 0.50)){
-            System.out.println("encoders");
-            }
-        if (timerInterval_Auto(0.51, 2.5)){
+        // if (timerInterval_Auto(0, 0.50)){
+        //     System.out.println("encoders");
+        //     }
+        if (timerInterval_Auto(0, 2)){
             driveSwerve_EncoderIf_turnOnSpot(Math.PI-0.01); // face nodes
             System.out.println("turning");
-        }else if (timerInterval_Auto(2.51, 3.50)){
+        }else if (timerInterval_Auto(2.01, 3.50)){
             //riveSwerve_EncoderIf_FwdAndBwd(-0.3); //drive forwards to thingy
             swerveDrive(-0.3, 0, 0);
             System.out.println("forward");
