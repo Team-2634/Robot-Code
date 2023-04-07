@@ -211,6 +211,16 @@ public class Robot extends TimedRobot {
         armTalonExtenstion.setSelectedSensorPosition(0);
     }
 
+    public void resetPIDs(){
+        pidFrontLeftTurn.reset();
+        pidFrontRightTurn.reset();
+        pidBackLeftTurn.reset();
+        pidBackRightTurn.reset();
+        
+        pidFrontLeftTurnAuto.reset();
+        pidFrontRightTurnAuto.reset();
+        pidBackLeftTurnAuto.reset();
+        pidBackRightTurnAuto.reset();
     }
 
     public void setMotorBreaks() {
@@ -461,6 +471,7 @@ public class Robot extends TimedRobot {
         navx.calibrate();
         navx.reset();
         resetEncoders();
+        resetPIDs();
         frontRightDrive.setSelectedSensorPosition(0);
         frontLeftDrive.setSelectedSensorPosition(0);
     }
