@@ -651,7 +651,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-        // autoTopCone(); //balance
+        // autoMidBalancee(); //balance
         autoTopAndBottom(); //not balance
         
         
