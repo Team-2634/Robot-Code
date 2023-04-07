@@ -186,7 +186,7 @@ public class Robot extends TimedRobot {
 
     // navx2 vvv
     final double kp_Pitch = 0.1;
-    final double kp_Yaw = 0.1;
+    //final double kp_Yaw = 0.1;
     final double ki_Navx = 0.05;
     final double kd_Navx = 0.05;
     AHRS navx = new AHRS(SPI.Port.kMXP);
@@ -668,11 +668,23 @@ public class Robot extends TimedRobot {
         autoTopAndBottom(); //not balance
     } 
 
+    public void autoBalance() {
+        double outputPitch;
+        double currentPitch;
+        double targetAnglePitch = 0;
+        double tolerance = 5;
+        currentPitch = navxPitch_Deg;
+
+        if (Math.abs(targetAnglePitch - currentPitch) > tolerance) {
+            outputPitch = pidPitch.calculate(currentPitch, targetAnglePitch);
+        } else {
+            outputPitch = 0;
+        }
+        
+        swerveDrive(outputPitch, 0, 0);
+    }
+
     public void autoMidBalance() {
-        // // no list auto vvv  for cone
-        // if (timerInterval_Auto(0, 0.50)){
-        //     System.out.println("encoders"); 
-        //     }
         if (timerInterval_Auto(0, 2.5)){
             driveSwerve_EncoderIf_turnOnSpot(Math.PI-0.01); // face nodes
             System.out.println("turning");
@@ -710,9 +722,6 @@ public class Robot extends TimedRobot {
     }
 
     public void autoTopAndBottom() {
-        // if (timerInterval_Auto(0, 0.50)){
-        //     System.out.println("encoders");
-        //     }
         if (timerInterval_Auto(0, 2)){
             driveSwerve_EncoderIf_turnOnSpot(Math.PI-0.01); // face nodes
             System.out.println("turning");
@@ -724,7 +733,7 @@ public class Robot extends TimedRobot {
         }else if (timerInterval_Auto(3.51, 6)){
             swerveDrive(0,0,0);
             armRotate_encoderIf_upAndDown(-1.80); //lift arm
-            System.out.println("arm u;p");
+            System.out.println("arm up");
         }else if (timerInterval_Auto(6.01, 8)){
             armExtend_encoderIf_outAndIn(0.75); // extend arm
             System.out.println("extend");
