@@ -676,11 +676,11 @@ public class Robot extends TimedRobot {
         if (timerInterval_Auto(0, 2.5)){
             driveSwerve_EncoderIf_turnOnSpot(Math.PI-0.01); // face nodes
             System.out.println("turning");
-        }else if (timerInterval_Auto(2.51, 3.50)){
+        }else if (timerInterval_Auto(2.51, 3)){
             //riveSwerve_EncoderIf_FwdAndBwd(-0.3); //drive forwards to thingy
             swerveDrive(-0.3, 0, 0);
             System.out.println("forward");
-        }else if (timerInterval_Auto(3.51, 6)){
+        }else if (timerInterval_Auto(3.01, 6)){
             swerveDrive(0,0,0);
             armRotate_encoderIf_upAndDown(-1.80); //lift arm
             System.out.println("arm u;p");
