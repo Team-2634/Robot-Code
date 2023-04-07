@@ -545,7 +545,7 @@ public class Robot extends TimedRobot {
         currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
         double outPutX = 0;
 
-        double toleranc = 0.1;
+        double toleranc = 0.05;
         double xSpeed = 0.45;
         double xSpeed_Rev = -0.30;
         if (Math.abs(targetX - currentDistanceX) > toleranc) {
@@ -676,9 +676,10 @@ public class Robot extends TimedRobot {
         if (timerInterval_Auto(0, 2.5)){
             driveSwerve_EncoderIf_turnOnSpot(Math.PI-0.01); // face nodes
             System.out.println("turning");
+            frontLeftDrive.setSelectedSensorPosition(0);
         }else if (timerInterval_Auto(2.51, 3)){
-            //riveSwerve_EncoderIf_FwdAndBwd(-0.3); //drive forwards to thingy
-            swerveDrive(-0.3, 0, 0);
+            driveSwerve_EncoderIf_FwdAndBwd(0.21); //drive forwards to thingy
+            //swerveDrive(-0.2, 0, 0);
             System.out.println("forward");
         }else if (timerInterval_Auto(3.01, 6)){
             swerveDrive(0,0,0);
@@ -716,8 +717,9 @@ public class Robot extends TimedRobot {
             driveSwerve_EncoderIf_turnOnSpot(Math.PI-0.01); // face nodes
             System.out.println("turning");
         }else if (timerInterval_Auto(2.01, 3.50)){
-            //riveSwerve_EncoderIf_FwdAndBwd(-0.3); //drive forwards to thingy
-            swerveDrive(-0.3, 0, 0);
+            driveSwerve_EncoderIf_FwdAndBwd(0.21); //drive forwards to thingy
+            frontLeftDrive.setSelectedSensorPosition(0);
+            //swerveDrive(-0.3, 0, 0);
             System.out.println("forward");
         }else if (timerInterval_Auto(3.51, 6)){
             swerveDrive(0,0,0);
