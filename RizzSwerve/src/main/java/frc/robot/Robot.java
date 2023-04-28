@@ -567,6 +567,12 @@ public class Robot extends TimedRobot {
         // } else {
             //autoBalance();
         // }
+
+        /*
+         * 
+         * Working Auto Balance Code here!
+         * 
+         */
     }
  
     @Override
