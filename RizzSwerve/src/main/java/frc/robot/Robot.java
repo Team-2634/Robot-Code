@@ -571,6 +571,8 @@ public class Robot extends TimedRobot {
  
     @Override
     public void autonomousPeriodic() {
+        //ARM GO FASTER!
+
         // double elapsedTime = Timer.getFPGATimestamp() - autonomousStartTime;
         //  if (elapsedTime <= 5){
             targetDistance_Xauto = 2;
