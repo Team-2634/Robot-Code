@@ -142,6 +142,7 @@
 6. Ideally, this is where your code can be peer reviewed and potentially approved.
 7. After your code's been approved for merging, you can merge the PR.
    - Note: When merging *develop* into *master*, you can follow the same steps
+8. Once the pr is merged, you can safely delete your *feature/coolNewThing* branch
 
 ### Running the FRC bot
 
