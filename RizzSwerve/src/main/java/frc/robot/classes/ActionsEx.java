@@ -1,4 +1,4 @@
-/* Online Java Compiler and Editor */
+// Testing Threads code 
 public class ActionRunner {
 
     public static void ActionRunner() {
@@ -6,12 +6,12 @@ public class ActionRunner {
             Thread t1 = new Thread(new Action("drive"));
             Thread t2 = new Thread(new Action("moveArm"));
             Thread t3 = new Thread(new Action("placeThingy"));
-            Thread t4 = new Thread(new Action("DriveBackwards"));
+            Thread t4 = new Thread(new Action("DriveBackwardsThenRotate"));
 
-            t1.start();
+            t1.start(); //starts thread
             t2.start();
 
-            t1.join();
+            t1.join(); //wait here until thread is finished
             t2.join();
 
             t3.start();
@@ -20,7 +20,7 @@ public class ActionRunner {
             t4.start();
             t4.join();
 
-            System.out.println("Fin");
+            System.out.println("Fin!");
 
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -48,31 +48,43 @@ class Action implements Runnable {
         case("DriveBackwards"):
             DriveBackwards(10);
             break;
+        case("DriveBackwardsThenRotate"):
+            DriveBackwards(10);
+            Rotate180(10);
+            break;
+        default:
+            System.out.println("ERROR, command not found: " + functionName);
         }
     }
 
     public void drive(int delay) {
-        ActionHelpers.action("Drive Forward");
+        ActionHelpers.action("Drive Forward..");
         ActionHelpers.Delay(delay);
-        ActionHelpers.action("Stop Driving");
+        ActionHelpers.action("..Stop Driving");
     }
 
     public void moveArm(int delay) {
-        ActionHelpers.action("Arm moving");
+        ActionHelpers.action("Arm moving..");
         ActionHelpers.Delay(delay);
-        ActionHelpers.action("Arm Ready");
+        ActionHelpers.action("..Arm Ready");
     }
 
     public void placeThingy(int delay) {
-        ActionHelpers.action("Placing");
+        ActionHelpers.action("Placing..");
         ActionHelpers.Delay(delay);
-        ActionHelpers.action("Thingy Placed");
+        ActionHelpers.action("..Thingy Placed");
     }
 
     public void DriveBackwards(int delay) {
-        ActionHelpers.action("Drive Backward");
+        ActionHelpers.action("Drive Backward..");
         ActionHelpers.Delay(delay);
-        ActionHelpers.action("Stop Driving");
+        ActionHelpers.action("..Stop Driving");
+    }
+
+    public void Rotate180(int delay) {
+        ActionHelpers.action("Spinning..");
+        ActionHelpers.Delay(delay);
+        ActionHelpers.action("..Dizzy");
     }
 }
 
