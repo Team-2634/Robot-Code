@@ -28,16 +28,18 @@ public class SwerveDriveTrain {
         // make desiredSpeeds into speeds and angles for each module
         SwerveModuleState[] moduleStates = m_kinematics.toSwerveModuleStates(desiredSpeeds);
 
-        //TODO loop
-        this.swerveModules[0].GO(moduleStates[0]);
-        this.swerveModules[1].GO(moduleStates[1]);
-        this.swerveModules[2].GO(moduleStates[2]);
-        this.swerveModules[3].GO(moduleStates[3]);
+        for (int i = 0; i < this.swerveModules.length; i++) {
+            this.swerveModules[i].GO(moduleStates[i]);
+        }
     }
 
-    public void setInverted(boolean inversion){ }
+    public void setInverted(boolean inversion){ 
+        //TODO 
+    }
 
-    public void resetEncoders(){ }
+    public void resetEncoders(){ 
+        //TODO 
+    }
     
     public void setDriveSensorPosition(double value){ 
         for (int i = 0; i < this.swerveModules.length; i++) {
@@ -50,19 +52,35 @@ public class SwerveDriveTrain {
         this.swerveModules[0].driveMotor.getSelectedSensorPosition();
     }
 
-    public void resetPIDs(){ }
+    public void resetPIDs(){ 
+        //TODO 
+    }
     
-    public void setMotorBreaks(){ 
+    public void setMotorBreaks(){
         setDriveMotorBreaks();
         setSteerMotorBreaks();
     }
 
-    public void setDriveMotorBreaks(){ }
-    public void setSteerMotorBreaks(){ }
+    public void setDriveMotorBreaks(){ 
+        for (int i = 0; i < this.swerveModules.length; i++) {
+            this.swerveModules[i].driveMotor.setBrake();
+        }
+    }
+    public void setSteerMotorBreaks(){ 
+        for (int i = 0; i < this.swerveModules.length; i++) {
+            this.swerveModules[i].steerMotor.setBrake();
+        }
+    }
 
     public void straightenModules() {
         for (int i = 0; i < this.swerveModules.length; i++) {
             this.swerveModules[i].straightenWheel();
+        }
+    }
+
+    public void lockWheels() {
+        for (int i = 0; i < this.swerveModules.length; i++) {
+            this.swerveModules[i].lockWheel();
         }
     }
 

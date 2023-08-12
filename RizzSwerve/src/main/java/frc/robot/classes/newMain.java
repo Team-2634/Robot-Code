@@ -5,10 +5,13 @@ import globalFunctions;
 import globalFunctions.toDashboard;
 import globalFunctions.getEncoderTicksMPS;
 import globalFunctions.getEncoderTicksMPS_steer;
-
+import globalFunctions.removeDeadzone;
 
 public class newMain {
     SwerveDriveTrain driveTrain;
+
+    final XboxController driving_xBoxCont = new XboxController(0);
+    final XboxController arm_xBoxCont = new XboxController(1);
 
     //TODO what is this?
     public static final HashMap<MotorLocation, Translation2d> motorLocations = initMotorLocations();
@@ -22,6 +25,7 @@ public class newMain {
         return Collections.unmodifiableMap(motorLocationsInit);
     }
 
+    /*/
     public static final HashMap<MotorType, <T>> motorTypes = initMotorTypes();
     private static HashMap<MotorLocation, ArrayList<double>> initMotorTypes() { 
         HashMap<MotorType, ArrayList<double>> motorTypesInit = new HashMap<MotorType, ArrayList<double>>();
@@ -29,52 +33,41 @@ public class newMain {
         motorTypesInit.put(MotorType.CANSparkMax, new ArrayList<double>(0.340, 0.285));
         return Collections.unmodifiableMap(motorTypesInit);
     }
+    */
     //TODO make use of, remove, fix value...
 
     public newMain(){
-        Tuple offset = new Tuple(0.340, 0.285);
+        //Tuple offset = new Tuple(0.340, 0.285);
 
 
         Motors[] motors= {
             //TODO does this work? 
-            new Motor<MotorType.WPI_TalonFX>(1, MotorType.WPI_TalonFX, MotorLocation.FrontLeft_Drive),
-            new Motor<MotorType.WPI_TalonFX>(2, MotorType.WPI_TalonFX, MotorLocation.FrontRight_Drive),
+            new Motor<MotorType.WPI_TalonFX>(7, MotorType.WPI_TalonFX, MotorLocation.FrontLeft_Drive),
+            new Motor<MotorType.WPI_TalonFX>(1, MotorType.WPI_TalonFX, MotorLocation.FrontRight_Drive),
+            new Motor<MotorType.WPI_TalonFX>(5, MotorType.WPI_TalonFX, MotorLocation.BackRight_Drive),
             new Motor<MotorType.WPI_TalonFX>(3, MotorType.WPI_TalonFX, MotorLocation.BackRight_Drive),
-            new Motor<MotorType.WPI_TalonFX>(4, MotorType.WPI_TalonFX, MotorLocation.BackRight_Drive)
-            //Todo
+
+            new Motor<MotorType.WPI_TalonFX>(6, MotorType.WPI_TalonFX, MotorLocation.FrontLeft_Steer),
+            new Motor<MotorType.WPI_TalonFX>(0, MotorType.WPI_TalonFX, MotorLocation.FrontRight_Steer),
+            new Motor<MotorType.WPI_TalonFX>(4, MotorType.WPI_TalonFX, MotorLocation.BackRight_Steer),
+            new Motor<MotorType.WPI_TalonFX>(2, MotorType.WPI_TalonFX, MotorLocation.BackRight_Steer)
         }
 
         /*
-            public final WPI_TalonFX frontLeftDrive = new WPI_TalonFX(7);
-            public final WPI_TalonFX frontRightDrive = new WPI_TalonFX(1);
-            public final WPI_TalonFX backLeftDrive = new WPI_TalonFX(5);
-            public final WPI_TalonFX backRightDrive = new WPI_TalonFX(3);
-
-            public final WPI_TalonFX frontLeftSteer = new WPI_TalonFX(6);
-            public final WPI_TalonFX frontRightSteer = new WPI_TalonFX(0);
-            public final WPI_TalonFX backLeftSteer = new WPI_TalonFX(4);
-            public final WPI_TalonFX backRightSteer = new WPI_TalonFX(2);
-
             public final WPI_CANCoder frontLeftAbsEncoder = new WPI_CANCoder(3);
             public final WPI_CANCoder frontRightAbsEncoder = new WPI_CANCoder(0);
             public final WPI_CANCoder backLeftAbsEncoder = new WPI_CANCoder(2);
             public final WPI_CANCoder backRightAbsEncoder = new WPI_CANCoder(1);
 
-            final public double frontLeftAbsOffset = 197.19;
-            final public double frontRightAbsOffset = 31.8;
-            final public double backLeftAbsOffset = 285.205;
-            final public double backRightAbsOffset = 50.4;
-
-            public double frontLeftAbsAngle = 0;
-            public double frontRightAbsAngle = 0;
-            public double backLeftAbsAngle = 0;
-            public double backRightAbsAngle = 0;
+            public final double frontLeftAbsOffset = 197.19;
+            public final double frontRightAbsOffset = 31.8;
+            public final double backLeftAbsOffset = 285.205;
+            public final double backRightAbsOffset = 50.4;
          */
 
-        //TODO make PID vals variable by mode
-        driveTrain = new SwerveDriveTrain(motors, Config.teleopSteerP, Config.teleopSteerI, Config.teleopSteerD);
-        driveTrain.setInverted(true);
-
+        //TODO make PID vals variable by gamemode
+        this.driveTrain = new SwerveDriveTrain(motors, Config.teleopSteerP, Config.teleopSteerI, Config.teleopSteerD);
+        //this.driveTrain.setInverted(true);
     }
 
 
@@ -85,10 +78,9 @@ public class newMain {
         timerRobot.reset();
         timerRobot.start();
 
-        UsbCamera camera0 = CameraServer.startAutomaticCapture(0); //these shouldnt be here?
+        UsbCamera camera0 = CameraServer.startAutomaticCapture(0); //these shouldnt be defined here?
         UsbCamera camera1 = CameraServer.startAutomaticCapture(1);
 
-        //todo new drivetrain(s)?
         driveTrain.setMotorBreaks();
         //arm.setMotorBreaks();
 
@@ -108,13 +100,13 @@ public class newMain {
     @Override
     public void robotPeriodic() {
         // encoder drive variables vvv
-        frontLeftDriveDisplacement_Meters = driveTrain.getDriveSensorPosition(MotorLocation.frontLeftDrive) * getEncoderTicksMPS();
+        double frontLeftDriveDisplacement_Meters = driveTrain.getDriveSensorPosition(MotorLocation.frontLeftDrive) * getEncoderTicksMPS();
         toDashboard("Drive_Distance_Meters x axis: ", frontLeftDriveDisplacement_Meters);
 
-        frontRightDriveDisplacement_Meters = driveTrain.getSelectedSensorPosition(MotorLocation.frontRightDrive) * getEncoderTicksMPS();
+        double frontRightDriveDisplacement_Meters = driveTrain.getSelectedSensorPosition(MotorLocation.frontRightDrive) * getEncoderTicksMPS();
         toDashboard("Drive_Distance_Meters yaxis: ", frontRightDriveDisplacement_Meters);
 
-        frontLeftSteer_Rad = driveTrain.getDriveSensorPosition(MotorLocation.frontLeftSteer) * getEncoderTicksMPS_steer();
+        double frontLeftSteer_Rad = driveTrain.getDriveSensorPosition(MotorLocation.frontLeftSteer) * getEncoderTicksMPS_steer();
         toDashboard("Drive_Rotation_Radians: ", frontLeftSteer_Rad);
 
         // navX2 vvv
@@ -171,26 +163,25 @@ public class newMain {
         // toDashboard("armExtendLimited: ", armExtendLimited);
         // setMotorSpeed_limitinExtendWHenToFar(-armTalonExtenstionSpeed_autoRetreat);
 
-        toDashboard("retractLimitSwitch: ", extendLimitSwitch.get());
-        System.out.println(extendLimitSwitch.get());
+        //toDashboard("retractLimitSwitch: ", extendLimitSwitch.get());
+        //System.out.println(extendLimitSwitch.get());
 
-        // swerve vvv (uses driving_xBoxCont)
-        double contXSpeed = removeDeadzone(1) * XdriveSensitivity;
-        double contYSpeed = removeDeadzone(0) * YdriveSensitivity;
-        double contTurnSpeed = removeDeadzone(4) * turningSensitivity;
 
-        // turn field oriented on/off
-        if (true) {
-            contXSpeedField = contXSpeed * Math.cos(botYaw_angleRad) - contYSpeed * Math.sin(botYaw_angleRad);
-            contYSpeedField = contXSpeed * Math.sin(botYaw_angleRad) + contYSpeed * Math.cos(botYaw_angleRad);
+        
+        //// Swerve vvv
+        //Get scaled Axis inputs from controller
+        double contXSpeed = removeDeadzone(this.driving_xBoxCont, 1) * Config.XdriveSensitivity;
+        double contYSpeed = removeDeadzone(this.driving_xBoxCont, 0) * Config.YdriveSensitivity;
+        double contTurnSpeed = removeDeadzone(this.driving_xBoxCont, 4) * Config.turningSensitivity;
+ 
+        if (Config.useFieldOrientation) {
+            double botYawAngle_Rad = Math.toRadians(navx.getAngle());
+            contXSpeed = contXSpeed * Math.cos(botYawAngle_Rad) - contYSpeed * Math.sin(botYawAngle_Rad);
+            contYSpeed = contXSpeed * Math.sin(botYawAngle_Rad) + contYSpeed * Math.cos(botYawAngle_Rad);
         }
+        this.SwerveDriveTrain.GO(contXSpeed, contYSpeed, contTurnSpeed);
 
-        //TODO make field/ cont interchangable past the set
-        //swerveDrive(contXSpeedField, contYSpeedField, contTurnSpeed);
-        // swerveDrive(contXSpeed, contYSpeed, contTurnSpeed);
-        this.SwerveDriveTrain.GO(contXSpeedField, contYSpeedField, contTurnSpeed);
-
-        // Button inputs: //TODO cleanup, set up blanks, controlSchemes
+        // Button inputs: //TODO cleanup, set up blanks, controlSchemes, use better namings
         // robot arm
         double armDown = arm_xBoxCont.getRightTriggerAxis();
         double armUp = arm_xBoxCont.getLeftTriggerAxis();
@@ -201,7 +192,6 @@ public class newMain {
         boolean intake = arm_xBoxCont.getXButton();
         boolean clawIntake_and_Extend = arm_xBoxCont.getYButton();
         boolean slowClawWheels = driving_xBoxCont.getRightBumper();
-        robotArm(armDown, armUp, claw_xBox, extendArm, retractArm, expel, intake, clawIntake_and_Extend,
-                slowClawWheels);
+        robotArm(armDown, armUp, claw_xBox, extendArm, retractArm, expel, intake, clawIntake_and_Extend, slowClawWheels);
     }
 }

@@ -10,7 +10,7 @@ public class globalFunctions {
         return Math.max(min, Math.min(max, value));
     }
 
-    // Convertions //TODO
+    // Convertions
     public double convertRotationToMeter(double gearRatio, double wheelDiameter){
         return gearRatio * Math.PI * wheelDiameter;
     }
@@ -31,7 +31,7 @@ public class globalFunctions {
 
         double motorTicksPerRev = 0;
 
-        if(motorType == "WPI_Talon") motorTicksPerRev = Constants.talonEncoder_TicksPerRev;
+        if(motorType == "WPI_Talon") motorTicksPerRev = Constants.talonEncoder_TicksPerRev; //TODO use motorType enum
 
         return convertRotationToMeter(gearRatio, wheelDiameter) / motorTicksPerRev
     }
@@ -57,7 +57,7 @@ public class globalFunctions {
         SmartDashboard.putData(navx);
     }
     
-    // Helper
+    // Helper //TODO move to controller class
     public static double removeDeadzone(XboxController controller, int axisInput) {
         if (Math.abs(controller.getRawAxis(axisInput)) < Config.controllerDeadzone) {
             return 0;
@@ -115,7 +115,11 @@ public final class Config {
     public static final double maxSpeedMpS = 20; // metres/sec
     
     //Controller
-    public static final double controllerDeadzone = 0.15; //Percent
+    public static final double controllerDeadzone = 0.15; //Percentage
+    public static final double XdriveSensitivity = 1; //Percentage
+    public static final double YdriveSensitivity = 1; //Percentage
+    public static final double turningSensitivity = 25; //Radians
+    public static final boolean useFieldOrientation = true;
 }
 
 enum MotorLocation {
