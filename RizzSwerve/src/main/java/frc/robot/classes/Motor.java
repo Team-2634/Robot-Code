@@ -1,31 +1,50 @@
-public class Motor<T> {
-    Int id;
+package frc.robot.classes;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
+import com.ctre.phoenix.sensors.WPI_CANCoder;
+
+public class Motor <T extends BaseMotorController>{
     MotorType type;
     MotorLocation location;
 
-    T motor; //TODO, use dict
-    T2 encoder; //TODO
+    T motor;
+    WPI_CANCoder encoder;
+    double encoderOffset;
     
-    public Motor(Int id, MotorType type, MotorLocation location) {
-        this.id = id;
+    public Motor(T motor, MotorType type, MotorLocation location) {
         this.type = type;
         this.location = location;
 
-        this.motor = new T(id); //TODO possible?
+        this.motor = motor;
     }
+    public Motor(T motor, MotorType type, MotorLocation location, WPI_CANCoder encoder, double encoderOffset) {
+        this.type = type;
+        this.location = location;
+
+        this.motor = motor;
+        this.encoder = encoder;
+        this.encoderOffset = encoderOffset;
+    }
+
 
     // Drive Functions
     public void GO(double power){
         if(power > 0 || power > 1) {
-            System.out.println('Speed out of bounds on motor', location.toString(), ' with: ', power);
+            System.out.println("Speed out of bounds on motor" + location.toString() + " with: " + power);
         }
 
         double clampedPower = globalFunctions.clamp(power);
-        motor.set(clampedPower);
+        motor.set(ControlMode.PercentOutput, clampedPower);
     }
 
     public void setBrake(){
         motor.setNeutralMode(NeutralMode.Brake);
+    }
+
+    public void setInverted(boolean value){
+        motor.setInverted(value);
     }
 
     // Encoder Functions
@@ -43,8 +62,7 @@ public class Motor<T> {
 
     //TODO move, integrate, ... ???
     //returns in Radians
-    public void getAbsolutePosition(){
-        //return encoder.getAbsolutePosition() - frontLeftAbsOffset) * (Math.PI / 180);
-        return (encoder.getAbsolutePosition() - encoder.offset) * (Math.PI / 180);
+    public double getAbsolutePosition(){
+        return (encoder.getAbsolutePosition() - encoderOffset) * (Math.PI / 180);
     }
 }

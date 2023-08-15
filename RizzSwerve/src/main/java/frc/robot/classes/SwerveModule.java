@@ -1,10 +1,16 @@
+package frc.robot.classes;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+
 public class SwerveModule {
     public Motor driveMotor;
     public Motor steerMotor;
 
-    PID pid;
+    PIDController pid;
 
-    public SwerveModule(Motor driveMotor, Motor steerMotor, PID pid) {
+    public SwerveModule(Motor driveMotor, Motor steerMotor, PIDController pid) {
         this.driveMotor = driveMotor;
         this.steerMotor = steerMotor;
         this.pid = pid;
