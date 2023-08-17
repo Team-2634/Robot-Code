@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.SPI;
 
 public class newMain extends TimedRobot {
+    //Global variables - Do not overuse
     //Robot Components
     SwerveDriveTrain driveTrain;
 
@@ -33,7 +34,7 @@ public class newMain extends TimedRobot {
 
 
     
-    //TODO explain what is this?
+    //TODO write explaination of what this is?
     public static final Map<MotorLocation, Translation2d> motorLocations = initMotorLocations();
     //This lets you initialze a static hashmap at runtime
     private static Map<MotorLocation, Translation2d> initMotorLocations() { 
@@ -56,6 +57,8 @@ public class newMain extends TimedRobot {
     //TODO make use of, remove, fix value...
     */
 
+
+    //TODO make this class Robot, called by main.java.  This is the entrypoint
     public newMain(){
        
         Motor[] motors = {
@@ -75,7 +78,6 @@ public class newMain extends TimedRobot {
     }
 
 
-    //TODO move to main
     // execution Functions vvvvv
     @Override
     public void robotInit() {
@@ -153,7 +155,7 @@ public class newMain extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-        //TODO Call new actions handler
+        //TODO Call new actions handler, pick which auto set to run
         // autoTopCone(); //balance
         //autoTopAndBottom(); //not balance
     } 

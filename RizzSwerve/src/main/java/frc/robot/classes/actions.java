@@ -1,7 +1,9 @@
 /*
 public class actions {
 
-    //TODO
+    //TODO this will be the list of basic auto actions, ex. DriveDist, TurnDeg, Balance...
+    // In an additional ActionHandler(?) class we will have a series of ActionGroups(?) which are the assembled auto code ex. DrivePlaceTurnDrive
+    //THe one to be used will be selected inside main 
 
     public void run(){
 

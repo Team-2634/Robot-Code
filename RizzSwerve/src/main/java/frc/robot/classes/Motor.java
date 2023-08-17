@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
 
+//Base Motor object, this should provide basic functionality regardless of which type of motor is actually in use
 public class Motor <T extends BaseMotorController>{
     MotorType type;
     MotorLocation location;

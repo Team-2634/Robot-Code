@@ -32,8 +32,8 @@ public class SwerveModule {
     }
 
     public void lockWheel(){
-        //TODO challenge:
-        // calculate the angle to turn to from the motorLocation and get the wheels to set that
+        //TODO future challenge:
+        // calculate the angle for each individual wheel to turn to given the motorLocation and set each wheel to their respective lock value
 
         turnWheelToAngle(45);
     }

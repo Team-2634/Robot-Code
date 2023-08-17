@@ -4,7 +4,8 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-//TODO break up into service files
+//TODO This will be broken up into multiple service files, used to execute basic repeatable static tasks.  
+
 public class globalFunctions {
     
     // MATH
