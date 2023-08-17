@@ -14,8 +14,6 @@
 
 - Alternativly you can use github gui or terminal/commandline
 
-![Sourcetree](https://blog.sourcetreeapp.com/files/2017/01/win_2_header.png)
-
 ## Terminology
 
 - **branch**: A mostly independent copy of the code.
@@ -98,6 +96,8 @@
 - **Git Flow**: The better way to branch consistently.  Using this you can make a feature or hotfix branch from develop
 - **Remote**: Takes you to the browser page where your code is pushed to
 - **Terminal**: opens a cmd terminal window (normally not used)
+
+![Sourcetree](https://blog.sourcetreeapp.com/files/2017/01/win_2_header.png)
 
 ---
 
