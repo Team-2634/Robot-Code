@@ -7,5 +7,5 @@ public final class Constants {
     public static double PI = Math.PI;
     public static double maxDegree = 360;
 
-    public static int turningEncoderTicksToRad; //TODO SET
+    public static int turningEncoderTicksToRad; // TODO SET
 }

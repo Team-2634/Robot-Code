@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //TODO This will be broken up into multiple service files, used to execute basic repeatable static tasks.  
-
+//TODO Rename to Helpers
 public class globalFunctions {
     
     // MATH
@@ -66,7 +66,7 @@ public class globalFunctions {
         SmartDashboard.putData(value);
     }
     
-    // Helper //TODO move to controller class
+    // Helper //TODO move to controller class?
     public static double removeDeadzone(XboxController controller, int axisInput) {
         if (Math.abs(controller.getRawAxis(axisInput)) < Config.controllerDeadzone) {
             return 0;

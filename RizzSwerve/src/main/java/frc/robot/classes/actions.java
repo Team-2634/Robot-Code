@@ -1,220 +1,258 @@
-/*
-public class actions {
+package frc.robot.classes;
 
-    //TODO this will be the list of basic auto actions, ex. DriveDist, TurnDeg, Balance...
-    // In an additional ActionHandler(?) class we will have a series of ActionGroups(?) which are the assembled auto code ex. DrivePlaceTurnDrive
-    //THe one to be used will be selected inside main 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DigitalInput;
 
-    public void run(){
+public class actions implements Runnable {
 
+    // TODO this will be the list of basic auto actions, ex. DriveDist, TurnDeg,
+    // Balance...
+    // In an additional ActionHandler(?) class we will have a series of
+    // ActionGroups(?) which are the assembled auto code ex. DrivePlaceTurnDrive
+    // THe one to be used will be selected inside main
 
+    //Todo: Dislike
+    String functionName;
+    double parameter;
 
+    SwerveDriveTrain driveTrain;
 
+    // TODO make arm piece w/ wrist, elbow, shoulder, fingers, extensions?
+    Motor shouldeMotor;
+    Motor armExtension;
+
+    public actions(SwerveDriveTrain driveTrain, Motor shouldeMotor, Motor armExtension, String functionName, double parameter) {
+        this.driveTrain = driveTrain;
+        this.shouldeMotor = shouldeMotor;
+        this.armExtension = armExtension;
+        this.functionName = functionName;
+        this.parameter = parameter;
     }
 
+    public void run() {
+        switch (functionName) {
+            case ("driveDistance"):
+                driveDistance(parameter, getEncoder);
+                break;
+            case ("driveRotate"):
+                driveRotate(parameter, getBotYaw);
+                break;
+            case ("placeThingy"):
+                // placeThingy(15);
+                break;
+            case ("autoMidBalance"):
+                driveRotate(Math.PI - 0.01, getBotYaw);
+                driveTrain.setDriveSensorPosition(0);;
+        
+                break;
+            case ("driveBackwardsThenRotate"):
+                driveDistance(parameter, getEncoder);
+                driveRotate(180, getBotYaw);
+                break;
+            default:
+                System.out.println("ERROR, command not found: " + functionName);
+        }
+    }
 
+    public boolean driveDistance(double targetX_Meters, double encoderDisplacement_Meters) {
+        ActionHelpers.action("Drive to " + targetX_Meters);
+        targetX_Meters = -targetX_Meters; // TODO why Inverse???
 
+        double currentDistanceX = encoderDisplacement_Meters;
 
-
-
-    public boolean driveSwerve_EncoderIf_FwdAndBwd(double targetX) {
-        targetX = -targetX;
-
-        double currentDistanceX;
-        currentDistanceX = encoderLeftFrontDriveDisplacement_Meteres;
-        double outPutX = 0;
-
-        double toleranc = 0.05;
+        // TODO config
+        double tolerance = 0.05;
         double xSpeed = 0.45;
         double xSpeed_Rev = -0.30;
-        if (Math.abs(targetX - currentDistanceX) > toleranc) {
-            if (currentDistanceX < targetX) {
-                outPutX = xSpeed;
-                swerveDrive(outPutX, 0, 0);
+
+        if (Math.abs(targetX_Meters - currentDistanceX) > tolerance) {
+            if (currentDistanceX < targetX_Meters) {
+                driveTrain.GO(xSpeed, 0, 0);
                 System.out.println("behind target");
                 return false;
             }
-            if (currentDistanceX > targetX) {
-                outPutX = -xSpeed;
-                swerveDrive(outPutX, 0, 0);
+            if (currentDistanceX > targetX_Meters) {
+                driveTrain.GO(-xSpeed_Rev, 0, 0);
                 System.out.println("in front of target");
                 return false;
             }
             return false;
         } else {
-            swerveDrive(0, 0, 0);
+            driveTrain.GO(0, 0, 0);
+            ActionHelpers.action("Destination Reached");
             return true;
         }
     }
 
-    public boolean driveSwerve_EncoderIf_turnOnSpot(double targetYaw_inRad) {
-        double currentRoationYaw_inRad;
-        currentRoationYaw_inRad = botYaw_angleRad;
-        double outPutRad = 0;
+    public boolean driveRotate(double targetYaw_Rad, double botYaw_Rad) {
+        ActionHelpers.action("Rotating to " + targetYaw_Rad);
 
+        double currentRoationYaw_Rad = botYaw_Rad;
+
+        // TODO config
         double tolerance = 0.2;
         double RotSpeed = 25; // rads per sec
-        if (Math.abs(targetYaw_inRad - currentRoationYaw_inRad) > tolerance) {
-            if (currentRoationYaw_inRad < targetYaw_inRad) {
-                outPutRad = RotSpeed;
-                swerveDrive(0, 0, outPutRad);
+
+        if (Math.abs(targetYaw_Rad - currentRoationYaw_Rad) > tolerance) {
+            if (currentRoationYaw_Rad < targetYaw_Rad) {
+                driveTrain.GO(0, 0, RotSpeed);
                 return false;
-            } else if (currentRoationYaw_inRad > targetYaw_inRad) {
-                outPutRad = -RotSpeed;
-                swerveDrive(0, 0, outPutRad);
+            } else if (currentRoationYaw_Rad > targetYaw_Rad) {
+                driveTrain.GO(0, 0, -RotSpeed);
                 return false;
             }
             return false;
         } else {
-            swerveDrive(0, 0, 0);
+            driveTrain.GO(0, 0, 0);
+            ActionHelpers.action("Bot Target Angle Reached");
             return true;
         }
     }
 
-    public boolean armRotate_encoderIf_upAndDown(double targetY) {
+    // TODO pass in motor to make fully parametric
+    public boolean armRotateShoulder(double targetY_Rad, double armCurrent_Rad) {
+        ActionHelpers.action("Rotating to " + targetY_Rad);
 
-        double currentDistanceY;
-        currentDistanceY = armRad_current;
-        double outPutY = 0;
+        double currentAngleY = armCurrent_Rad;
 
-        double toleranc = 0.1;
+        // TODO config
+        double tolerance = 0.1;
         double ySpeed = 0.70;
         double ySpeed_Rev = -0.15;
-        if (Math.abs(targetY - currentDistanceY) > toleranc) {
-            if (currentDistanceY > targetY) {
-                outPutY = -ySpeed;
-                armRotate.tankDrive(-outPutY, outPutY);
+
+        if (Math.abs(targetY_Rad - currentAngleY) > tolerance) {
+            if (currentAngleY > targetY_Rad) {
+                shouldeMotor.tankDrive(ySpeed, -ySpeed);
                 return false;
             }
-            if (currentDistanceY < targetY) {
-                outPutY = ySpeed;
-                armRotate.tankDrive(-outPutY, outPutY);
+            if (currentAngleY < targetY_Rad) {
+                shouldeMotor.tankDrive(-ySpeed, ySpeed);
                 return false;
-            }return false;
+            }
+            return false;
         } else {
-            armRotate.tankDrive(0, 0);
+            shouldeMotor.tankDrive(0, 0);
+            ActionHelpers.action("Arm Target Angle Reached");
             return true;
         }
     }
 
-    public boolean armExtend_encoderIf_outAndIn(double targetExtend) {
+    // TODO pass in motor to make fully parametric, make limitSwitch Boolean
+    public boolean armExtend(double targetExtend, double armCurrentExtenshion_Metres, DigitalInput limitSwitch) {
+        ActionHelpers.action("Extending to " + targetExtend);
 
-        double currentDistance_Metres;
-        currentDistance_Metres = extenstionEncoder_CurrentMetres;
-        double outPut_prec = 0;
+        double currentDistance = armCurrentExtenshion_Metres;
 
-        double toleranc = 0.05;
+        // TODO config
+        double tolerance = 0.05;
         double xSpeed = 0.90;
         double xSpeed_Rev = -0.15;
-        if (Math.abs(targetExtend - currentDistance_Metres) > toleranc) {
-            if (currentDistance_Metres < targetExtend) {
-                outPut_prec = xSpeed;
-                armTalonExtenstion.set(outPut_prec);
+
+        if (Math.abs(targetExtend - currentDistance) > tolerance) {
+            if (currentDistance < targetExtend) {
+                armExtension.set(xSpeed);
                 return false;
             }
-            if (currentDistance_Metres > targetExtend) {
-                if (!extendLimitSwitch.get()) {
-                    outPut_prec = -xSpeed;
-                    armTalonExtenstion.set(outPut_prec);
+            if (currentDistance > targetExtend) {
+                if (!limitSwitch.get()) {
+                    armExtension.set(-xSpeed);
                     return false;
-                } else if (extendLimitSwitch.get()) {
-                    armTalonExtenstion.set(0);
+                } else if (limitSwitch.get()) {
+                    armExtension.set(0);
                     return false;
                 }
             }
-        }
-        else {
-            armTalonExtenstion.set(0);
+        } else {
+            armExtension.set(0);
+            ActionHelpers.action("Arm Target Length Reached");
             return true;
         }
-        return false;
     }
 
-    public void autoBalance() {
-        double outputPitch;
-        double currentPitch;
-        double targetAnglePitch = 0;
-        double tolerance = 5;
-        currentPitch = navxPitch_Deg;
+    ////
 
-        if (Math.abs(targetAnglePitch - currentPitch) > tolerance) {
-            outputPitch = pidPitch.calculate(currentPitch, targetAnglePitch);
+
+    public void autoBalance(double targetAngle_Deg, double botPitch_Deg, PIDController balancePid) {
+        double outputPitch;
+        double tolerance = 5;
+
+        if (Math.abs(targetAngle_Deg - botPitch_Deg) > tolerance) {
+            outputPitch = balancePid.calculate(botPitch_Deg, targetAngle_Deg);
         } else {
             outputPitch = 0;
         }
-        
-        swerveDrive(outputPitch, 0, 0);
+        driveTrain.GO(outputPitch, 0, 0);
     }
 
     public void autoMidBalance() {
-        if (timerInterval_Auto(0, 2.5)){
-            driveSwerve_EncoderIf_turnOnSpot(Math.PI-0.01); // face nodes
+        if (timerInterval_Auto(0, 2.5)) {
+            driveSwerve_EncoderIf_turnOnSpot(Math.PI - 0.01); // face nodes
             System.out.println("turning");
             frontLeftDrive.setSelectedSensorPosition(0);
-        }else if (timerInterval_Auto(2.51, 3)){
-            driveSwerve_EncoderIf_FwdAndBwd(0.21); //drive forwards to thingy
-            //swerveDrive(-0.2, 0, 0);
+        } else if (timerInterval_Auto(2.51, 3)) {
+            driveSwerve_EncoderIf_FwdAndBwd(0.21); // drive forwards to thingy
+            // swerveDrive(-0.2, 0, 0);
             System.out.println("forward");
-        }else if (timerInterval_Auto(3.01, 6)){
-            swerveDrive(0,0,0);
-            armRotate_encoderIf_upAndDown(-1.80); //lift arm
+        } else if (timerInterval_Auto(3.01, 6)) {
+            swerveDrive(0, 0, 0);
+            armRotate_encoderIf_upAndDown(-1.80); // lift arm
             System.out.println("arm up");
-        }else if (timerInterval_Auto(6.01, 8)){
+        } else if (timerInterval_Auto(6.01, 8)) {
             armExtend_encoderIf_outAndIn(0.75); // extend arm
             System.out.println("extend");
-        }else if (timerInterval_Auto(8.01, 8.5)){
-            dSolenoidClaw.set(Value.kForward); //open claw
+        } else if (timerInterval_Auto(8.01, 8.5)) {
+            dSolenoidClaw.set(Value.kForward); // open claw
             System.out.println("drop");
-        }else if (timerInterval_Auto(8.51, 10)){
-            armExtend_encoderIf_outAndIn(0); //retract
-            dSolenoidClaw.set(Value.kReverse); //close claw
+        } else if (timerInterval_Auto(8.51, 10)) {
+            armExtend_encoderIf_outAndIn(0); // retract
+            dSolenoidClaw.set(Value.kReverse); // close claw
             System.out.println("arm down");
-        }else if (timerInterval_Auto(10.01, 12)){
-            armRotate_encoderIf_upAndDown(-0.1); //lower arm
+        } else if (timerInterval_Auto(10.01, 12)) {
+            armRotate_encoderIf_upAndDown(-0.1); // lower arm
             System.out.println("retract");
-        }else if (timerInterval_Auto(12.01, 15)){
-            driveSwerve_EncoderIf_FwdAndBwd(-2.3); //drive backwards past line
+        } else if (timerInterval_Auto(12.01, 15)) {
+            driveSwerve_EncoderIf_FwdAndBwd(-2.3); // drive backwards past line
             System.out.println("back it up");
-        }else { //STOP!!!
+        } else { // STOP!!!
             swerveDrive(0, 0, 0);
-            armRotate.tankDrive(0, 0);      
+            armRotate.tankDrive(0, 0);
             armTalonExtenstion.set(0);
             System.out.println("stop");
         }
     }
 
     public void autoTopAndBottom() {
-        if (timerInterval_Auto(0, 2)){
-            driveSwerve_EncoderIf_turnOnSpot(Math.PI-0.01); // face nodes
+        if (timerInterval_Auto(0, 2)) {
+            driveSwerve_EncoderIf_turnOnSpot(Math.PI - 0.01); // face nodes
             System.out.println("turning");
-        }else if (timerInterval_Auto(2.01, 3.50)){
-            driveSwerve_EncoderIf_FwdAndBwd(0.21); //drive forwards to thingy
+        } else if (timerInterval_Auto(2.01, 3.50)) {
+            driveSwerve_EncoderIf_FwdAndBwd(0.21); // drive forwards to thingy
             frontLeftDrive.setSelectedSensorPosition(0);
-            //swerveDrive(-0.3, 0, 0);
+            // swerveDrive(-0.3, 0, 0);
             System.out.println("forward");
-        }else if (timerInterval_Auto(3.51, 6)){
-            swerveDrive(0,0,0);
-            armRotate_encoderIf_upAndDown(-1.80); //lift arm
+        } else if (timerInterval_Auto(3.51, 6)) {
+            swerveDrive(0, 0, 0);
+            armRotate_encoderIf_upAndDown(-1.80); // lift arm
             System.out.println("arm up");
-        }else if (timerInterval_Auto(6.01, 8)){
+        } else if (timerInterval_Auto(6.01, 8)) {
             armExtend_encoderIf_outAndIn(0.75); // extend arm
             System.out.println("extend");
-        }else if (timerInterval_Auto(8.01, 8.5)){
-            dSolenoidClaw.set(Value.kForward); //open claw
+        } else if (timerInterval_Auto(8.01, 8.5)) {
+            dSolenoidClaw.set(Value.kForward); // open claw
             System.out.println("drop");
-        }else if (timerInterval_Auto(8.51, 10)){
-            armExtend_encoderIf_outAndIn(0); //retract
-            dSolenoidClaw.set(Value.kReverse); //close claw
+        } else if (timerInterval_Auto(8.51, 10)) {
+            armExtend_encoderIf_outAndIn(0); // retract
+            dSolenoidClaw.set(Value.kReverse); // close claw
             System.out.println("arm down");
-        }else if (timerInterval_Auto(10.01, 12)){
-            armRotate_encoderIf_upAndDown(-0.1); //lower arm
+        } else if (timerInterval_Auto(10.01, 12)) {
+            armRotate_encoderIf_upAndDown(-0.1); // lower arm
             System.out.println("retract");
-        }else if (timerInterval_Auto(12.01, 15)){
-            driveSwerve_EncoderIf_FwdAndBwd(-4.3); //drive backwards past line
+        } else if (timerInterval_Auto(12.01, 15)) {
+            driveSwerve_EncoderIf_FwdAndBwd(-4.3); // drive backwards past line
             System.out.println("back it up");
-        }else { //STOP!!!
+        } else { // STOP!!!
             swerveDrive(0, 0, 0);
-            armRotate.tankDrive(0, 0);      
+            armRotate.tankDrive(0, 0);
             armTalonExtenstion.set(0);
             System.out.println("stop");
         }
@@ -228,4 +266,3 @@ public class actions {
         }
     }
 }
-*/

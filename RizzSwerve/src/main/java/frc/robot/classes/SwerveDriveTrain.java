@@ -5,6 +5,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
+//TODO make extend DriveTrain
 public class SwerveDriveTrain {
     SwerveModule[] swerveModules;    
     SwerveDriveKinematics swerveKinematics;

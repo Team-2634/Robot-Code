@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.SPI;
 
 public class newMain extends TimedRobot {
-    //Global variables - Do not overuse
+    //Global variables - Do not overuse!
     //Robot Components
     SwerveDriveTrain driveTrain;
 
@@ -33,7 +33,7 @@ public class newMain extends TimedRobot {
     final XboxController arm_xBoxCont = new XboxController(1);
 
 
-    
+    //TODO move offsets to config?
     //TODO write explaination of what this is?
     public static final Map<MotorLocation, Translation2d> motorLocations = initMotorLocations();
     //This lets you initialze a static hashmap at runtime
@@ -62,7 +62,7 @@ public class newMain extends TimedRobot {
     public newMain(){
        
         Motor[] motors = {
-            //TODO move values to config file
+            //TODO move offset values to config file?
             new Motor<WPI_TalonFX>(new WPI_TalonFX(7), MotorType.WPI_TalonFX, MotorLocation.FrontLeft_Drive),
             new Motor<WPI_TalonFX>(new WPI_TalonFX(1), MotorType.WPI_TalonFX, MotorLocation.FrontRight_Drive),
             new Motor<WPI_TalonFX>(new WPI_TalonFX(5), MotorType.WPI_TalonFX, MotorLocation.BackLeft_Drive),

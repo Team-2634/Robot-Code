@@ -61,7 +61,7 @@ public class Motor <T extends BaseMotorController>{
         setSensorPos(0);
     }
 
-    //TODO move, integrate, ... ???
+    //TODO move, integrate with rest of object, ... ???
     //returns in Radians
     public double getAbsolutePosition(){
         return (encoder.getAbsolutePosition() - encoderOffset) * (Math.PI / 180);

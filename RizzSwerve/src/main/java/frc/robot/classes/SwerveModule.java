@@ -37,15 +37,6 @@ public class SwerveModule {
 
         turnWheelToAngle(45);
     }
-
-    public void resetPIDs(){
-        pid.reset();
-    }
-
-    public void setContinouousInput(){
-        pid.enableContinuousInput(-Math.PI, Math.PI);
-    }
-    
     public void straightenWheel(){ 
         turnWheelToAngle(0);
     }
@@ -60,4 +51,12 @@ public class SwerveModule {
             steerMotor.GO(turnPower);
         }
     }
+
+    public void resetPIDs(){
+        pid.reset();
+    }
+
+    public void setContinouousInput(){
+        pid.enableContinuousInput(-Math.PI, Math.PI);
+    }   
 }
