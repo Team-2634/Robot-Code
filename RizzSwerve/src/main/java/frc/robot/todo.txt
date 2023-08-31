@@ -30,6 +30,7 @@ Rework SmartDashboard logging
 Overall
 	make folder structure
     standardize file naming
+	add descriptions to classes/functions
 
 SwerveModule 
 	✔Generic Motors cause warnings
@@ -41,6 +42,7 @@ SwerveDriveTrain
 	✔resetPIDs
 	PID functions
 	getDriveSensorPosition given location
+	Add @Override decorators
 
 DriveTrain
 	✔Make
@@ -59,7 +61,7 @@ IntakeClawThing
 
 newMain
 	rename newRobot.js (?)
-	call from main.js
+	✔call from main.js
 
 	Move wheel offsets to config
 	Remove/use MotorTypes hashmap

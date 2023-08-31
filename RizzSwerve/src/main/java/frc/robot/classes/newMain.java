@@ -75,6 +75,8 @@ public class newMain extends TimedRobot {
         };
 
         this.driveTrain = new SwerveDriveTrain(motors, Config.teleopSteer_P, Config.teleopSteer_I, Config.teleopSteer_D);
+
+        //TODO Arm Setup
     }
 
 
