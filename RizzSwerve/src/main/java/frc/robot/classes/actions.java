@@ -1,5 +1,7 @@
 package frc.robot.classes;
 
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 
@@ -16,38 +18,50 @@ public class actions implements Runnable {
     double parameter;
 
     SwerveDriveTrain driveTrain;
+    AHRS navx;
 
     // TODO make arm piece w/ wrist, elbow, shoulder, fingers, extensions?
-    Motor shouldeMotor;
+    Motor shouldeMotor; //TODO make Drivetrain/motorgroup
     Motor armExtension;
 
-    public actions(SwerveDriveTrain driveTrain, Motor shouldeMotor, Motor armExtension, String functionName, double parameter) {
+    public actions(SwerveDriveTrain driveTrain, AHRS navx, Motor shouldeMotor, Motor armExtension, String functionName, double parameter) {
         this.driveTrain = driveTrain;
-        this.shouldeMotor = shouldeMotor;
-        this.armExtension = armExtension;
+        this.navx = navx;
+        
         this.functionName = functionName;
         this.parameter = parameter;
+
+        this.shouldeMotor = shouldeMotor;
+        this.armExtension = armExtension;
+    }
+    
+    //TODO Helper functions, move elsewhere
+    double getEncoderX(){
+        return driveTrain.getDriveEncoderPosition(MotorLocation.FrontLeft_Drive);
+    }
+    double getBotYaw(){
+        return this.navx.getPitch();
     }
 
     public void run() {
         switch (functionName) {
             case ("driveDistance"):
-                driveDistance(parameter, getEncoder);
+                driveDistance(parameter, getEncoderX());
                 break;
             case ("driveRotate"):
-                driveRotate(parameter, getBotYaw);
+                driveRotate(parameter, getBotYaw());
                 break;
             case ("placeThingy"):
                 // placeThingy(15);
                 break;
             case ("autoMidBalance"):
-                driveRotate(Math.PI - 0.01, getBotYaw);
-                driveTrain.setDriveSensorPosition(0);;
+                driveRotate(Math.PI - 0.01, getBotYaw());
+                driveTrain.setDriveEncoderPosition(0);;
         
                 break;
             case ("driveBackwardsThenRotate"):
-                driveDistance(parameter, getEncoder);
-                driveRotate(180, getBotYaw);
+                driveDistance(parameter, getEncoderX());
+                driveRotate(180, getBotYaw());
                 break;
             default:
                 System.out.println("ERROR, command not found: " + functionName);
@@ -122,16 +136,16 @@ public class actions implements Runnable {
 
         if (Math.abs(targetY_Rad - currentAngleY) > tolerance) {
             if (currentAngleY > targetY_Rad) {
-                shouldeMotor.tankDrive(ySpeed, -ySpeed);
+                //shouldeMotor.tankDrive(ySpeed, -ySpeed);
                 return false;
             }
             if (currentAngleY < targetY_Rad) {
-                shouldeMotor.tankDrive(-ySpeed, ySpeed);
+                //shouldeMotor.tankDrive(-ySpeed, ySpeed);
                 return false;
             }
             return false;
         } else {
-            shouldeMotor.tankDrive(0, 0);
+            //shouldeMotor.tankDrive(0, 0);
             ActionHelpers.action("Arm Target Angle Reached");
             return true;
         }
@@ -150,28 +164,29 @@ public class actions implements Runnable {
 
         if (Math.abs(targetExtend - currentDistance) > tolerance) {
             if (currentDistance < targetExtend) {
-                armExtension.set(xSpeed);
+                armExtension.GO(xSpeed);
                 return false;
             }
-            if (currentDistance > targetExtend) {
+            else {
                 if (!limitSwitch.get()) {
-                    armExtension.set(-xSpeed);
+                    armExtension.GO(-xSpeed);
                     return false;
                 } else if (limitSwitch.get()) {
-                    armExtension.set(0);
-                    return false;
+                    armExtension.GO(0);
+                    return true;
                 }
+                return false;
             }
         } else {
-            armExtension.set(0);
+            armExtension.GO(0);
             ActionHelpers.action("Arm Target Length Reached");
             return true;
         }
     }
 
-    ////
+    //// Old Auto Subroutines
 
-
+    /*
     public void autoBalance(double targetAngle_Deg, double botPitch_Deg, PIDController balancePid) {
         double outputPitch;
         double tolerance = 5;
@@ -265,4 +280,5 @@ public class actions implements Runnable {
             return false;
         }
     }
+     */
 }

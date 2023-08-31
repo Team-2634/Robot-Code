@@ -2,38 +2,40 @@ package frc.robot.classes;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
 
 //Base Motor object, this should provide basic functionality regardless of which type of motor is actually in use
-public class Motor <T extends BaseMotorController>{
-    MotorType type;
+public class Motor<T>{
+    GenericMotor<T> motor;
+
+    MotorModel type;
     MotorLocation location;
 
-    T motor;
     WPI_CANCoder encoder;
     double encoderOffset;
     
-    public Motor(T motor, MotorType type, MotorLocation location) {
-        this.type = type;
+    public Motor(T motor, MotorModel type, MotorLocation location) {
+        this.motor = new GenericMotor<T>(motor);
         this.location = location;
-
-        this.motor = motor;
+        this.type = type;        
+        //this.type = this.motor.getMotorType();
     }
-    public Motor(T motor, MotorType type, MotorLocation location, WPI_CANCoder encoder, double encoderOffset) {
-        this.type = type;
+    public Motor(T motor, MotorModel type, MotorLocation location, WPI_CANCoder encoder, double encoderOffset) {
+        this.motor = new GenericMotor<T>(motor);
         this.location = location;
+        this.type = type;
 
-        this.motor = motor;
         this.encoder = encoder;
         this.encoderOffset = encoderOffset;
     }
-
 
     // Drive Functions
     public void GO(double power){
         if(power > 0 || power > 1) {
             System.out.println("Speed out of bounds on motor" + location.toString() + " with: " + power);
+        }
+        if(power == 0) {
+            //TODO Set Brakes
         }
 
         double clampedPower = globalFunctions.clamp(power);

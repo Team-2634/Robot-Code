@@ -1,0 +1,114 @@
+TODO LIST:
+
+//// Old Stuff still to migrate ///
+limitSwitch
+
+Arm generic Motors
+differentialDrive as a type of Motor
+
+arm gearRatios and constants to config file
+arm extension const to config
+
+arm IsLimited function for logging
+
+armExtend, armShoulders resetEncoders, getEncoders, 
+armExtend, armShoulders, claw Brakes
+
+Arm PIDs
+
+Make Auto work
+Set up auto routine
+
+Get Navx PID into auto
+
+
+Rework SmartDashboard logging
+
+
+
+/// New Stuff to make better ///
+Overall
+	make folder structure
+    standardize file naming
+
+SwerveModule 
+	✔Generic Motors cause warnings
+	move tolerance to config
+	make tolerance check a globalFunction
+
+SwerveDriveTrain
+	✔extend DriveTrain
+	✔resetPIDs
+	PID functions
+	getDriveSensorPosition given location
+
+DriveTrain
+	✔Make
+TankDriveTrain
+	✔Make
+ArcadeDriveTrain 
+	Make
+
+RobotArm
+	architecture
+	stuff
+
+IntakeClawThing
+	Move to own class
+
+
+newMain
+	rename newRobot.js (?)
+	call from main.js
+
+	Move wheel offsets to config
+	Remove/use MotorTypes hashmap
+
+	Cameras
+	armInits
+	clawInits/resets
+	Move logging to own function
+	Make logging work, work well
+	choose AutoSubroutine
+	rename controller buttons
+	reorder to be cleaner
+	hookup arm
+
+    make sure auto and teleop variables are correctly used at correct times
+	
+Motor
+	✔Fix initialization
+	Allow for DifferentialDrives?
+	✔Have one class per motorType, all extends Motor
+	✔rename to keep away from libraries
+
+globalFunctions
+	rename helpers
+	move to several helper files? (Maybe not...)
+	convertTicksToMPS calculate for any given motorType
+	convertTicksToRads?
+	cleanup getEncoderTicksMPS
+
+Enums
+	✔rename MotorType
+
+Constants
+	set turningEncoderTicksToRad
+
+Config
+	cleanup unused
+	label
+	rename controllerConfigs
+
+ActionsHandler
+	Fix
+Actions
+	✔Fix subroutines
+	move tolerances to config
+	get speeds from config
+	make arm functions use Arm Class
+
+
+
+
+

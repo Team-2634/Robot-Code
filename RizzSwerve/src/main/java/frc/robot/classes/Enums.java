@@ -9,11 +9,12 @@ enum MotorLocation {
     FrontLeft_Steer,
     FrontRight_Steer,
     BackLeft_Steer,
-    BackRight_Steer
+    BackRight_Steer,
+    Left,
+    Right
 }
 
-//TODO RENAME
-enum MotorType {
+enum MotorModel {
     WPI_TalonFX,
     CANSparkMax
 }

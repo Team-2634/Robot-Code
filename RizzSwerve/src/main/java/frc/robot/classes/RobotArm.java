@@ -2,10 +2,12 @@ package frc.robot.classes;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -31,8 +33,7 @@ public class RobotArm {
     Boolean clawToggle = true;
     private final DoubleSolenoid dSolenoidClaw = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 5, 4);
 
-    private final CANSparkMax claw_Wheels = new CANSparkMax(13,
-            com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless); // TODO fix input
+    private final Motor<CANSparkMax> claw_Wheels = new Motor<CANSparkMax>(new CANSparkMax(13, MotorType.kBrushless), MotorModel.CANSparkMax, null);
 
     // PIDController pid;
 
@@ -41,8 +42,7 @@ public class RobotArm {
         double liftArmSide_GearRatio = 64 * (60 / 15);
         double armRotate_ToRad = ((1.0 / liftArmSide_GearRatio) * 2 * Math.PI) / 2048;
         double armRad_current;
-        double kp_armAngle = 0.5, ki_armAngle = 0.05, kd_armAngle = 0.05;
-        final PIDController PID_armAngle = new PIDController(kp_armAngle, ki_armAngle, kd_armAngle);
+        final PIDController PID_armAngle = new PIDController(Config.armAngle_P, Config.armAngle_I, Config.armAngle_D);
         // flag to indicate if arm angle is being limited
         // private boolean armAngleLimited = false; TODO make get isLimited function
 
@@ -56,8 +56,8 @@ public class RobotArm {
         double armTalonExtenstionSpeed_autoRetreat = 0.10;
         double armExtenstion_ToMetres = (armExtenstion_gearRatio * Math.PI * Units.inchesToMeters(2.75)) / 2048.0; // metres
         double extenstionEncoder_CurrentMetres;
-        double kp_armE = 0.5, ki_armE = 0, kd_armD = 0;
-        final PIDController pidArmExtensController = new PIDController(kpAuto, kiAuto, kdAuto);
+
+        final PIDController pidArmExtensController = new PIDController(Config.armExtend_P, Config.armExtend_I, Config.armExtend_D);
 
         // claw_Wheels vvv
 
@@ -254,34 +254,28 @@ public class RobotArm {
 
     ////// Remove \/   
 
-    public void lockWheel() {
-        // TODO future challenge:
-        // calculate the angle for each individual wheel to turn to given the
-        // motorLocation and set each wheel to their respective lock value
+    
 
-        turnWheelToAngle(45);
-    }
+    //public void resetPIDs() {
+    //    pid.reset();
+    //}
 
-    public void resetPIDs() {
-        pid.reset();
-    }
+    // public void setContinouousInput() {
+    //     pid.enableContinuousInput(-Math.PI, Math.PI);
+    // }
 
-    public void setContinouousInput() {
-        pid.enableContinuousInput(-Math.PI, Math.PI);
-    }
+    // public void straightenWheel() {
+    //     turnWheelToAngle(0);
+    // }
 
-    public void straightenWheel() {
-        turnWheelToAngle(0);
-    }
+    // public void turnWheelToAngle(double targetAngle) {
+    //     double currentAngle = Math.abs(this.steerMotor.getAbsolutePosition());
+    //     targetAngle = Math.abs(targetAngle);
 
-    public void turnWheelToAngle(double targetAngle) {
-        double currentAngle = Math.abs(this.steerMotor.getAbsolutePosition());
-        targetAngle = Math.abs(targetAngle);
-
-        double tolerance = 0.0; // TODO move to config
-        if (Math.abs(targetAngle - currentAngle) > tolerance) {
-            double turnPower = pid.calculate(currentAngle, targetAngle);
-            steerMotor.GO(turnPower);
-        }
-    }
+    //     double tolerance = 0.0; // TODO move to config
+    //     if (Math.abs(targetAngle - currentAngle) > tolerance) {
+    //         double turnPower = pid.calculate(currentAngle, targetAngle);
+    //         steerMotor.GO(turnPower);
+    //     }
+    // }
 }

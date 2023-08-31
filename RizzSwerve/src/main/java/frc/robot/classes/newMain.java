@@ -63,15 +63,15 @@ public class newMain extends TimedRobot {
        
         Motor[] motors = {
             //TODO move offset values to config file?
-            new Motor<WPI_TalonFX>(new WPI_TalonFX(7), MotorType.WPI_TalonFX, MotorLocation.FrontLeft_Drive),
-            new Motor<WPI_TalonFX>(new WPI_TalonFX(1), MotorType.WPI_TalonFX, MotorLocation.FrontRight_Drive),
-            new Motor<WPI_TalonFX>(new WPI_TalonFX(5), MotorType.WPI_TalonFX, MotorLocation.BackLeft_Drive),
-            new Motor<WPI_TalonFX>(new WPI_TalonFX(3), MotorType.WPI_TalonFX, MotorLocation.BackRight_Drive),
+            new Motor<WPI_TalonFX>(new WPI_TalonFX(7), MotorModel.WPI_TalonFX, MotorLocation.FrontLeft_Drive),
+            new Motor<WPI_TalonFX>(new WPI_TalonFX(1), MotorModel.WPI_TalonFX, MotorLocation.FrontRight_Drive),
+            new Motor<WPI_TalonFX>(new WPI_TalonFX(5), MotorModel.WPI_TalonFX, MotorLocation.BackLeft_Drive),
+            new Motor<WPI_TalonFX>(new WPI_TalonFX(3), MotorModel.WPI_TalonFX, MotorLocation.BackRight_Drive),
 
-            new Motor<WPI_TalonFX>(new WPI_TalonFX(6), MotorType.WPI_TalonFX, MotorLocation.FrontLeft_Steer, new WPI_CANCoder(3),  197.19),
-            new Motor<WPI_TalonFX>(new WPI_TalonFX(0), MotorType.WPI_TalonFX, MotorLocation.FrontRight_Steer, new WPI_CANCoder(0),  31.8),
-            new Motor<WPI_TalonFX>(new WPI_TalonFX(4), MotorType.WPI_TalonFX, MotorLocation.BackLeft_Steer, new WPI_CANCoder(2),  285.205),
-            new Motor<WPI_TalonFX>(new WPI_TalonFX(2), MotorType.WPI_TalonFX, MotorLocation.BackRight_Steer, new WPI_CANCoder(1),  50.4)
+            new Motor<WPI_TalonFX>(new WPI_TalonFX(6), MotorModel.WPI_TalonFX, MotorLocation.FrontLeft_Steer, new WPI_CANCoder(3),  197.19),
+            new Motor<WPI_TalonFX>(new WPI_TalonFX(0), MotorModel.WPI_TalonFX, MotorLocation.FrontRight_Steer, new WPI_CANCoder(0),  31.8),
+            new Motor<WPI_TalonFX>(new WPI_TalonFX(4), MotorModel.WPI_TalonFX, MotorLocation.BackLeft_Steer, new WPI_CANCoder(2),  285.205),
+            new Motor<WPI_TalonFX>(new WPI_TalonFX(2), MotorModel.WPI_TalonFX, MotorLocation.BackRight_Steer, new WPI_CANCoder(1),  50.4)
         };
 
         this.driveTrain = new SwerveDriveTrain(motors, Config.teleopSteer_P, Config.teleopSteer_I, Config.teleopSteer_D);
@@ -87,8 +87,8 @@ public class newMain extends TimedRobot {
         UsbCamera camera0 = CameraServer.startAutomaticCapture(0); //TODO these shouldnt be defined here
         UsbCamera camera1 = CameraServer.startAutomaticCapture(1);
 
-        driveTrain.setMotorBreaks();
-        //arm.setMotorBreaks();
+        driveTrain.setMotorBrakes();
+        //arm.setMotorBrakes();
 
         driveTrain.setInverted(true);
         driveTrain.setContinouousInput();
@@ -100,19 +100,19 @@ public class newMain extends TimedRobot {
         //arm.resetEncoders();
 
         driveTrain.resetPIDs();
-        driveTrain.setDriveSensorPosition(0);
+        driveTrain.setDriveEncoderPosition(0);
     }
 
     @Override
     public void robotPeriodic() {
         // encoder drive variables vvv
-        double frontLeftDriveDisplacement_Meters = driveTrain.getDriveSensorPosition(MotorLocation.FrontLeft_Drive) * globalFunctions.getEncoderTicksMPS();
+        double frontLeftDriveDisplacement_Meters = driveTrain.getDriveEncoderPosition(MotorLocation.FrontLeft_Drive) * globalFunctions.getEncoderTicksMPS();
         globalFunctions.toDashboard("Drive_Distance_Meters x axis: ", frontLeftDriveDisplacement_Meters);
 
-        double frontRightDriveDisplacement_Meters = driveTrain.getDriveSensorPosition(MotorLocation.FrontRight_Drive) * globalFunctions.getEncoderTicksMPS();
+        double frontRightDriveDisplacement_Meters = driveTrain.getDriveEncoderPosition(MotorLocation.FrontRight_Drive) * globalFunctions.getEncoderTicksMPS();
         globalFunctions.toDashboard("Drive_Distance_Meters yaxis: ", frontRightDriveDisplacement_Meters);
 
-        double frontLeftSteer_Rad = driveTrain.getDriveSensorPosition(MotorLocation.FrontLeft_Steer) * globalFunctions.getEncoderTicksMPS_steer();
+        double frontLeftSteer_Rad = driveTrain.getDriveEncoderPosition(MotorLocation.FrontLeft_Steer) * globalFunctions.getEncoderTicksMPS_steer();
         globalFunctions.toDashboard("Drive_Rotation_Radians: ", frontLeftSteer_Rad);
 
         // navX2 vvv

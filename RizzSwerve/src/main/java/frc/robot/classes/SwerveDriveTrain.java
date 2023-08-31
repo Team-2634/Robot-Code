@@ -5,12 +5,13 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
-//TODO make extend DriveTrain
-public class SwerveDriveTrain {
+public class SwerveDriveTrain extends DriveTrain{
     SwerveModule[] swerveModules;    
     SwerveDriveKinematics swerveKinematics;
 
     public SwerveDriveTrain(Motor[] motors, double pidP, double pidI, double pidD) {
+        super(); 
+
         this.swerveModules = new SwerveModule[]{ 
             new SwerveModule(motors[0], motors[4], new PIDController(pidP, pidI, pidD)),
             new SwerveModule(motors[1], motors[5], new PIDController(pidP, pidI, pidD)),
@@ -23,8 +24,7 @@ public class SwerveDriveTrain {
             newMain.motorLocations.get(MotorLocation.FrontRight_Drive),
             newMain.motorLocations.get(MotorLocation.BackLeft_Drive),
             newMain.motorLocations.get(MotorLocation.BackRight_Drive)
-        );
-
+        );               
     }
 
     public void GO(double xSpeed, double ySpeed, double rotSpeed){
@@ -48,7 +48,7 @@ public class SwerveDriveTrain {
     }
 
     public double getAbsoluteEncoderPosition(MotorLocation location){ 
-        Motor motor = getSwerveModuleMotor(location);
+        Motor motor = getMotor(location);
         return motor.getAbsolutePosition();
     }
 
@@ -59,13 +59,13 @@ public class SwerveDriveTrain {
         }
     }
     
-    public void setDriveSensorPosition(double value){ 
+    public void setDriveEncoderPosition(double value){ 
         for (int i = 0; i < this.swerveModules.length; i++) {
             this.swerveModules[i].driveMotor.setSensorPos(value);
         }
     }
 
-    public double getDriveSensorPosition(MotorLocation location){ 
+    public double getDriveEncoderPosition(MotorLocation location){ 
         //TODO
         return this.swerveModules[0].driveMotor.getSensorPos();
     }
@@ -77,7 +77,10 @@ public class SwerveDriveTrain {
     }
 
     public void resetPIDs(){ 
-        //TODO 
+        //TODO singular/drive/steer PID functions
+        for (int i = 0; i < this.swerveModules.length; i++) {
+            this.swerveModules[i].pid.reset();
+        }
     }
     
     public SwerveModule getSwerveModule(MotorLocation location){ 
@@ -100,7 +103,7 @@ public class SwerveDriveTrain {
         }
     }
 
-    public Motor getSwerveModuleMotor(MotorLocation location){ 
+    public Motor getMotor(MotorLocation location){ 
         //TODO Explain the magic of Regex
         String[] splitLocation = location.toString().split("(?=[A-Z_])");
         
@@ -112,17 +115,17 @@ public class SwerveDriveTrain {
         }
     }
     
-    public void setMotorBreaks(){
-        setDriveMotorBreaks();
-        setSteerMotorBreaks();
+    public void setMotorBrakes(){
+        setDriveMotorBrakes();
+        setSteerMotorBrakes();
     }
 
-    public void setDriveMotorBreaks(){ 
+    public void setDriveMotorBrakes(){ 
         for (int i = 0; i < this.swerveModules.length; i++) {
             this.swerveModules[i].driveMotor.setBrake();
         }
     }
-    public void setSteerMotorBreaks(){ 
+    public void setSteerMotorBrakes(){ 
         for (int i = 0; i < this.swerveModules.length; i++) {
             this.swerveModules[i].steerMotor.setBrake();
         }
@@ -145,5 +148,7 @@ public class SwerveDriveTrain {
             this.swerveModules[i].setContinouousInput();
         }
     }
+
+
 
 }
