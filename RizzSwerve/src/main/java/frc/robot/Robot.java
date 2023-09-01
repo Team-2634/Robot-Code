@@ -34,6 +34,11 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.SPI;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+
 public class Robot extends TimedRobot {
     // Constants vvvvv
     DigitalInput extendLimitSwitch = new DigitalInput(9);
@@ -199,6 +204,9 @@ public class Robot extends TimedRobot {
 
     
     PIDController drive = new PIDController(0.5, 0.0, 0.05);
+
+    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+
     // constants ^^^^^
     // our functions vvvvvv
     
@@ -459,6 +467,18 @@ public class Robot extends TimedRobot {
         }
     }
 
+    public void limelightAlign() {
+        NetworkTableEntry tx = table.getEntry("tx");
+        NetworkTableEntry ty = table.getEntry("ty");
+        NetworkTableEntry ta = table.getEntry("ta");
+
+        double limelightX = tx.getDouble(0.0);
+        double limelightY = ty.getDouble(0.0);
+        double limelightArea = ta.getDouble(0.0);
+
+        
+    }
+
     // execution Functions vvvvv
     @Override
     public void robotInit() {
@@ -575,7 +595,7 @@ public class Robot extends TimedRobot {
         double outPutRad = 0;
 
         double tolerance = 0.2;
-        double RotSpeed = 25; // rads per sec
+        double RotSpeed = 15; // rads per sec
         if (Math.abs(targetYaw_inRad - currentRoationYaw_inRad) > tolerance) {
             if (currentRoationYaw_inRad < targetYaw_inRad) {
                 outPutRad = RotSpeed;
@@ -665,8 +685,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-        // autoTopCone(); //balance
-        autoTopAndBottom(); //not balance
+        // autoMidBalance(); //balance
+        // autoTopAndBottom(); //not balance
+        autoPlsWork();
     } 
 
     public void autoBalance() {
@@ -755,6 +776,39 @@ public class Robot extends TimedRobot {
             swerveDrive(0, 0, 0);
             armRotate.tankDrive(0, 0);      
             armTalonExtenstion.set(0);
+            System.out.println("stop");
+        }
+    }
+
+    public void autoPlsWork() {
+        if (timerInterval_Auto(0, 2.5)){
+            swerveDrive(0,0,0);
+            armRotate_encoderIf_upAndDown(-1.80); //lift arm
+            System.out.println("arm up");
+        }else if (timerInterval_Auto(2.51, 4.5)){
+            armExtend_encoderIf_outAndIn(0.75); // extend arm
+            System.out.println("extend");
+        }else if (timerInterval_Auto(4.51, 5)){
+            dSolenoidClaw.set(Value.kForward); //open claw
+            System.out.println("drop");
+        }else if (timerInterval_Auto(5.01, 6.5)){
+            armExtend_encoderIf_outAndIn(0); //retract
+            dSolenoidClaw.set(Value.kReverse); //close claw
+            System.out.println("arm down");
+        }else if (timerInterval_Auto(6.51, 8.5)){
+            armRotate_encoderIf_upAndDown(-0.1); //lower arm
+            System.out.println("retract");
+        }else if (timerInterval_Auto(8.51, 10.5)){
+            driveSwerve_EncoderIf_FwdAndBwd(-4.3); //drive backwards past line
+            System.out.println("back it up");
+        }else if (timerInterval_Auto(10.51, 15)){
+            driveSwerve_EncoderIf_turnOnSpot(Math.PI-0.01); // face nodes
+            System.out.println("turning");
+        }else { //STOP!!!
+            swerveDrive(0, 0, 0);
+            armRotate.tankDrive(0, 0);      
+            armTalonExtenstion.set(0);
+            navx.reset();
             System.out.println("stop");
         }
     }
