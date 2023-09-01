@@ -781,14 +781,14 @@ public class Robot extends TimedRobot {
     }
 
     public void autoPlsWork() {
-        if (timerInterval_Auto(0, 2.5)){
+        if (timerInterval_Auto(0, 2)){
             swerveDrive(0,0,0);
-            armRotate_encoderIf_upAndDown(-1.80); //lift arm
+            armRotate_encoderIf_upAndDown(-1.70); //lift arm
             System.out.println("arm up");
-        }else if (timerInterval_Auto(2.51, 4.5)){
+        }else if (timerInterval_Auto(2.01, 4)){
             armExtend_encoderIf_outAndIn(0.75); // extend arm
             System.out.println("extend");
-        }else if (timerInterval_Auto(4.51, 5)){
+        }else if (timerInterval_Auto(4.01, 5)){
             dSolenoidClaw.set(Value.kForward); //open claw
             System.out.println("drop");
         }else if (timerInterval_Auto(5.01, 6.5)){
