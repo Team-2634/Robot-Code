@@ -21,7 +21,7 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  final WPI_TalonFX motor = new WPI_TalonFX(0);
+  final WPI_TalonFX motor = new WPI_TalonFX(6);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -64,15 +64,9 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
-    }
+    System.out.println("HELP ME");
+    motor.set(kDefaultPeriod);
+    System.out.println(motor.get());
   }
 
   /** This function is called once when teleop is enabled. */
@@ -82,7 +76,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    motor.set(0.5);
   }
 
   /** This function is called once when the robot is disabled. */
