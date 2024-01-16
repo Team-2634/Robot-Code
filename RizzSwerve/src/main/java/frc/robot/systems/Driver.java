@@ -13,8 +13,20 @@ public class Driver {
     public final WPI_TalonFX backLeftDrive = new WPI_TalonFX(5);
     public final WPI_TalonFX backRightDrive = new WPI_TalonFX(3);
 
+    public final WPI_TalonFX frontLeftSteer = new WPI_TalonFX(6);
+    public final WPI_TalonFX frontRightSteer = new WPI_TalonFX(0);
+    public final WPI_TalonFX backLeftSteer = new WPI_TalonFX(4);
+    public final WPI_TalonFX backRightSteer = new WPI_TalonFX(2);
 
-    
+    public final WPI_CANCoder frontLeftAbsEncoder = new WPI_CANCoder(3);
+    public final WPI_CANCoder frontRightAbsEncoder = new WPI_CANCoder(0);
+    public final WPI_CANCoder backLeftAbsEncoder = new WPI_CANCoder(2);
+    public final WPI_CANCoder backRightAbsEncoder = new WPI_CANCoder(1);
+
+    public final double ticksToMetersDrive = (frontLeftDrive.getSelectedSensorPosition / Constants.talonEncoder_TicksPerRev) * Constants.kDriveMotorGearRatio * Units.inchesToMeters(Constants.kWheelDiameterInches) * Math.PI
+    public final double ticksToRadsTurning =  
+
+
 
     public void swerveDrive(double xSpeed, double ySpeed, double rotSpeed) {
         ChassisSpeeds desiredSpeeds = new ChassisSpeeds(xSpeed * maxSpeedMpS, ySpeed * maxSpeedMpS, rotSpeed);
