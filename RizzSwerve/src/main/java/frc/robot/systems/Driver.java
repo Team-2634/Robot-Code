@@ -23,8 +23,10 @@ public class Driver {
     public final WPI_CANCoder backLeftAbsEncoder = new WPI_CANCoder(2);
     public final WPI_CANCoder backRightAbsEncoder = new WPI_CANCoder(1);
 
-    public final double ticksToMetersDrive = (frontLeftDrive.getSelectedSensorPosition / Constants.talonEncoder_TicksPerRev) * Constants.kDriveMotorGearRatio * Units.inchesToMeters(Constants.kWheelDiameterInches) * Math.PI
-    public final double ticksToRadsTurning =  
+    //ticks counted by motor -> rotations motor side -> rotations wheel side -> distance travelled 
+    public final double ticksToMetersDrive = (frontLeftDrive.getSelectedSensorPosition / Constants.talonEncoder_TicksPerRev) * Constants.kDriveMotorGearRatio * (Units.inchesToMeters(Constants.kWheelDiameterInches) * Math.PI)
+    //ticks counted by motor -> rotations motor side -> rotations output side -> rads turned
+    public final double ticksToRadsTurning = (frontLeftSteer.getSelectedSensorPosition / Constants.talonEncoder_TicksPerRev) * Constants.kTurningMotorGearRatio * 2 * Math.PI
 
 
 
