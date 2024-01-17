@@ -10,7 +10,7 @@ public static class Constants {
     final public double backLeftAbsEncoderOffset = 285.205;
     final public double backRightAbsEncoderOffset = 50.4;
 
-    
+    final double maxDegree = 360;
 
 
     //configurable stuff
