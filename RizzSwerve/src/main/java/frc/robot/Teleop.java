@@ -6,24 +6,21 @@ public class Teleop {
         teleopHelper = new TeleopHelper(driver, shooter, climber)
     }
     
-    final XboxController driving_xBoxCont = new XboxController(0);
+    
+    
+    double contXSpeed = TeleopHelper.removeDeadzone(1) * Constants.XdriveSensitivity;
+    double contYSpeed = TeleopHelper.removeDeadzone(0) * Constants.YdriveSensitivity;
+    double contTurnSpeed = TeleopHelper.removeDeadzone(4) * Constants.turningSensitivity;
 
-    double contXSpeed = removeDeadzone(1) * XdriveSensitivity;
-    double contYSpeed = removeDeadzone(0) * YdriveSensitivity;
-    double contTurnSpeed = removeDeadzone(4) * turningSensitivity;
-
-
-
-    public double removeDeadzone(int axisInput) {
-        if (Math.abs(driving_xBoxCont.getRawAxis(axisInput)) < 0.15) {
-            return 0;
-        }
-        return driving_xBoxCont.getRawAxis(axisInput);
+    public void drive() {
+        TeleopHelper.drive()
     }
 
-    if (true) {
-        contXSpeedField = contXSpeed * Math.cos(botYaw_angleRad) - contYSpeed * Math.sin(botYaw_angleRad);
-        contYSpeedField = contXSpeed * Math.sin(botYaw_angleRad) + contYSpeed * Math.cos(botYaw_angleRad);
-    }
+    
+
+    
+
+
+
 
 }

@@ -53,7 +53,7 @@ public class Robot2 extends TimedRobot {
     
     @Override
     public void teleopInit() {
-        swerveDrive(contXSpeedField, contYSpeedField, contTurnSpeed);
+        
     }
     
     @Override
