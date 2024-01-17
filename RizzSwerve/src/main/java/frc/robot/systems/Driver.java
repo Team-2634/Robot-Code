@@ -85,18 +85,6 @@ public class Driver {
         pidBackRightTurn.enableContinuousInput(-Math.PI, Math.PI);
     }
 
-    public SwerveModuleState[] swerveToModuleStates(double xSpeed, double ySpeed, double rotSpeed) {
-        ChassisSpeeds desiredSpeeds = new ChassisSpeeds(xSpeed * Constants.maxSpeedMpS, ySpeed * Constants.maxSpeedMpS, rotSpeed);
-
-        // make desiredSpeeds into speeds and angles for each module
-        SwerveModuleState[] moduleStates = m_kinematics.toSwerveModuleStates(desiredSpeeds);
-
-        // normalize module values to remove impossible speed values
-        SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, maxSpeedMpS);
-
-        return moduleStates
-    }
-
 
 
 
