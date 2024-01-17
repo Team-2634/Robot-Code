@@ -12,12 +12,12 @@ public class TeleopHelper {
         this.climber = climber;
     }
     
-    final XboxController driving_xBoxCont = new XboxController(0);
+    
 
     
 
     public void drive(double XSpeed, double YSpeed, double TurnSpeed) {
-    swerveDrive(XSpeed, YSpeed, TurnSpeed);
+        swerveDrive(XSpeed, YSpeed, TurnSpeed);
     }
 
     public double removeDeadzone(int axisInput) {
