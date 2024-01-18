@@ -14,22 +14,20 @@ public class TeleopHelper {
     
     
 
-    
+    final XboxController xbox = new XboxController(0);
 
     public void drive(double XSpeed, double YSpeed, double TurnSpeed) {
-        swerveDrive(XSpeed, YSpeed, TurnSpeed);
+        double XSpeedField = XSpeed * Math.cos(botYaw_angleRad) - YSpeed * Math.sin(botYaw_angleRad);
+        double YSpeedField = XSpeed * Math.sin(botYaw_angleRad) + YSpeed * Math.cos(botYaw_angleRad);
+        swerveDrive(XSpeedField * Constants.XdriveSensitivity, YSpeedField * Constants.YdriveSensitivity, TurnSpeed * Constants.turningSensitivity);
     }
 
     public double removeDeadzone(int axisInput) {
-        if (Math.abs(driving_xBoxCont.getRawAxis(axisInput)) < 0.15) {
+        if (Math.abs(xbox.getRawAxis(axisInput)) < Constants.controllerDeadzone) {
             return 0;
         }
-        return driving_xBoxCont.getRawAxis(axisInput);
+        return xbox.getRawAxis(axisInput);
     }
 
-    public void fieldOrientationConvert(double contXSpeed, double contYSpeed) {
-        contXSpeedField = contXSpeed * Math.cos(botYaw_angleRad) - contYSpeed * Math.sin(botYaw_angleRad);
-        contYSpeedField = contXSpeed * Math.sin(botYaw_angleRad) + contYSpeed * Math.cos(botYaw_angleRad);
-    }
 
 }

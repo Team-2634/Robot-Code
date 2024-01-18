@@ -31,6 +31,8 @@ public static class Constants {
     final double turningSensitivity = 25;
     final double maxSpeedMpS = 20; 
 
+    final double controllerDeadzone = 0.15
+
     
 
 
