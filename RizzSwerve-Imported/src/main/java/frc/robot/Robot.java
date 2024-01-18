@@ -14,11 +14,12 @@ import java.util.Collections;
 import java.util.List;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
@@ -71,10 +72,11 @@ public class Robot extends TimedRobot {
     PIDController pidBackLeftTurnAuto = new PIDController(kpAuto, kiAuto, kdAuto);
     PIDController pidBackRightTurnAuto = new PIDController(kpAuto, kiAuto, kdAuto);
 
-    public final WPI_TalonFX frontLeftDrive = new WPI_TalonFX(7);
-    public final WPI_TalonFX frontRightDrive = new WPI_TalonFX(1);
-    public final WPI_TalonFX backLeftDrive = new WPI_TalonFX(5);
-    public final WPI_TalonFX backRightDrive = new WPI_TalonFX(3);
+    
+    public final TalonFX frontLeftDrive = new TalonFX(7);
+    public final TalonFX frontRightDrive = new TalonFX(1);
+    public final TalonFX backLeftDrive = new TalonFX(5);
+    public final TalonFX backRightDrive = new TalonFX(3);
 
     /*
      * public final CANSparkMax frontLeftDrive = new CANSparkMax(17,
@@ -87,10 +89,10 @@ public class Robot extends TimedRobot {
      * MotorType.kBrushless);
      */
 
-    public final WPI_TalonFX frontLeftSteer = new WPI_TalonFX(6);
-    public final WPI_TalonFX frontRightSteer = new WPI_TalonFX(0);
-    public final WPI_TalonFX backLeftSteer = new WPI_TalonFX(4);
-    public final WPI_TalonFX backRightSteer = new WPI_TalonFX(2);
+    public final TalonFX frontLeftSteer = new TalonFX(6);
+    public final TalonFX frontRightSteer = new TalonFX(0);
+    public final TalonFX backLeftSteer = new TalonFX(4);
+    public final TalonFX backRightSteer = new TalonFX(2);
 
     /*
      * public final CANSparkMax frontLeftSteer = new CANSparkMax(17,
@@ -102,11 +104,11 @@ public class Robot extends TimedRobot {
      * public final CANSparkMax backRightSteer = new CANSparkMax(18,
      * MotorType.kBrushless);
      */
-
-    public final WPI_CANCoder frontLeftAbsEncoder = new WPI_CANCoder(3);
-    public final WPI_CANCoder frontRightAbsEncoder = new WPI_CANCoder(0);
-    public final WPI_CANCoder backLeftAbsEncoder = new WPI_CANCoder(2);
-    public final WPI_CANCoder backRightAbsEncoder = new WPI_CANCoder(1);
+    
+    public final CANcoder frontLeftAbsEncoder = new CANcoder(3);
+    public final CANcoder frontRightAbsEncoder = new CANcoder(0);
+    public final CANcoder backLeftAbsEncoder = new CANcoder(2);
+    public final CANcoder backRightAbsEncoder = new CANcoder(1);
 
     final public double frontLeftAbsOffset = 197.19;
     final public double frontRightAbsOffset = 31.8;

@@ -53,19 +53,19 @@ public class RobotOld extends TimedRobot {
     // double contYSpeedField;
 
     // these are used for swerve vvv
-    // final double kpDrive = 0.3;
-    // final double kiDrive = 0.01;
-    // final double kdDrive = 0.01;
+    final double kpDrive = 0.3;
+    final double kiDrive = 0.01;
+    final double kdDrive = 0.01;
 
     // final double kpAuto = 1;
     // final double kiAuto = 0;
     // final double kdAuto = 0.0000075;
 
-    // PIDController pidFrontLeftTurn = new PIDController(kpDrive, kiDrive, kdDrive);
+    PIDController pidFrontLeftTurn = new PIDController(kpDrive, kiDrive, kdDrive);
     // PIDController pidFrontRightTurn = new PIDController(kpDrive, kiDrive, kdDrive);
     // PIDController pidBackLeftTurn = new PIDController(kpDrive, kiDrive, kdDrive);
     // PIDController pidBackRightTurn = new PIDController(kpDrive, kiDrive, kdDrive);
-
+    
     // PIDController pidFrontLeftTurnAuto = new PIDController(kpAuto, kiAuto, kdAuto);
     // PIDController pidFrontRightTurnAuto = new PIDController(kpAuto, kiAuto, kdAuto);
     // PIDController pidBackLeftTurnAuto = new PIDController(kpAuto, kiAuto, kdAuto);

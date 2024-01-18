@@ -1,9 +1,13 @@
 package frc.robot;
 
+import frc.robot.systems.Climber;
+import frc.robot.systems.Driver;
+import frc.robot.systems.Shooter;
+
 public class Auto {
     AutoHelper autoHelper;
     public Auto(Driver driver, Shooter shooter, Climber climber) {
-        this.autoHelper = new AutoHelper(driver, shooter, climber)
+        this.autoHelper = new AutoHelper(driver, shooter, climber);
     }
 
     void restartAutoTimer() {

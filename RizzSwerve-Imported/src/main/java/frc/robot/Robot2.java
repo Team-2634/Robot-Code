@@ -1,6 +1,11 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
+import frc.robot.systems.Climber;
+import frc.robot.systems.Driver;
+import frc.robot.systems.Shooter;
+
 
 
 public class Robot2 extends TimedRobot {
@@ -9,7 +14,7 @@ public class Robot2 extends TimedRobot {
     Driver driver;
     Shooter shooter;
     Climber climber;
-
+ 
     Timer timer = new Timer();
     AHRS navx = new AHRS(SPI.Port.kMXP);
 
@@ -23,16 +28,16 @@ public class Robot2 extends TimedRobot {
         this.auto = new Auto(driver, shooter, climber);
         this.teleop = new Teleop(driver, shooter, climber);
         
-        timerRobot.reset();
-        timerRobot.start();
+        timer.reset();
+        timer.start();
 
         navx.calibrate();
         navx.reset();
-        resetEncoders();
-        resetPIDs();
-        setMotorBreaks();
-        invertMotors();
-        continouousInput();
+        driver.resetEncoders();
+        driver.resetPIDs();
+        driver.setMotorBreaks();
+        driver.invertMotors();
+        driver.continouousInput();
 
     }
     
@@ -48,7 +53,7 @@ public class Robot2 extends TimedRobot {
     
     @Override
     public void autonomousPeriodic() {
-        autoTopAndBottom();
+        auto.autoTopAndBottom();
     }
     
     @Override
