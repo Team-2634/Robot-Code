@@ -23,10 +23,7 @@ public class AutoHelper {
         this.timer = timer;
     }
 
-    void restartTimer() {
-        timer.reset();
-        timer.start();    
-    }
+    
 
     public boolean timerInterval_Auto(double min, double max) {
         if (timer.get() > min && timer.get() < max) {

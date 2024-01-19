@@ -8,15 +8,19 @@ import frc.robot.systems.Driver;
 import frc.robot.systems.Shooter;
 
 public class Auto {
+
+    Timer timer;
+
     AutoHelper autoHelper;
     public Auto(Driver driver, Shooter shooter, Climber climber, AHRS navx, Timer timer) {
         this.autoHelper = new AutoHelper(driver, shooter, climber, navx, timer);
+        this.timer = timer;
     }
 
-    // void restartTimer() {
-    //     timer.reset();
-    //     timer.start();    
-    // }
+    void restartTimer() {
+        timer.reset();
+        timer.start();    
+    }
     
     
     public void autoMidBalance() {
@@ -40,7 +44,6 @@ public class Auto {
             // armRotate_encoderIf_upAndDown(-0.1); //lower arm
         }else if (autoHelper.timerInterval_Auto(12.01, 15)){
             autoHelper.driveSwerve_EncoderIf_FwdAndBwd(-2.3); //drive backwards past line
-            System.out.println("back it up");
         }else { //STOP!!!
             autoHelper.driveSwerve_EncoderIf_FwdAndBwd(0);
             // armRotate.tankDrive(0, 0);      

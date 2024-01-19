@@ -48,10 +48,6 @@ public class Driver {
     SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
         m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
-
-
-
-
     //ticks counted by motor -> rotations motor side -> rotations wheel side -> distance travelled 
     public final double ticksToMetersDrive = (1 / Constants.talonEncoder_TicksPerRev) * Constants.kDriveMotorGearRatio * (Units.inchesToMeters(Constants.kWheelDiameterInches) * Math.PI);
     //ticks counted by motor -> rotations motor side -> rotations output side -> rads turned

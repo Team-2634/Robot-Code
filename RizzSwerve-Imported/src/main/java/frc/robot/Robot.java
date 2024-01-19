@@ -12,25 +12,20 @@ import frc.robot.systems.Shooter;
 
 
 public class Robot extends TimedRobot {
-    Auto auto;
-    Teleop teleop;
-    Driver driver;
-    Shooter shooter;
-    Climber climber;
- 
+
+    Driver driver = new Driver();
+    Shooter shooter = new Shooter();
+    Climber climber = new Climber();
     Timer timer = new Timer();
     AHRS navx = new AHRS();
+
+    Auto auto = new Auto(driver, shooter, climber, navx, timer);
+    Teleop teleop = new Teleop(driver, shooter, climber, navx);
+ 
 
     @Override
     public void robotInit() {
 
-        this.driver = new Driver();
-        this.shooter = new Shooter();
-        this.climber = new Climber();
-        
-        this.auto = new Auto(driver, shooter, climber, navx, timer);
-        this.teleop = new Teleop(driver, shooter, climber, navx);
-        
         timer.reset();
         timer.start();
         navx.reset();
@@ -48,7 +43,7 @@ public class Robot extends TimedRobot {
     
     @Override
     public void autonomousInit() {
-
+        auto.restartTimer();
     }
     
     @Override
@@ -63,6 +58,6 @@ public class Robot extends TimedRobot {
     
     @Override
     public void teleopPeriodic() {
-
+        teleop.drive();
     }
 }
