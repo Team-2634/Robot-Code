@@ -112,6 +112,15 @@ public class Driver {
         return turningEncoderArray[encoder];
     }
 
+    public double readDriveEncoder(int encoder) {
+        double[] driveEncoderArray = {
+            frontLeftDrive.getPosition().getValue(), 
+            frontRightDrive.getPosition().getValue(), 
+            backLeftDrive.getPosition().getValue(), 
+            backRightDrive.getPosition().getValue()};
+        return driveEncoderArray[encoder];
+    }
+
     public SwerveModuleState[] swerveInputToModuleStates(double xSpeed, double ySpeed, double rotSpeed) {
         ChassisSpeeds desiredSpeeds = new ChassisSpeeds(xSpeed * Constants.maxSpeedMpS, ySpeed * Constants.maxSpeedMpS, rotSpeed);
 
@@ -144,7 +153,7 @@ public class Driver {
         driveMotorArray[module].set(power);
     }
 
-    public void swerveDriveModule(int module, SwerveModuleState moduleState) {
+    public void swerveModuleDrive(int module, SwerveModuleState moduleState) {
         swerveSetTurnPower(module, moduleState);
         swerveSetDrivePower(module, moduleState);
     }
@@ -157,10 +166,10 @@ public class Driver {
             swerveOptimizeModuleState(2, moduleStateArray[2]), 
             swerveOptimizeModuleState(3, moduleStateArray[3])};
 
-        swerveDriveModule(0, moduleOptimizedStateArray[0]);
-        swerveDriveModule(1, moduleOptimizedStateArray[1]);
-        swerveDriveModule(2, moduleOptimizedStateArray[2]);
-        swerveDriveModule(3, moduleOptimizedStateArray[3]);
+        swerveModuleDrive(0, moduleOptimizedStateArray[0]);
+        swerveModuleDrive(1, moduleOptimizedStateArray[1]);
+        swerveModuleDrive(2, moduleOptimizedStateArray[2]);
+        swerveModuleDrive(3, moduleOptimizedStateArray[3]);
         
     }
 
