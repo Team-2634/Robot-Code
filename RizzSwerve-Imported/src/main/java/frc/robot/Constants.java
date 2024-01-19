@@ -12,6 +12,8 @@ public class Constants {
 
     public final static double maxDegree = 360;
 
+    public final static double maxVelocity_MetersPerSeconds = 6;
+    public final static double maxAccel_MetersPerSecondsSquared = 3;
 
     //configurable stuff
     public final static double kpDrive = 0.3;
