@@ -1,4 +1,17 @@
-package frc.robot;
+package frc.robot.systems;
+
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
+import frc.robot.Constants;
 
 public class Driver {
     
@@ -9,23 +22,23 @@ public class Driver {
     PIDController pidBackRightTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
     PIDController[] pidArray = {pidFrontLeftTurn, pidFrontRightTurn, pidBackLeftTurn, pidBackRightTurn};
 
-    public final WPI_TalonFX frontLeftDrive = new WPI_TalonFX(7);
-    public final WPI_TalonFX frontRightDrive = new WPI_TalonFX(1);
-    public final WPI_TalonFX backLeftDrive = new WPI_TalonFX(5);
-    public final WPI_TalonFX backRightDrive = new WPI_TalonFX(3);
-    public final WPI_TalonFX[] driveMotorArray = {frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive};
+    public final TalonFX frontLeftDrive = new TalonFX(7);
+    public final TalonFX frontRightDrive = new TalonFX(1);
+    public final TalonFX backLeftDrive = new TalonFX(5);
+    public final TalonFX backRightDrive = new TalonFX(3);
+    public final TalonFX[] driveMotorArray = {frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive};
 
 
-    public final WPI_TalonFX frontLeftSteer = new WPI_TalonFX(6);
-    public final WPI_TalonFX frontRightSteer = new WPI_TalonFX(0);
-    public final WPI_TalonFX backLeftSteer = new WPI_TalonFX(4);
-    public final WPI_TalonFX backRightSteer = new WPI_TalonFX(2);
-    public final WPI_TalonFX[] steerMotorArray = {frontLeftSteer, frontRightSteer, backLeftSteer, backRightSteer};
+    public final TalonFX frontLeftSteer = new TalonFX(6);
+    public final TalonFX frontRightSteer = new TalonFX(0);
+    public final TalonFX backLeftSteer = new TalonFX(4);
+    public final TalonFX backRightSteer = new TalonFX(2);
+    public final TalonFX[] steerMotorArray = {frontLeftSteer, frontRightSteer, backLeftSteer, backRightSteer};
 
-    public final WPI_CANCoder frontLeftAbsEncoder = new WPI_CANCoder(3);
-    public final WPI_CANCoder frontRightAbsEncoder = new WPI_CANCoder(0);
-    public final WPI_CANCoder backLeftAbsEncoder = new WPI_CANCoder(2);
-    public final WPI_CANCoder backRightAbsEncoder = new WPI_CANCoder(1);
+    public final CANcoder frontLeftAbsEncoder = new CANcoder(3);
+    public final CANcoder frontRightAbsEncoder = new CANcoder(0);
+    public final CANcoder backLeftAbsEncoder = new CANcoder(2);
+    public final CANcoder backRightAbsEncoder = new CANcoder(1);
 
     Translation2d m_frontLeftLocation = new Translation2d(0.340, 0.285);
     Translation2d m_frontRightLocation = new Translation2d(0.340, -0.285);
@@ -40,15 +53,15 @@ public class Driver {
 
 
     //ticks counted by motor -> rotations motor side -> rotations wheel side -> distance travelled 
-    public final double ticksToMetersDrive = (1 / Constants.talonEncoder_TicksPerRev) * Constants.kDriveMotorGearRatio * (Units.inchesToMeters(Constants.kWheelDiameterInches) * Math.PI)
+    public final double ticksToMetersDrive = (1 / Constants.talonEncoder_TicksPerRev) * Constants.kDriveMotorGearRatio * (Units.inchesToMeters(Constants.kWheelDiameterInches) * Math.PI);
     //ticks counted by motor -> rotations motor side -> rotations output side -> rads turned
-    public final double ticksToRadsTurning = (1 / Constants.talonEncoder_TicksPerRev) * Constants.kTurningMotorGearRatio * 2 * Math.PI
+    public final double ticksToRadsTurning = (1 / Constants.talonEncoder_TicksPerRev) * Constants.kTurningMotorGearRatio * 2 * Math.PI;
 
     public void resetEncoders() {
-        frontLeftSteer.setSelectedSensorPosition(0);
-        frontRightSteer.setSelectedSensorPosition(0);
-        backLeftSteer.setSelectedSensorPosition(0);
-        backRightSteer.setSelectedSensorPosition(0);
+        frontLeftSteer.setPosition(0);
+        frontRightSteer.setPosition(0);
+        backLeftSteer.setPosition(0);
+        backRightSteer.setPosition(0);
     }
 
     public void resetPIDs(){
@@ -59,15 +72,15 @@ public class Driver {
     }
 
     public void setMotorBreaks() {
-        frontLeftDrive.setNeutralMode(NeutralMode.Brake);
-        frontRightDrive.setNeutralMode(NeutralMode.Brake);
-        backLeftDrive.setNeutralMode(NeutralMode.Brake);
-        backRightDrive.setNeutralMode(NeutralMode.Brake);
+        frontLeftDrive.setNeutralMode(NeutralModeValue.Brake);
+        frontRightDrive.setNeutralMode(NeutralModeValue.Brake);
+        backLeftDrive.setNeutralMode(NeutralModeValue.Brake);
+        backRightDrive.setNeutralMode(NeutralModeValue.Brake);
 
-        frontLeftSteer.setNeutralMode(NeutralMode.Brake);
-        frontRightSteer.setNeutralMode(NeutralMode.Brake);
-        backLeftSteer.setNeutralMode(NeutralMode.Brake);
-        backRightSteer.setNeutralMode(NeutralMode.Brake);
+        frontLeftSteer.setNeutralMode(NeutralModeValue.Brake);
+        frontRightSteer.setNeutralMode(NeutralModeValue.Brake);
+        backLeftSteer.setNeutralMode(NeutralModeValue.Brake);
+        backRightSteer.setNeutralMode(NeutralModeValue.Brake);
     }
 
     public void invertMotors() {
@@ -92,11 +105,11 @@ public class Driver {
 
     public double readTurnEncoder(int encoder) {
         double[] turningEncoderArray = {
-            frontLeftSteer.getSelectedSensorPosition, 
-            frontRightSteer.getSelectedSensorPosition, 
-            backLeftSteer.getSelectedSensorPosition, 
-            backRightSteer.getSelectedSensorPosition}
-        return turningEncoderArray[encoder]
+            frontLeftSteer.getPosition().getValue(), 
+            frontRightSteer.getPosition().getValue(), 
+            backLeftSteer.getPosition().getValue(), 
+            backRightSteer.getPosition().getValue()};
+        return turningEncoderArray[encoder];
     }
 
     public SwerveModuleState[] swerveInputToModuleStates(double xSpeed, double ySpeed, double rotSpeed) {
@@ -106,7 +119,7 @@ public class Driver {
         SwerveModuleState[] moduleStatesArray = m_kinematics.toSwerveModuleStates(desiredSpeeds);
 
         // normalize module values to remove impossible speed values
-        SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, maxSpeedMpS);
+        SwerveDriveKinematics.desaturateWheelSpeeds(moduleStatesArray, Constants.maxSpeedMpS);
 
         return moduleStatesArray;
     }
@@ -120,8 +133,7 @@ public class Driver {
 
     public void swerveSetTurnPower(int module, SwerveModuleState moduleState) {
         double power = pidArray[module].calculate(
-        steerMotorArray[module].getSelectedSensorPosition() * kTurningEncoderTicksToRad,
-        moduleState.angle.getRadians());
+            steerMotorArray[module].getPosition().getValue() * ticksToRadsTurning, moduleState.angle.getRadians());
 
         steerMotorArray[module].set(power);
     }
@@ -143,8 +155,7 @@ public class Driver {
             swerveOptimizeModuleState(0, moduleStateArray[0]), 
             swerveOptimizeModuleState(1, moduleStateArray[1]), 
             swerveOptimizeModuleState(2, moduleStateArray[2]), 
-            swerveOptimizeModuleState(3, moduleStateArray[3])
-        }
+            swerveOptimizeModuleState(3, moduleStateArray[3])};
 
         swerveDriveModule(0, moduleOptimizedStateArray[0]);
         swerveDriveModule(1, moduleOptimizedStateArray[1]);

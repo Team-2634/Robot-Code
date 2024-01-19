@@ -1,5 +1,9 @@
 package frc.robot;
 
+import frc.robot.systems.Climber;
+import frc.robot.systems.Driver;
+import frc.robot.systems.Shooter;
+
 public class AutoHelper {
 
     Driver driver;

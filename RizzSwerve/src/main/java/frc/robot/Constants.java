@@ -10,7 +10,7 @@ public static class Constants {
     final public double backLeftAbsEncoderOffset = 285.205;
     final public double backRightAbsEncoderOffset = 50.4;
 
-    
+    final double maxDegree = 360;
 
 
     //configurable stuff
@@ -26,4 +26,15 @@ public static class Constants {
     public final double kDriveMotorGearRatio = 1 / 8.14;
     public final double kTurningMotorGearRatio = 1.0 / (150.0 / 7.0);
 
+    final double XdriveSensitivity = 1;
+    final double YdriveSensitivity = 1; 
+    final double turningSensitivity = 25;
+    final double maxSpeedMpS = 20; 
+
+    final double controllerDeadzone = 0.15
+
+    
+
+
+    
 }
