@@ -17,7 +17,7 @@ public class AutoPathing{
 
     public void autoPathing(SwerveDriveKinematics kinematics, AHRS gyro, SwerveModulePosition swerveModPos){
         SwerveDriveOdometry odometer = new SwerveDriveOdometry(
-            kinematics, 
+            kinematics,
             gyro.Rotation2d(),
             swerveModPos
         );

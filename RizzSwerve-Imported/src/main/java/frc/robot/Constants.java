@@ -34,9 +34,5 @@ public class Constants {
     public final static double maxSpeedMpS = 20; 
 
     public final static double controllerDeadzone = 0.15;
-
-    
-
-
     
 }
