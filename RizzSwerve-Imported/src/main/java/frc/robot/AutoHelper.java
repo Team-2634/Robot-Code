@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
@@ -23,7 +24,9 @@ public class AutoHelper {
         this.timer = timer;
     }
 
-    
+    PIDController autoXPID = new PIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto);
+    PIDController autoYPID = new PIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto);
+
 
     public boolean timerInterval_Auto(double min, double max) {
         if (timer.get() > min && timer.get() < max) {
@@ -38,6 +41,25 @@ public class AutoHelper {
         driver.frontRightDrive.setPosition(0);
         driver.backLeftDrive.setPosition(0);
         driver.backRightDrive.setPosition(0);
+    }
+
+    
+    public void autoDriveToPosition(double distanceX, double distanceY) {
+        double currentYawRadians = Math.toRadians(navx.getYaw());
+        double fieldDistanceX = distanceX * Math.cos(currentYawRadians) - distanceY * Math.sin(currentYawRadians);
+        double fieldDistanceY = distanceX * Math.sin(currentYawRadians) + distanceY * Math.cos(currentYawRadians);
+
+        double currentDisplacementX = navx.getDisplacementX() * Math.cos(currentYawRadians) - navx.getDisplacementY() * Math.sin(currentYawRadians);
+        double currentDisplacementY = navx.getDisplacementX() * Math.sin(currentYawRadians) + navx.getDisplacementY() * Math.cos(currentYawRadians);
+        
+        double xSpeed = Math.min(autoXPID.calculate(currentDisplacementX, fieldDistanceX), 1);
+        double ySpeed = Math.min(autoXPID.calculate(currentDisplacementY, fieldDistanceY), 1);
+        driver.swerveDrive(xSpeed, ySpeed, 0);
+    }
+
+    public void autoResetPIDs() {
+        autoXPID.reset();
+        autoYPID.reset();
     }
 
     public boolean driveSwerve_EncoderIf_FwdAndBwd(double targetX) {
