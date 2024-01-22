@@ -83,7 +83,7 @@ public class AutoPathing{
     }
 
     public void followTrajectory(){// final
-        SwerveControllerCommand swerveControllerCoommand = new SwerveControllerCommand(null,null,null,null,null,null,null
+        SwerveControllerCommand swerveControllerCoommand = new SwerveControllerCommand(
         //trajectory,
         //swerveSubsystem::getPose,
         //Drive kinematics,
@@ -94,7 +94,9 @@ public class AutoPathing{
         );
     }
 }
+/* Here's a simplified view of how it works:
 
-
-
-
+    A Trajectory is generated using a trajectory generator, which calculates a path for the robot to follow.
+    The Trajectory is converted into a series of SwerveModuleState objects using the SwerveDriveKinematics class. This involves calculating the desired speed and angle for each module based on the trajectory.
+    The SwerveControllerCommand takes these SwerveModuleState objects and commands the individual swerve modules to achieve those states.
+*/
