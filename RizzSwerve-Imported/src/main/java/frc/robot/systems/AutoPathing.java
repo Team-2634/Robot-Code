@@ -1,3 +1,9 @@
+//git merge develop
+//git checkout <your-feature-branch>
+
+//READ ME: I am not sure if the module state, gyro and such which require to be updated regularly will be... keep that in mind!! 
+//FURTHERMORE: reset and update method exists if needed, however it dose not re-get the gyro and modules, just their values... I think?
+//ONE MORE THINGS: pid values = 0 at the time of writing this :P
 package frc.robot.systems;
 
 import frc.robot.Constants;
@@ -5,6 +11,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -12,51 +19,67 @@ import edu.wpi.first.math.trajectory.*;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import com.kauailabs.navx.frc.AHRS;
 
-public class AutoPathing{
-    Driver driver;
+import java.util.Arrays;
 
-    public void autoPathing(SwerveDriveKinematics kinematics, AHRS gyro, SwerveModulePosition swerveModPos){
-        SwerveDriveOdometry odometer = new SwerveDriveOdometry(
-            kinematics,
-            gyro.Rotation2d(),
-            swerveModPos
-        );
-       
-        TrajectoryConfig trajectoryConfig = new TrajectoryConfig(
-            Constants.maxVelocity_MetersPerSeconds, 
-            Constants.maxAccel_MetersPerSecondsSquared
-        );
-        
-    }   
+public class AutoPathing{
+    int PID_DEAFULT = 0;
+    Driver driver;
+    private SwerveDriveKinematics kinematics;
+    private AHRS gyro;
+    private SwerveModulePosition[] swerveModPos;
+    
+    public AutoPathing(SwerveDriveKinematics kinematics, AHRS gyro, SwerveModulePosition[] swerveModPos) {
+        this.kinematics = kinematics;
+        this.gyro = gyro;
+        this.swerveModPos = swerveModPos;
+    }
+    
+    SwerveDriveOdometry odometer = new SwerveDriveOdometry(//dead reckoning: Where am I, Then where do I need to be
+        kinematics, 
+        gyro.getRotation2d(), 
+        swerveModPos
+    );
+
+    TrajectoryConfig trajectoryConfig = new TrajectoryConfig(//motion planning: Where to next, While asking: where on the path am I?
+        Constants.maxVelocity_MetersPerSeconds, 
+        Constants.maxAccel_MetersPerSecondsSquared
+    );
 
     public Pose2d getPose(){ // pose2d holds x,y and roation 2d
-        return odometer.PoseMeters();
+        return odometer.getPoseMeters();
     }
 
-    public void resetOdometry(Pose2d pose){
-        odometer.reset(pose, gyro.Rotation2d());
+    public void updateOdometry(){
+        odometer.update(gyro.getRotation2d(), swerveModPos);
     }
 
-    public void trajectoryGenerator(){// FIX THIS; WIP
+    public void resetOdometry(Pose2d pose){ // this resest current location too, see pose2d
+        odometer.resetPosition(gyro.getRotation2d(), swerveModPos, pose);
+    }
+
+    public void trajectoryGenerator(){
         Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
             new Pose2d(0,0, new Rotation2d(0)), // initial point
-            list.of(
-                new Translationd2d(1,0), // some more points
-                new Translationd2d(1,-1) //another
+            Arrays.asList(
+                new Translation2d(1,0), // some more points
+                new Translation2d(1,-1) //another
             ),
             new Pose2d(0,0, Rotation2d.fromDegrees(180)), //final
-                                                          // tl;dr spins 180 by the time it travels between the points
+                                                                        // tl;dr spins 180 by the time it travels between the points
             trajectoryConfig
         );
     }
 
-    public void pidTrajectoryTrackers(){//WIP, found online.... ????
-        PIDController xController = new PIDController(null,null,null); //fix
-        PIDController yController = new PIDController(null,null,null); //fix
+    public void pidTrajectoryTrackers(){//combine the functionality of PID control and motion profiling. aka generate setpoints using a motion profile and then use a PID controller to follow those setpoints.
+        PIDController xController = new PIDController(PID_DEAFULT, PID_DEAFULT, PID_DEAFULT);
+        PIDController yController = new PIDController(PID_DEAFULT, PID_DEAFULT, PID_DEAFULT);
         ProfiledPIDController thetaController = new ProfiledPIDController(
-            //p,i,d,constarints?
+            PID_DEAFULT,
+            PID_DEAFULT,
+            PID_DEAFULT,
+            new TrapezoidProfile.Constraints(Constants.maxVelocity_MetersPerSeconds, Constants.maxAccel_MetersPerSecondsSquared)
         );
-        thetaController.enableContinousInput(Math.Pi,Math.Pi);
+        thetaController.enableContinuousInput(Math.PI,Math.PI);
     }
 
     public void followTrajectory(){// final
@@ -75,9 +98,3 @@ public class AutoPathing{
 
 
 
-//public void updateOdometry(){
-//    odometer.update(null,null // replace nulls with the following:
-//        //Rotation2d()
-//        //*4 module states: front left, -right, and then back left, -right
-//    );
-//}
