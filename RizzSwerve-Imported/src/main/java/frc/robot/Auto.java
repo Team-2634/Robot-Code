@@ -1,92 +1,81 @@
 package frc.robot;
 
+import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Shooter;
 
 public class Auto {
+
+    Timer timer;
+
     AutoHelper autoHelper;
-    public Auto(Driver driver, Shooter shooter, Climber climber) {
-        this.autoHelper = new AutoHelper(driver, shooter, climber);
+    public Auto(Driver driver, Shooter shooter, Climber climber, AHRS navx, Timer timer) {
+        this.autoHelper = new AutoHelper(driver, shooter, climber, navx, timer);
+        this.timer = timer;
     }
 
-    void restartAutoTimer() {
-        timerAuto.reset();
-        timerAuto.start();    
+    void restartTimer() {
+        timer.reset();
+        timer.start();    
     }
     
     
     public void autoMidBalance() {
-        if (timerInterval_Auto(0, 2.5)){
-            driveSwerve_EncoderIf_turnOnSpot(Math.PI-0.01); // face nodes
-            System.out.println("turning");
-            frontLeftDrive.setSelectedSensorPosition(0);
-        }else if (timerInterval_Auto(2.51, 3)){
-            driveSwerve_EncoderIf_FwdAndBwd(0.21); //drive forwards to thingy
+        if (autoHelper.timerInterval_Auto(0, 2.5)){
+            autoHelper.driveSwerve_EncoderIf_turnOnSpot(Math.PI-0.01); // face nodes
+            autoHelper.resetDriveEncoders();
+        }else if (autoHelper.timerInterval_Auto(2.51, 3)){
+            autoHelper.driveSwerve_EncoderIf_FwdAndBwd(0.21); //drive forwards to thingy
             //swerveDrive(-0.2, 0, 0);
-            System.out.println("forward");
-        }else if (timerInterval_Auto(3.01, 6)){
-            swerveDrive(0,0,0);
-            armRotate_encoderIf_upAndDown(-1.80); //lift arm
-            System.out.println("arm up");
-        }else if (timerInterval_Auto(6.01, 8)){
-            armExtend_encoderIf_outAndIn(0.75); // extend arm
-            System.out.println("extend");
-        }else if (timerInterval_Auto(8.01, 8.5)){
-            dSolenoidClaw.set(Value.kForward); //open claw
-            System.out.println("drop");
-        }else if (timerInterval_Auto(8.51, 10)){
-            armExtend_encoderIf_outAndIn(0); //retract
-            dSolenoidClaw.set(Value.kReverse); //close claw
-            System.out.println("arm down");
-        }else if (timerInterval_Auto(10.01, 12)){
-            armRotate_encoderIf_upAndDown(-0.1); //lower arm
-            System.out.println("retract");
-        }else if (timerInterval_Auto(12.01, 15)){
-            driveSwerve_EncoderIf_FwdAndBwd(-2.3); //drive backwards past line
-            System.out.println("back it up");
+        }else if (autoHelper.timerInterval_Auto(3.01, 6)){
+            autoHelper.driveSwerve_EncoderIf_FwdAndBwd(0);
+            // armRotate_encoderIf_upAndDown(-1.80); //lift arm
+        }else if (autoHelper.timerInterval_Auto(6.01, 8)){
+            // armExtend_encoderIf_outAndIn(0.75); // extend arm
+        }else if (autoHelper.timerInterval_Auto(8.01, 8.5)){
+            // dSolenoidClaw.set(Value.kForward); //open claw
+        }else if (autoHelper.timerInterval_Auto(8.51, 10)){
+            // armExtend_encoderIf_outAndIn(0); //retract
+            // dSolenoidClaw.set(Value.kReverse); //close claw
+        }else if (autoHelper.timerInterval_Auto(10.01, 12)){
+            // armRotate_encoderIf_upAndDown(-0.1); //lower arm
+        }else if (autoHelper.timerInterval_Auto(12.01, 15)){
+            autoHelper.driveSwerve_EncoderIf_FwdAndBwd(-2.3); //drive backwards past line
         }else { //STOP!!!
-            swerveDrive(0, 0, 0);
-            armRotate.tankDrive(0, 0);      
-            armTalonExtenstion.set(0);
-            System.out.println("stop");
+            autoHelper.driveSwerve_EncoderIf_FwdAndBwd(0);
+            // armRotate.tankDrive(0, 0);      
+            // armTalonExtenstion.set(0);
         }
     }
 
         public void autoTopAndBottom() {
-        if (timerInterval_Auto(0, 2)){
-            driveSwerve_EncoderIf_turnOnSpot(Math.PI-0.01); // face nodes
-            System.out.println("turning");
-        }else if (timerInterval_Auto(2.01, 3.50)){
-            driveSwerve_EncoderIf_FwdAndBwd(0.21); //drive forwards to thingy
-            frontLeftDrive.setSelectedSensorPosition(0);
+        if (autoHelper.timerInterval_Auto(0, 2)){
+            autoHelper.driveSwerve_EncoderIf_turnOnSpot(Math.PI-0.01); // face nodes
+        }else if (autoHelper.timerInterval_Auto(2.01, 3.50)){
+            autoHelper.driveSwerve_EncoderIf_FwdAndBwd(0.21); //drive forwards to thingy
+            autoHelper.resetDriveEncoders();
             //swerveDrive(-0.3, 0, 0);
-            System.out.println("forward");
-        }else if (timerInterval_Auto(3.51, 6)){
-            swerveDrive(0,0,0);
-            armRotate_encoderIf_upAndDown(-1.80); //lift arm
-            System.out.println("arm up");
-        }else if (timerInterval_Auto(6.01, 8)){
-            armExtend_encoderIf_outAndIn(0.75); // extend arm
-            System.out.println("extend");
-        }else if (timerInterval_Auto(8.01, 8.5)){
-            dSolenoidClaw.set(Value.kForward); //open claw
-            System.out.println("drop");
-        }else if (timerInterval_Auto(8.51, 10)){
-            armExtend_encoderIf_outAndIn(0); //retract
-            dSolenoidClaw.set(Value.kReverse); //close claw
-            System.out.println("arm down");
-        }else if (timerInterval_Auto(10.01, 12)){
-            armRotate_encoderIf_upAndDown(-0.1); //lower arm
-            System.out.println("retract");
-        }else if (timerInterval_Auto(12.01, 15)){
-            driveSwerve_EncoderIf_FwdAndBwd(-4.3); //drive backwards past line
-            System.out.println("back it up");
+        }else if (autoHelper.timerInterval_Auto(3.51, 6)){
+            autoHelper.driveSwerve_EncoderIf_FwdAndBwd(0);
+            // armRotate_encoderIf_upAndDown(-1.80); //lift arm
+        }else if (autoHelper.timerInterval_Auto(6.01, 8)){
+            // armExtend_encoderIf_outAndIn(0.75); // extend arm
+        }else if (autoHelper.timerInterval_Auto(8.01, 8.5)){
+            // dSolenoidClaw.set(Value.kForward); //open claw
+        }else if (autoHelper.timerInterval_Auto(8.51, 10)){
+            // armExtend_encoderIf_outAndIn(0); //retract
+            // dSolenoidClaw.set(Value.kReverse); //close claw
+        }else if (autoHelper.timerInterval_Auto(10.01, 12)){
+            // armRotate_encoderIf_upAndDown(-0.1); //lower arm
+        }else if (autoHelper.timerInterval_Auto(12.01, 15)){
+            autoHelper.driveSwerve_EncoderIf_FwdAndBwd(-4.3); //drive backwards past line
         }else { //STOP!!!
-            swerveDrive(0, 0, 0);
-            armRotate.tankDrive(0, 0);      
-            armTalonExtenstion.set(0);
-            System.out.println("stop");
+            autoHelper.driveSwerve_EncoderIf_FwdAndBwd(0);
+            // armRotate.tankDrive(0, 0);      
+            // armTalonExtenstion.set(0);
         }
     }
     
