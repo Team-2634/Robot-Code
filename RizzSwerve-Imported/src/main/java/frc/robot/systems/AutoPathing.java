@@ -57,7 +57,7 @@ public class AutoPathing{
         odometer.resetPosition(gyro.getRotation2d(), swerveModPos, pose);
     }
 
-    public void trajectoryGenerator(){
+    public void trajectoryGenerator(){// change this in usch a way we can create auto code by calling this method.
         Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
             new Pose2d(0,0, new Rotation2d(0)), // initial point
             Arrays.asList(
