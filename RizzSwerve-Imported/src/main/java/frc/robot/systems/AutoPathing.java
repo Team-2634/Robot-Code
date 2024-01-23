@@ -128,4 +128,42 @@ public void autonomousPeriodic() {
     swerveControllerCommand.execute();
 }
 
+an another thing: 
+// Create a SwerveDriveKinematics object
+List<Translation2d> moduleLocations = Arrays.asList(
+new Translation2d(Constants.kTrackWidth / 2.0, Constants.kWheelBase / 2.0),
+new Translation2d(Constants.kTrackWidth / 2.0, -Constants.kWheelBase / 2.0),
+new Translation2d(-Constants.kTrackWidth / 2.0, -Constants.kWheelBase / 2.0),
+new Translation2d(-Constants.kTrackWidth / 2.0, Constants.kWheelBase / 2.0)
+);
+
+SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(moduleLocations);
+
+// Create a SwerveDriveOdometry object
+SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation());
+
+// Generate a trajectory
+TrajectoryConfig config = new TrajectoryConfig(5, 5)
+.setReversed(false)
+.addConstraint(new MaxVelocityConstraint(Units.feetToMeters(12)))
+.addConstraint(new CentripetalAccelerationConstraint(Math.pow(Units.feetToMeters(12), 2) / Math.pow(Constants.kMaxRadius, 2)));
+
+Trajectory trajectory = TrajectoryGenerator.generateTrajectory(config, List.of(), new Pose2d());
+
+// Follow the trajectory
+SwerveControllerCommand command = new SwerveControllerCommand(
+trajectory,
+() -> m_odometry.getPoseMeters(),
+m_kinematics,
+(state) -> {
+// Set the desired output of each swerve module here
+},
+m_drive
+);
+
+command.schedule();
+
+// Update the odometry object in your main loop
+m_odometry.update(getGyroscopeRotation(), getModuleStates());
+
 */
