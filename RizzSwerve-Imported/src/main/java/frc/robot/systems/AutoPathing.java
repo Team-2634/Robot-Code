@@ -23,10 +23,13 @@ import java.util.Arrays;
 
 public class AutoPathing{
     int PID_DEAFULT = 0;//switch to conts
-    add driver thing back, my bad I delete it :(
+    Driver driver = new Driver();
     private SwerveDriveKinematics kinematics;
     private AHRS gyro;
     private SwerveModulePosition[] swerveModPos;
+    Trajectory trajectory;
+    PIDController xController, yController;
+    ProfiledPIDController thetaController;
     
     public AutoPathing(SwerveDriveKinematics kinematics, AHRS gyro, SwerveModulePosition[] swerveModPos) {
         this.kinematics = kinematics;
@@ -58,7 +61,7 @@ public class AutoPathing{
     }
 
     public void trajectoryGenerator(){// change this in usch a way we can create auto code by calling this method.
-        Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
+        trajectory = TrajectoryGenerator.generateTrajectory(
             new Pose2d(0,0, new Rotation2d(0)), // initial point
             Arrays.asList(
                 new Translation2d(1,0), // some more points
@@ -71,26 +74,27 @@ public class AutoPathing{
     }
 
     public void pidTrajectoryTrackers(){//combine the functionality of PID control and motion profiling. aka generate setpoints using a motion profile and then use a PID controller to follow those setpoints.
-        PIDController xController = new PIDController(PID_DEAFULT, PID_DEAFULT, PID_DEAFULT);
-        PIDController yController = new PIDController(PID_DEAFULT, PID_DEAFULT, PID_DEAFULT);
-        ProfiledPIDController thetaController = new ProfiledPIDController(
+        xController = new PIDController(PID_DEAFULT, PID_DEAFULT, PID_DEAFULT);
+        yController = new PIDController(PID_DEAFULT, PID_DEAFULT, PID_DEAFULT);
+        thetaController = new ProfiledPIDController(
             PID_DEAFULT,
             PID_DEAFULT,
             PID_DEAFULT,
             new TrapezoidProfile.Constraints(Constants.maxVelocity_MetersPerSeconds, Constants.maxAccel_MetersPerSecondsSquared)
         );
         thetaController.enableContinuousInput(Math.PI,Math.PI);
-        return new PIDCONTROLLER[]{xController,yController}; asjdfhgasjkfgasd // fix
+        //return new PIDCONTROLLER[]{xController,yController}; asjdfhgasjkfgasd // ...
     }
 
-    public void followTrajectory(){// final
+    public void followTrajectory(){// final swerveModPos
         SwerveControllerCommand swerveControllerCoommand = new SwerveControllerCommand(
         trajectory,
         this::getPose,
         kinematics,
         xController,
         yController,
-        //swerveSubsystem::setModulesStates,
+        thetaController,
+        swerveModPos::setModulesStates,
         driver
         );
     }
@@ -165,5 +169,40 @@ command.schedule();
 
 // Update the odometry object in your main loop
 m_odometry.update(getGyroscopeRotation(), getModuleStates());
+
+
+phind:
+The `SwerveControllerCommand` class in the WPILib library has three constructors, each requiring different parameters. Here are the parameters for each constructor:
+
+1. **Constructor 1:**
+   - `Trajectory trajectory`: The trajectory to follow.
+   - `Supplier<Pose2d> pose`: A function that supplies the robot pose.
+   - `SwerveDriveKinematics kinematics`: The kinematics for the robot drivetrain.
+   - `PIDController xController`: The Trajectory Tracker PID controller for the robot's x position.
+   - `PIDController yController`: The Trajectory Tracker PID controller for the robot's y position.
+   - `ProfiledPIDController thetaController`: The Trajectory Tracker PID controller for angle for the robot.
+   - `Supplier<Rotation2d> desiredRotation`: The angle that the drivetrain should be facing. This is sampled at each time step.
+   - `Consumer<SwerveModuleState[]> outputModuleStates`: The raw output module states from the position controllers.
+   - `Subsystem... requirements`: The subsystems to require.
+
+2. **Constructor 2:**
+   - `Trajectory trajectory`: The trajectory to follow.
+   - `Supplier<Pose2d> pose`: A function that supplies the robot pose.
+   - `SwerveDriveKinematics kinematics`: The kinematics for the robot drivetrain.
+   - `PIDController xController`: The Trajectory Tracker PID controller for the robot's x position.
+   - `PIDController yController`: The Trajectory Tracker PID controller for the robot's y position.
+   - `ProfiledPIDController thetaController`: The Trajectory Tracker PID controller for angle for the robot.
+   - `Consumer<SwerveModuleState[]> outputModuleStates`: The raw output module states from the position controllers.
+   - `Subsystem... requirements`: The subsystems to require.
+
+3. **Constructor 3:**
+   - `Trajectory trajectory`: The trajectory to follow.
+   - `Supplier<Pose2d> pose`: A function that supplies the robot pose.
+   - `SwerveDriveKinematics kinematics`: The kinematics for the robot drivetrain.
+   - `HolonomicDriveController controller`: The HolonomicDriveController for the drivetrain.
+   - `Consumer<SwerveModuleState[]> outputModuleStates`: The raw output module states from the position controllers.
+   - `Subsystem... requirements`: The subsystems to require.
+
+Please note that the second and third constructors assume that the final rotation of the robot will be set to the rotation of the final pose in the trajectory. The robot will not follow the rotations from the poses at each timestep. If alternate rotation behavior is desired, the first constructor with a supplier for rotation should be used.
 
 */
