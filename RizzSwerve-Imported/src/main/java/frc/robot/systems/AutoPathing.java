@@ -25,7 +25,7 @@ import com.kauailabs.navx.frc.AHRS;
 import java.util.Arrays;
 
 public class AutoPathing{
-    int PID_DEAFULT = 0;//switch to consts    Driver driver = new Driver();
+    int PID_DEAFULT = 0;//switch to consts
     private SwerveDriveKinematics kinematics;
     private AHRS gyro;
     private SwerveModulePosition[] swerveModPos;
@@ -105,7 +105,7 @@ public class AutoPathing{
         swerveControllerCoommand.initialize();
     }
 
-    public void followTrajectory_Exectute(){
+    public void followTrajectory_Execute(){
         try {
             swerveControllerCoommand.execute();
         } catch (NullPointerException e) {
@@ -119,7 +119,41 @@ public class AutoPathing{
     The Trajectory is converted into a series of SwerveModuleState objects using the SwerveDriveKinematics class. This involves calculating the desired speed and angle for each module based on the trajectory.
     The SwerveControllerCommand takes these SwerveModuleState objects and commands the individual swerve modules to achieve those states.
 */
-/*
+/* 
 // Update the odometry object in your main loop
 m_odometry.update(getGyroscopeRotation(), getModuleStates());
+
+stream line trajectory for easier use:
+public enum Direction {
+    FORWARD, BACKWARD, LEFT, RIGHT
+}
+
+public void trajectoryGenerator(Direction[] directions) {
+    List<Translation2d> waypoints = new ArrayList<>();
+
+    for (Direction direction : directions) {
+        switch (direction) {
+            case FORWARD:
+                waypoints.add(new Translation2d(1, 0)); // adjust as needed
+                break;
+            case BACKWARD:
+                waypoints.add(new Translation2d(-1, 0)); // adjust as needed
+                break;
+            case LEFT:
+                waypoints.add(new Translation2d(0, -1)); // adjust as needed
+                break;
+            case RIGHT:
+                waypoints.add(new Translation2d(0, 1)); // adjust as needed
+                break;
+        }
+    }
+
+    trajectory = TrajectoryGenerator.generateTrajectory(
+        new Pose2d(0,0, new Rotation2d(0)), 
+        waypoints, 
+        new Pose2d(0,0, Rotation2d.fromDegrees(180)), 
+        trajectoryConfig
+    );
+}
+
 */
