@@ -156,4 +156,8 @@ public void trajectoryGenerator(Direction[] directions) {
     );
 }
 
+// module stuff
+public void updateModuleStates(SwerveModuleState[] newStates) {
+    moduleStatesArray = newStates;
+}
 */
