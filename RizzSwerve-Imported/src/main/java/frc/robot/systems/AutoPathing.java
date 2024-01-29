@@ -25,8 +25,7 @@ import com.kauailabs.navx.frc.AHRS;
 import java.util.Arrays;
 
 public class AutoPathing{
-    int PID_DEAFULT = 0;//switch to conts
-    Driver driver = new Driver();
+    int PID_DEAFULT = 0;//switch to consts    Driver driver = new Driver();
     private SwerveDriveKinematics kinematics;
     private AHRS gyro;
     private SwerveModulePosition[] swerveModPos;
@@ -102,12 +101,16 @@ public class AutoPathing{
             this::getPose, 
             kinematics, 
             holoController,
-            null); // need module states!!!
+            () -> moduleStatesArray); // need module states!!!
         swerveControllerCoommand.initialize();
     }
 
-    public void followTrajectory_Periodic(){ //fix
-        swerveControllerCoommand.execute();
+    public void followTrajectory_Exectute(){
+        try {
+            swerveControllerCoommand.execute();
+        } catch (NullPointerException e) {
+            System.out.println("Warning: SwerveControllerCommand has not been initialized.")
+        }
     }
 }
 /* Here's a simplified view of how it works:
@@ -115,84 +118,8 @@ public class AutoPathing{
     A Trajectory is generated using a trajectory generator, which calculates a path for the robot to follow.
     The Trajectory is converted into a series of SwerveModuleState objects using the SwerveDriveKinematics class. This involves calculating the desired speed and angle for each module based on the trajectory.
     The SwerveControllerCommand takes these SwerveModuleState objects and commands the individual swerve modules to achieve those states.
-
-
-@Override
-public void autonomousPeriodic() {
-    swerveControllerCommand.execute();
-}
-
-an another thing: 
-// Create a SwerveDriveKinematics object
-List<Translation2d> moduleLocations = Arrays.asList(
-new Translation2d(Constants.kTrackWidth / 2.0, Constants.kWheelBase / 2.0),
-new Translation2d(Constants.kTrackWidth / 2.0, -Constants.kWheelBase / 2.0),
-new Translation2d(-Constants.kTrackWidth / 2.0, -Constants.kWheelBase / 2.0),
-new Translation2d(-Constants.kTrackWidth / 2.0, Constants.kWheelBase / 2.0)
-);
-
-SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(moduleLocations);
-
-// Create a SwerveDriveOdometry object
-SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation());
-
-// Generate a trajectory
-TrajectoryConfig config = new TrajectoryConfig(5, 5)
-.setReversed(false)
-.addConstraint(new MaxVelocityConstraint(Units.feetToMeters(12)))
-.addConstraint(new CentripetalAccelerationConstraint(Math.pow(Units.feetToMeters(12), 2) / Math.pow(Constants.kMaxRadius, 2)));
-
-Trajectory trajectory = TrajectoryGenerator.generateTrajectory(config, List.of(), new Pose2d());
-
-// Follow the trajectory
-SwerveControllerCommand command = new SwerveControllerCommand(
-trajectory,
-() -> m_odometry.getPoseMeters(),
-m_kinematics,
-(state) -> {
-// Set the desired output of each swerve module here
-},
-m_drive
-);
-
-command.schedule();
-
+*/
+/*
 // Update the odometry object in your main loop
 m_odometry.update(getGyroscopeRotation(), getModuleStates());
-
-
-phind:
-The `SwerveControllerCommand` class in the WPILib library has three constructors, each requiring different parameters. Here are the parameters for each constructor:
-
-1. **Constructor 1:**
-   - `Trajectory trajectory`: The trajectory to follow.
-   - `Supplier<Pose2d> pose`: A function that supplies the robot pose.
-   - `SwerveDriveKinematics kinematics`: The kinematics for the robot drivetrain.
-   - `PIDController xController`: The Trajectory Tracker PID controller for the robot's x position.
-   - `PIDController yController`: The Trajectory Tracker PID controller for the robot's y position.
-   - `ProfiledPIDController thetaController`: The Trajectory Tracker PID controller for angle for the robot.
-   - `Supplier<Rotation2d> desiredRotation`: The angle that the drivetrain should be facing. This is sampled at each time step.
-   - `Consumer<SwerveModuleState[]> outputModuleStates`: The raw output module states from the position controllers.
-   - `Subsystem... requirements`: The subsystems to require.
-
-2. **Constructor 2:**
-   - `Trajectory trajectory`: The trajectory to follow.
-   - `Supplier<Pose2d> pose`: A function that supplies the robot pose.
-   - `SwerveDriveKinematics kinematics`: The kinematics for the robot drivetrain.
-   - `PIDController xController`: The Trajectory Tracker PID controller for the robot's x position.
-   - `PIDController yController`: The Trajectory Tracker PID controller for the robot's y position.
-   - `ProfiledPIDController thetaController`: The Trajectory Tracker PID controller for angle for the robot.
-   - `Consumer<SwerveModuleState[]> outputModuleStates`: The raw output module states from the position controllers.
-   - `Subsystem... requirements`: The subsystems to require.
-
-3. **Constructor 3:**
-   - `Trajectory trajectory`: The trajectory to follow.
-   - `Supplier<Pose2d> pose`: A function that supplies the robot pose.
-   - `SwerveDriveKinematics kinematics`: The kinematics for the robot drivetrain.
-   - `HolonomicDriveController controller`: The HolonomicDriveController for the drivetrain.
-   - `Consumer<SwerveModuleState[]> outputModuleStates`: The raw output module states from the position controllers.
-   - `Subsystem... requirements`: The subsystems to require.
-
-Please note that the second and third constructors assume that the final rotation of the robot will be set to the rotation of the final pose in the trajectory. The robot will not follow the rotations from the poses at each timestep. If alternate rotation behavior is desired, the first constructor with a supplier for rotation should be used.
-
 */
