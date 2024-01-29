@@ -65,7 +65,7 @@ public class AutoPathing{
         odometer.resetPosition(gyro.getRotation2d(), swerveModPos, pose);
     }
 
-    public void trajectoryGenerator(){// change this in usch a way we can create auto code by calling this method.
+    public Trajectory trajectoryGenerator(){// change this in usch a way we can create auto code by calling this method.
         trajectory = TrajectoryGenerator.generateTrajectory(
             new Pose2d(0,0, new Rotation2d(0)), // initial point
             Arrays.asList(
@@ -93,15 +93,21 @@ public class AutoPathing{
         //SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(1, 3, 1);
     }
 
-    public void followTrajectory(){
+    public void followTrajectory_Init(){
+        trajectoryGenerator();
+        pidTrajectoryTrackers();
         HolonomicDriveController holoController = new HolonomicDriveController(xController, yController, thetaController);
         SwerveControllerCommand swerveControllerCoommand = new SwerveControllerCommand(
             trajectory, 
             this::getPose, 
             kinematics, 
-            holoController, 
-            null, // need module states!!
-             null);
+            holoController,
+            null); // need module states!!!
+        swerveControllerCoommand.initialize();
+    }
+
+    public void followTrajectory_Periodic(){ //fix
+        swerveControllerCoommand.execute();
     }
 }
 /* Here's a simplified view of how it works:
@@ -110,27 +116,6 @@ public class AutoPathing{
     The Trajectory is converted into a series of SwerveModuleState objects using the SwerveDriveKinematics class. This involves calculating the desired speed and angle for each module based on the trajectory.
     The SwerveControllerCommand takes these SwerveModuleState objects and commands the individual swerve modules to achieve those states.
 
-another: 
-CommandScheduler scheduler = CommandScheduler.getInstance();
-scheduler.schedule(swerveControllerCommand);
-or
-private SwerveControllerCommand swerveControllerCommand;
-
-@Override
-public void autonomousInit() {
-    Trajectory trajectory = trajectoryGenerator();
-    PIDController[] controllers = pidTrajectoryTrackers();
-    swerveControllerCommand = new SwerveControllerCommand(
-        trajectory,
-        this::getPose,
-        kinematics,
-        controllers[0],
-        controllers[1],
-        swerveModPos::setState,
-        driver
-    );
-    swerveControllerCommand.initialize();
-}
 
 @Override
 public void autonomousPeriodic() {
