@@ -1,20 +1,23 @@
 //git merge develop
 //git checkout <your-feature-branch>
 
-//READ ME: I am not sure if the module state, gyro and such which require to be updated regularly will be... keep that in mind!! 
+//READ ME: I am not sure if the module state, gyro and such which require to be updated regularly... keep that in mind!! 
 //FURTHERMORE: reset and update method exists if needed, however it dose not re-get the gyro and modules, just their values... I think?
 //ONE MORE THINGS: pid values = 0 at the time of writing this :P
 package frc.robot.systems;
 
 import frc.robot.Constants;
+import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.*;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import com.kauailabs.navx.frc.AHRS;
@@ -27,14 +30,16 @@ public class AutoPathing{
     private SwerveDriveKinematics kinematics;
     private AHRS gyro;
     private SwerveModulePosition[] swerveModPos;
+    private SwerveModuleState[] moduleStatesArray;
     Trajectory trajectory;
     PIDController xController, yController;
     ProfiledPIDController thetaController;
     
-    public AutoPathing(SwerveDriveKinematics kinematics, AHRS gyro, SwerveModulePosition[] swerveModPos) {
+    public AutoPathing(SwerveDriveKinematics kinematics, AHRS gyro, SwerveModulePosition[] swerveModPos, SwerveModuleState[] moduleStatesAry) {
         this.kinematics = kinematics;
         this.gyro = gyro;
         this.swerveModPos = swerveModPos;
+        this.moduleStatesArray = moduleStatesAry;
     }
     
     SwerveDriveOdometry odometer = new SwerveDriveOdometry(//dead reckoning: Where am I, Then where do I need to be
@@ -83,20 +88,20 @@ public class AutoPathing{
             new TrapezoidProfile.Constraints(Constants.maxVelocity_MetersPerSeconds, Constants.maxAccel_MetersPerSecondsSquared)
         );
         thetaController.enableContinuousInput(Math.PI,Math.PI);
-        //return new PIDCONTROLLER[]{xController,yController}; asjdfhgasjkfgasd // ...
+        
+        //Feedforward control is a technique used to compensate for static friction and other forces that cause the motor to require more power to overcome inertia
+        //SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(1, 3, 1);
     }
 
-    public void followTrajectory(){// final swerveModPos
+    public void followTrajectory(){
+        HolonomicDriveController holoController = new HolonomicDriveController(xController, yController, thetaController);
         SwerveControllerCommand swerveControllerCoommand = new SwerveControllerCommand(
-        trajectory,
-        this::getPose,
-        kinematics,
-        xController,
-        yController,
-        thetaController,
-        swerveModPos::setModulesStates,
-        driver
-        );
+            trajectory, 
+            this::getPose, 
+            kinematics, 
+            holoController, 
+            driver::swerveInputToModuleStates,
+             null);
     }
 }
 /* Here's a simplified view of how it works:
