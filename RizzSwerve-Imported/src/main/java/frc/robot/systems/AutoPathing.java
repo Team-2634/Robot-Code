@@ -78,6 +78,34 @@ public class AutoPathing{
         );
     }
 
+    public void trajectoryGenerator_madeEasy(Direction[] directions) {
+        List<Translation2d> waypoints = new ArrayList<>();
+
+        for (Direction direction : directions) {
+            switch (direction) {
+                case FORWARD:
+                    waypoints.add(new Translation2d(1, 0)); // adjust as needed
+                    break;
+                case BACKWARD:
+                    waypoints.add(new Translation2d(-1, 0)); // adjust as needed
+                    break;
+                case LEFT:
+                    waypoints.add(new Translation2d(0, -1)); // adjust as needed
+                    break;
+                case RIGHT:
+                    waypoints.add(new Translation2d(0, 1)); // adjust as needed
+                    break;
+            }
+        }
+
+        trajectory = TrajectoryGenerator.generateTrajectory(
+        new Pose2d(0,0, new Rotation2d(0)), 
+        waypoints,
+        new Pose2d(0,0, Rotation2d.fromDegrees(180)), 
+        trajectoryConfig
+        );
+    }
+
     public void pidTrajectoryTrackers(){//combine the functionality of PID control and motion profiling. aka generate setpoints using a motion profile and then use a PID controller to follow those setpoints.
         xController = new PIDController(PID_DEAFULT, PID_DEAFULT, PID_DEAFULT);
         yController = new PIDController(PID_DEAFULT, PID_DEAFULT, PID_DEAFULT);
