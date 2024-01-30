@@ -23,22 +23,24 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import com.kauailabs.navx.frc.AHRS;
 
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 public class AutoPathing{
     int PID_DEAFULT = 0;//switch to consts
     private SwerveDriveKinematics kinematics;
     private AHRS gyro;
     private SwerveModulePosition[] swerveModPos;
-    private SwerveModuleState[] moduleStatesArray;
+    private Consumer<SwerveModuleState[]> moduleStatesArray;
+    SwerveControllerCommand swerveControllerCoommand;
     Trajectory trajectory;
     PIDController xController, yController;
     ProfiledPIDController thetaController;
     
-    public AutoPathing(SwerveDriveKinematics kinematics, AHRS gyro, SwerveModulePosition[] swerveModPos, SwerveModuleState[] moduleStatesAry) {
+    public AutoPathing(SwerveDriveKinematics kinematics, AHRS gyro, SwerveModulePosition[] swerveModPos, Consumer<SwerveModuleState[]> moduleStatesArray) {
         this.kinematics = kinematics;
         this.gyro = gyro;
         this.swerveModPos = swerveModPos;
-        this.moduleStatesArray = moduleStatesAry;
+        this.moduleStatesArray = moduleStatesArray;
     }
     
     SwerveDriveOdometry odometer = new SwerveDriveOdometry(//dead reckoning: Where am I, Then where do I need to be
@@ -64,15 +66,14 @@ public class AutoPathing{
         odometer.resetPosition(gyro.getRotation2d(), swerveModPos, pose);
     }
 
-    public Trajectory trajectoryGenerator(){// change this in usch a way we can create auto code by calling this method.
+    public void trajectoryGenerator(){
         trajectory = TrajectoryGenerator.generateTrajectory(
             new Pose2d(0,0, new Rotation2d(0)), // initial point
             Arrays.asList(
                 new Translation2d(1,0), // some more points
                 new Translation2d(1,-1) //another
             ),
-            new Pose2d(0,0, Rotation2d.fromDegrees(180)), //final
-                                                                        // tl;dr spins 180 by the time it travels between the points
+            new Pose2d(0,0, Rotation2d.fromDegrees(180)), //final, this ones makes it spin
             trajectoryConfig
         );
     }
@@ -92,25 +93,21 @@ public class AutoPathing{
         //SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(1, 3, 1);
     }
 
-    public void followTrajectory_Init(){
+    public void followTrajectory(){
         trajectoryGenerator();
         pidTrajectoryTrackers();
         HolonomicDriveController holoController = new HolonomicDriveController(xController, yController, thetaController);
-        SwerveControllerCommand swerveControllerCoommand = new SwerveControllerCommand(
+        swerveControllerCoommand = new SwerveControllerCommand(
             trajectory, 
             this::getPose, 
             kinematics, 
             holoController,
-            () -> moduleStatesArray); // need module states!!!
+            moduleStatesArray); // need module states!!!
         swerveControllerCoommand.initialize();
     }
 
     public void followTrajectory_Execute(){
-        try {
-            swerveControllerCoommand.execute();
-        } catch (NullPointerException e) {
-            System.out.println("Warning: SwerveControllerCommand has not been initialized.")
-        }
+        swerveControllerCoommand.execute();
     }
 }
 /* Here's a simplified view of how it works:
