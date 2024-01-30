@@ -100,7 +100,7 @@ public class AutoPathing{
         swerveControllerCoommand = new SwerveControllerCommand(
             trajectory, 
             this::getPose, 
-            kinematics, 
+            kinematics,
             holoController,
             moduleStatesArray); // need module states!!!
         swerveControllerCoommand.initialize();
