@@ -39,5 +39,16 @@ public class TeleopHelper {
         return xbox.getRawAxis(axisInput);
     }
 
+    public void Shoot(){
+        shooter.shootNote(5.0, Constants.ShooterMotorSpeed);
+    }
 
+    public void Unstick(){
+        shooter.shootNote(1.0, Constants.ShooterMotorSpeed * 2);
+    }
+
+    public void pickup(){
+        shooter.collectNote(xbox.getRightTriggerAxis());
+    }
 }
+

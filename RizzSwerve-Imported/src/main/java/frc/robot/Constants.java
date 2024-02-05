@@ -35,6 +35,8 @@ public class Constants {
  
     public final static double controllerDeadzone = 0.15;
 
+    public final static double ShooterMotorSpeed = 0.5;
+
     
 
 
