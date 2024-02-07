@@ -2,11 +2,20 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+<<<<<<< Updated upstream
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+=======
+import frc.robot.systems.Climber;
+import frc.robot.systems.Driver;
+import frc.robot.systems.Shooter;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.XboxController;
+
+>>>>>>> Stashed changes
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,10 +61,17 @@ public class Robot extends TimedRobot {
     double contXSpeedField;
     double contYSpeedField;
 
+<<<<<<< Updated upstream
     // these are used for swerve vvv
     final double kpDrive = 0.3;
     final double kiDrive = 0.01;
     final double kdDrive = 0.01;
+=======
+    Auto auto = new Auto(driver, shooter, climber, navx, matchTimer);
+    Teleop teleop = new Teleop(driver, shooter, climber, navx);
+ 
+    XboxController testController = new XboxController(0);
+>>>>>>> Stashed changes
 
     final double kpAuto = 1;
     final double kiAuto = 0;
@@ -481,6 +497,7 @@ public class Robot extends TimedRobot {
     double straightenTolerance = 1;
 
     @Override
+<<<<<<< Updated upstream
     public void robotPeriodic() {
 
         // }
@@ -537,6 +554,10 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("pid_frontRight_Error", pidFrontRightTurn.getPositionError());
         SmartDashboard.putNumber("pid_backLeft_Error", pidBackLeftTurn.getPositionError());
         SmartDashboard.putNumber("pid_backRight_Error", pidBackRightTurn.getPositionError());
+=======
+    public void robotPeriodic() {  
+
+>>>>>>> Stashed changes
     }
 
     public boolean driveSwerve_EncoderIf_FwdAndBwd(double targetX) {
@@ -769,6 +790,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
+<<<<<<< Updated upstream
 
         limitationArmRise(armRad_current);
         SmartDashboard.putBoolean("armAngleLimited: ", armAngleLimited);
@@ -806,6 +828,12 @@ public class Robot extends TimedRobot {
         boolean slowClawWheels = driving_xBoxCont.getRightBumper();
         robotArm(armDown, armUp, claw_xBox, extendArm, retractArm, expel, intake, clawIntake_and_Extend,
                 slowClawWheels);
+=======
+        teleop.drive();
+        boolean buttonA = testController.getAButton();
+
+        SmartDashboard.getBoolean("Button A Pressed", buttonA);
+>>>>>>> Stashed changes
     }
 
     public boolean timerInterval_Auto(double min, double max) {
