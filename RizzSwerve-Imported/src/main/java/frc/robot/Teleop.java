@@ -34,8 +34,22 @@ public class Teleop {
         if (xbox.getLeftBumperPressed() == true){
             teleopHelperObject.Unstick();
         }
-       
+        
+        if (xbox.getAButton() == true){
+            teleopHelperObject.RotateArmCL();
+        }else{
+            teleopHelperObject.RotateStop();
+        }
+
+        if (xbox.getXButton()){
+            teleopHelperObject.RotateArmCCL();
+        }else{
+            teleopHelperObject.RotateStop();
+        }
+        
         teleopHelperObject.pickup();
+
+
     }
 
 }

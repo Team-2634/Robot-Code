@@ -50,5 +50,17 @@ public class TeleopHelper {
     public void pickup(){
         shooter.collectNote(xbox.getRightTriggerAxis());
     }
+
+    public void RotateArmCL(){
+        shooter.RotateArm(1.0);
+    }
+
+    public void RotateArmCCL(){
+        shooter.RotateArm(-1.0);
+    }
+
+    public void RotateStop(){
+        shooter.RotateArm(0.0);
+    }
 }
 
