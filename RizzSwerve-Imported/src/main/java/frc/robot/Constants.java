@@ -20,15 +20,15 @@ public class Constants {
     //configurable stuff
 
     //device IDs
-    public final static int frontLeftDriveID = 7;
-    public final static int frontRightDriveID = 1;
+    public final static int frontLeftDriveID = 1;
+    public final static int frontRightDriveID = 3;
     public final static int backLeftDriveID = 5;
-    public final static int backRightDriveID = 3;
+    public final static int backRightDriveID = 7;
 
-    public final static int frontLeftSteerID = 6;
-    public final static int frontRightSteerID = 0;
+    public final static int frontLeftSteerID = 0;
+    public final static int frontRightSteerID = 2;
     public final static int backLeftSteerID = 4;
-    public final static int backRightSteerID = 2;
+    public final static int backRightSteerID = 6;
     
     public final static int frontLeftAbsEncoderID = 3;
     public final static int frontRightAbsEncoderID = 0;
@@ -37,8 +37,8 @@ public class Constants {
 
     //PID values
     public final static double kpDrive = 0.3;
-    public final static double kiDrive = 0.01;
-    public final static double kdDrive = 0.01;
+    public final static double kiDrive = 0;
+    public final static double kdDrive = 0;
 
     public final static double kpAuto = 1;
     public final static double kiAuto = 0;
@@ -56,10 +56,10 @@ public class Constants {
     //controller settings
     public final static double XdriveSensitivity = 1;
     public final static double YdriveSensitivity = 1; 
-    public final static double turningSensitivity = 25;
-    public final static double maxSpeedMpS = 20; 
+    public final static double turningSensitivity = 1;
+    public final static double maxSpeedMpS = 1; 
 
-    public final static double controllerDeadzone = 0.15;
+    public final static double controllerDeadzone = 0.1;
 
     //field oriented on/off
     public final static boolean fieldOriented = true;

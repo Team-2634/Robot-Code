@@ -47,7 +47,6 @@ public class AutoHelper {
     
     public void autoDriveByDistance(double distanceX, double distanceY) {
         double[] distanceFieldOriented = Driver.fieldOrient(distanceX, distanceY, navx);
-        
         double fieldDistanceX = distanceFieldOriented[0];
         double fieldDistanceY = distanceFieldOriented[1];
 
@@ -123,5 +122,5 @@ public class AutoHelper {
     public void autoDriveRotatePID(double targetYawRadians) {
         driver.swerveDrive(0, 0, autoTurnPID.calculate(targetYawRadians, Math.toRadians(navx.getYaw())));
     }
-
+    
 }
