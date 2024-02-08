@@ -16,11 +16,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 public class Driver {
-    PIDController pidFrontLeftTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
-    PIDController pidFrontRightTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
-    PIDController pidBackLeftTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
-    PIDController pidBackRightTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
-    PIDController[] pidArray = {pidFrontLeftTurn, pidFrontRightTurn, pidBackLeftTurn, pidBackRightTurn};
+    final PIDController pidFrontLeftTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
+    final PIDController pidFrontRightTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
+    final PIDController pidBackLeftTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
+    final PIDController pidBackRightTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
+    final PIDController[] pidArray = {pidFrontLeftTurn, pidFrontRightTurn, pidBackLeftTurn, pidBackRightTurn};
 
     public final TalonFX frontLeftDrive = new TalonFX(Constants.frontLeftDriveID);
     public final TalonFX frontRightDrive = new TalonFX(Constants.frontRightDriveID);
@@ -40,30 +40,30 @@ public class Driver {
     public final CANcoder backLeftAbsEncoder = new CANcoder(Constants.backLeftAbsEncoderID);
     public final CANcoder backRightAbsEncoder = new CANcoder(Constants.backRightAbsEncoderID);
 
-    Translation2d m_frontLeftLocation = new Translation2d(0.340, 0.285);
-    Translation2d m_frontRightLocation = new Translation2d(0.340, -0.285);
-    Translation2d m_backLeftLocation = new Translation2d(-0.340, 0.285);
-    Translation2d m_backRightLocation = new Translation2d(-0.340, -0.285);
+    final Translation2d frontLeftWheelLocation = new Translation2d(0.325, 0.325);
+    final Translation2d frontRightWheelLocation = new Translation2d(0.325, -0.325);
+    final Translation2d backLeftWheelLocation = new Translation2d(-0.325, 0.325);
+    final Translation2d backRightWheelLocation = new Translation2d(-0.325, -0.325);
 
-    SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
-        m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
+    SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
+        frontLeftWheelLocation, frontRightWheelLocation, backLeftWheelLocation, backRightWheelLocation);
 
     //rotations counted by motor -> rotations wheel side -> distance travelled (meters) 
-    public final double ticksToMetersDrive = Constants.kDriveMotorGearRatio * (Units.inchesToMeters(Constants.kWheelDiameterInches) * Math.PI);
+    final double ticksToMetersDrive = Constants.kDriveMotorGearRatio * (Units.inchesToMeters(Constants.kWheelDiameterInches) * Math.PI);
     //rotations counted by motor -> rotations output side -> rads turned
-    public final double ticksToRadsTurning = Constants.kTurningMotorGearRatio * 2 * Math.PI;
+    final double ticksToRadsTurning = Constants.kTurningMotorGearRatio * 2 * Math.PI;
 
     private void initializeModule(int module) {
         driveMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
         driveMotorArray[module].setInverted(true);
+
         steerMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
         steerMotorArray[module].setInverted(true);
         steerMotorArray[module].setPosition(0);
+
         pidArray[module].reset();
         pidArray[module].enableContinuousInput(-Math.PI, Math.PI);
-
     }
-
 
     public void initialize() {
         initializeModule(0);
@@ -72,39 +72,45 @@ public class Driver {
         initializeModule(3);
     }
 
-
+    /**
+     * Gets encoder position of given encoder
+     * @param encoder location id (0 is front left, 3 is back right)
+     * @return value of requested encoder
+     */
     public double readTurnEncoder(int encoder) {
-        double[] turningEncoderArray = {
-            frontLeftSteer.getPosition().getValue(), 
-            frontRightSteer.getPosition().getValue(), 
-            backLeftSteer.getPosition().getValue(), 
-            backRightSteer.getPosition().getValue()
-        };
-        return turningEncoderArray[encoder];
+        return steerMotorArray[encoder].getPosition().getValue();
     }
 
+    /**
+     * Gets encoder position of given encoder
+     * @param encoder location id (0 is front left, 3 is back right)
+     * @return value of requested encoder
+     */
     public double readDriveEncoder(int encoder) {
-        double[] driveEncoderArray = {
-            frontLeftDrive.getPosition().getValue(), 
-            frontRightDrive.getPosition().getValue(), 
-            backLeftDrive.getPosition().getValue(), 
-            backRightDrive.getPosition().getValue()
-        };
-        return driveEncoderArray[encoder];
+        return driveMotorArray[encoder].getPosition().getValue();
     }
 
-    private SwerveModuleState[] swerveInputToModuleStates(double xSpeed, double ySpeed, double rotSpeed) {
-        ChassisSpeeds desiredSpeeds = new ChassisSpeeds(xSpeed * Constants.maxSpeedMpS, ySpeed * Constants.maxSpeedMpS, rotSpeed);
+    private SwerveModuleState[] swerveInputToModuleStates(double xSpeed, double ySpeed, double turnSpeed) {
+        ChassisSpeeds desiredSpeeds = new ChassisSpeeds(
+            xSpeed * Constants.maxSpeedMpS, 
+            ySpeed * Constants.maxSpeedMpS, 
+            turnSpeed
+        );
 
         // make desiredSpeeds into speeds and angles for each module
-        SwerveModuleState[] moduleStatesArray = m_kinematics.toSwerveModuleStates(desiredSpeeds);
+        SwerveModuleState[] moduleStatesArray = kinematics.toSwerveModuleStates(desiredSpeeds);
 
         // normalize module values to remove impossible speed values
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleStatesArray, Constants.maxSpeedMpS);
 
         return moduleStatesArray;
     }
-
+    /**
+     * Optimize module state so that module does not have to turn more than 90 degrees.
+     * @param id
+     * @param moduleState
+     * @return
+     */
     private SwerveModuleState swerveOptimizeModuleState(int id, SwerveModuleState moduleState) {
         double sensorPosition = readTurnEncoder(id) * ticksToRadsTurning;
         Rotation2d currentAngle = new Rotation2d(sensorPosition);
