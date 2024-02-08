@@ -3,17 +3,26 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 =======
+=======
+import edu.wpi.first.wpilibj.XboxController;
+>>>>>>> Stashed changes
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Shooter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController;
+
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 >>>>>>> Stashed changes
 
@@ -69,6 +78,8 @@ public class Robot extends TimedRobot {
 =======
     Auto auto = new Auto(driver, shooter, climber, navx, matchTimer);
     Teleop teleop = new Teleop(driver, shooter, climber, navx);
+
+    XboxController controller = new XboxController(0);
  
     XboxController testController = new XboxController(0);
 >>>>>>> Stashed changes
@@ -791,6 +802,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
         limitationArmRise(armRad_current);
         SmartDashboard.putBoolean("armAngleLimited: ", armAngleLimited);
@@ -833,6 +845,13 @@ public class Robot extends TimedRobot {
         boolean buttonA = testController.getAButton();
 
         SmartDashboard.getBoolean("Button A Pressed", buttonA);
+>>>>>>> Stashed changes
+=======
+        // teleop.drive();
+
+        boolean buttonA = controller.getAButton();
+
+        SmartDashboard.putBoolean("Button A Pressed!", buttonA);
 >>>>>>> Stashed changes
     }
 
