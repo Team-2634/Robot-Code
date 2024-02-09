@@ -49,7 +49,7 @@ public class Driver {
         frontLeftWheelLocation, frontRightWheelLocation, backLeftWheelLocation, backRightWheelLocation);
 
     //rotations counted by motor -> rotations wheel side -> distance travelled (meters) 
-    final double ticksToMetersDrive = Constants.kDriveMotorGearRatio * (Units.inchesToMeters(Constants.kWheelDiameterInches) * Math.PI);
+    public final double ticksToMetersDrive = Constants.kDriveMotorGearRatio * (Units.inchesToMeters(Constants.kWheelDiameterInches) * Math.PI);
     //rotations counted by motor -> rotations output side -> rads turned
     final double ticksToRadsTurning = Constants.kTurningMotorGearRatio * 2 * Math.PI;
 

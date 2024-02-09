@@ -41,5 +41,4 @@ public class TeleopHelper {
         return xbox.getRawAxis(axisInput);
     }
 
-
 }

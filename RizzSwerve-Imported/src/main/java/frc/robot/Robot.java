@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Shooter;
-
+import frc.robot.systems.SmartDash;
 
 
 
@@ -18,6 +18,7 @@ public class Robot extends TimedRobot {
     Climber climber = new Climber();
     Timer matchTimer = new Timer();
     AHRS navx = new AHRS();
+    SmartDash smartDash = new SmartDash();
 
     Auto auto = new Auto(driver, shooter, climber, navx, matchTimer);
     Teleop teleop = new Teleop(driver, shooter, climber, navx);
@@ -35,6 +36,7 @@ public class Robot extends TimedRobot {
     
     @Override
     public void robotPeriodic() {
+        smartDash.print(5);
     }
     
     @Override
