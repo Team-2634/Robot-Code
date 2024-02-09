@@ -78,6 +78,7 @@ public class AutoPathing{
         );
     }
 
+/*
     public void trajectoryGenerator_madeEasy(Direction[] directions) {
         List<Translation2d> waypoints = new ArrayList<>();
 
@@ -105,6 +106,7 @@ public class AutoPathing{
         trajectoryConfig
         );
     }
+*/
 
     public void pidTrajectoryTrackers(){//combine the functionality of PID control and motion profiling. aka generate setpoints using a motion profile and then use a PID controller to follow those setpoints.
         xController = new PIDController(PID_DEAFULT, PID_DEAFULT, PID_DEAFULT);
