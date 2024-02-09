@@ -6,10 +6,13 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -45,13 +48,30 @@ public class Driver {
     final Translation2d backLeftWheelLocation = new Translation2d(-0.325, 0.325);
     final Translation2d backRightWheelLocation = new Translation2d(-0.325, -0.325);
 
-    SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
+    final SwerveModulePosition frontLeftModulePosition = new SwerveModulePosition();
+    final SwerveModulePosition frontRightModulePosition = new SwerveModulePosition();
+    final SwerveModulePosition backLeftModulePosition = new SwerveModulePosition();
+    final SwerveModulePosition backRightModulePosition = new SwerveModulePosition();
+    final SwerveModulePosition[] modulePositionArray = {
+        frontLeftModulePosition, 
+        frontRightModulePosition, 
+        backLeftModulePosition, 
+        backRightModulePosition
+    };
+
+    public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
         frontLeftWheelLocation, frontRightWheelLocation, backLeftWheelLocation, backRightWheelLocation);
+        
+    SwerveDriveOdometry swerveOdometry = new SwerveDriveOdometry(
+        kinematics, 
+        new Rotation2d(), 
+        modulePositionArray
+    );
 
     //rotations counted by motor -> rotations wheel side -> distance travelled (meters) 
-    final double ticksToMetersDrive = Constants.kDriveMotorGearRatio * (Units.inchesToMeters(Constants.kWheelDiameterInches) * Math.PI);
+    public final double ticksToMetersDrive = Constants.kDriveMotorGearRatio * (Units.inchesToMeters(Constants.kWheelDiameterInches) * Math.PI);
     //rotations counted by motor -> rotations output side -> rads turned
-    final double ticksToRadsTurning = Constants.kTurningMotorGearRatio * 2 * Math.PI;
+    public final double ticksToRadsTurning = Constants.kTurningMotorGearRatio * 2 * Math.PI;
 
     private void initializeModule(int module) {
         driveMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
@@ -165,6 +185,27 @@ public class Driver {
         double YSpeedField = XSpeed * Math.sin(currentYawRadians) + YSpeed * Math.cos(currentYawRadians);
         double[] speeds = {XSpeedField, YSpeedField};
         return speeds;
+    }
+
+    SwerveModulePosition getModulePosition(int module) {
+        return new SwerveModulePosition(
+            readDriveEncoder(module) * ticksToMetersDrive, 
+            new Rotation2d(readTurnEncoder(module) * ticksToRadsTurning)
+        );
+    }
+
+    SwerveModulePosition[] getModulePositionArray() {
+        SwerveModulePosition[] swerveModulePositionArray = {
+            getModulePosition(0),
+            getModulePosition(1),
+            getModulePosition(2),
+            getModulePosition(3)
+        };
+        return swerveModulePositionArray;
+    }
+
+    public Pose2d updatePose(AHRS navx) {
+        return swerveOdometry.update(new Rotation2d(navx.getAngle()), getModulePositionArray());
     }
 
     // public void resetTurnEncoders() {

@@ -3,6 +3,7 @@ package frc.robot;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
@@ -28,6 +29,7 @@ public class AutoHelper {
     PIDController autoYPID = new PIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto);
     PIDController autoTurnPID = new PIDController(Constants.kpAutoRotate, Constants.kiAutoRotate, Constants.kdAutoRotate);
 
+    
 
     public boolean timerInterval_Auto(double min, double max) {
         if (timer.get() > min && timer.get() < max) {
@@ -57,6 +59,14 @@ public class AutoHelper {
         double xSpeed = autoXPID.calculate(currentDisplacementX, fieldDistanceX);
         double ySpeed = autoYPID.calculate(currentDisplacementY, fieldDistanceY);
         driver.swerveDrive(xSpeed, ySpeed, 0);
+    }
+    //unfinished
+    public void driveToPosition(Pose2d startPose, Pose2d endPose) {
+        driver.swerveDrive(
+            autoXPID.calculate(startPose.getX(), endPose.getX()), 
+            autoYPID.calculate(startPose.getY(), endPose.getY()), 
+            autoTurnPID.calculate(startPose.getRotation().getRadians(), endPose.getRotation().getRadians())
+        );
     }
 
     public void autoResetPIDs() {

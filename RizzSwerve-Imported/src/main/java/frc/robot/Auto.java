@@ -79,7 +79,25 @@ public class Auto {
         }
     }
     
-    
+    public void autoProgramTest() {
+        int counter = 0;
+        switch (counter) {
+            case 0:
+                
+                break;
+            
+            case 1:
+                
+                break;
+
+            case 2:
+                
+                break;
+        
+            default:
+                break;
+        }
+    }
 
 
 

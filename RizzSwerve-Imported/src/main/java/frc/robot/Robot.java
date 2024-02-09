@@ -35,6 +35,7 @@ public class Robot extends TimedRobot {
     
     @Override
     public void robotPeriodic() {
+        driver.updatePose(navx);
     }
     
     @Override
