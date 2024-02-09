@@ -25,7 +25,7 @@ public class Auto {
     
     public void autoMidBalance() {
         if (autoHelper.timerInterval_Auto(0, 2.5)){
-            autoHelper.driveSwerve_EncoderIf_turnOnSpot(Math.PI-0.01); // face nodes
+            autoHelper.autoDriveRotate(Math.PI-0.01); // face nodes
             autoHelper.resetDriveEncoders();
         }else if (autoHelper.timerInterval_Auto(2.51, 3)){
             autoHelper.driveSwerve_EncoderIf_FwdAndBwd(0.21); //drive forwards to thingy
@@ -53,7 +53,7 @@ public class Auto {
 
         public void autoTopAndBottom() {
         if (autoHelper.timerInterval_Auto(0, 2)){
-            autoHelper.driveSwerve_EncoderIf_turnOnSpot(Math.PI-0.01); // face nodes
+            autoHelper.autoDriveRotate(Math.PI-0.01); // face nodes
         }else if (autoHelper.timerInterval_Auto(2.01, 3.50)){
             autoHelper.driveSwerve_EncoderIf_FwdAndBwd(0.21); //drive forwards to thingy
             autoHelper.resetDriveEncoders();

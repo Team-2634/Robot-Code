@@ -26,6 +26,7 @@ public class AutoHelper {
 
     PIDController autoXPID = new PIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto);
     PIDController autoYPID = new PIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto);
+    PIDController autoTurnPID = new PIDController(Constants.kpAutoRotate, Constants.kiAutoRotate, Constants.kdAutoRotate);
 
 
     public boolean timerInterval_Auto(double min, double max) {
@@ -44,16 +45,17 @@ public class AutoHelper {
     }
 
     
-    public void autoDriveToPosition(double distanceX, double distanceY) {
-        double currentYawRadians = Math.toRadians(navx.getYaw());
-        double fieldDistanceX = distanceX * Math.cos(currentYawRadians) - distanceY * Math.sin(currentYawRadians);
-        double fieldDistanceY = distanceX * Math.sin(currentYawRadians) + distanceY * Math.cos(currentYawRadians);
+    public void autoDriveByDistance(double distanceX, double distanceY) {
+        double[] distanceFieldOriented = Driver.fieldOrient(distanceX, distanceY, navx);
+        double fieldDistanceX = distanceFieldOriented[0];
+        double fieldDistanceY = distanceFieldOriented[1];
 
-        double currentDisplacementX = navx.getDisplacementX() * Math.cos(currentYawRadians) - navx.getDisplacementY() * Math.sin(currentYawRadians);
-        double currentDisplacementY = navx.getDisplacementX() * Math.sin(currentYawRadians) + navx.getDisplacementY() * Math.cos(currentYawRadians);
+        double[] displacementFieldOriented = Driver.fieldOrient(navx.getDisplacementX(), navx.getDisplacementY(), navx);
+        double currentDisplacementX = displacementFieldOriented[0];
+        double currentDisplacementY = displacementFieldOriented[1];
         
-        double xSpeed = Math.min(autoXPID.calculate(currentDisplacementX, fieldDistanceX), 1);
-        double ySpeed = Math.min(autoXPID.calculate(currentDisplacementY, fieldDistanceY), 1);
+        double xSpeed = autoXPID.calculate(currentDisplacementX, fieldDistanceX);
+        double ySpeed = autoYPID.calculate(currentDisplacementY, fieldDistanceY);
         driver.swerveDrive(xSpeed, ySpeed, 0);
     }
 
@@ -62,6 +64,12 @@ public class AutoHelper {
         autoYPID.reset();
     }
 
+    /**
+     * @deprecated
+     * 
+     * @param targetYaw_inRad
+     * @return
+     */
     public boolean driveSwerve_EncoderIf_FwdAndBwd(double targetX) {
         targetX = -targetX;
 
@@ -88,20 +96,20 @@ public class AutoHelper {
         }
     }
 
-    public boolean driveSwerve_EncoderIf_turnOnSpot(double targetYaw_inRad) {
-        double currentRoationYaw_inRad = Math.toRadians(navx.getYaw());
-        double outPutRad;
+    /*
+     * clean up
+    */
+    public boolean autoDriveRotate(double targetYawRadians) {
+        double currentYawRadians = Math.toRadians(navx.getYaw());
 
         double tolerance = 0.2;
         double RotSpeed = 25; // rads per sec
-        if (Math.abs(targetYaw_inRad - currentRoationYaw_inRad) > tolerance) {
-            if (currentRoationYaw_inRad < targetYaw_inRad) {
-                outPutRad = RotSpeed;
-                driver.swerveDrive(0, 0, outPutRad);
+        if (Math.abs(targetYawRadians - currentYawRadians) > tolerance) {
+            if (currentYawRadians < targetYawRadians) {
+                driver.swerveDrive(0, 0, RotSpeed);
                 return false;
-            } else if (currentRoationYaw_inRad > targetYaw_inRad) {
-                outPutRad = -RotSpeed;
-                driver.swerveDrive(0, 0, outPutRad);
+            } else if (currentYawRadians > targetYawRadians) {
+                driver.swerveDrive(0, 0, -RotSpeed);
                 return false;
             }
             return false;
@@ -111,5 +119,8 @@ public class AutoHelper {
         }
     }
 
-
+    public void autoDriveRotatePID(double targetYawRadians) {
+        driver.swerveDrive(0, 0, autoTurnPID.calculate(targetYawRadians, Math.toRadians(navx.getYaw())));
+    }
+    
 }

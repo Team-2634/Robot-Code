@@ -16,24 +16,20 @@ public class Robot extends TimedRobot {
     Driver driver = new Driver();
     Shooter shooter = new Shooter();
     Climber climber = new Climber();
-    Timer timer = new Timer();
+    Timer matchTimer = new Timer();
     AHRS navx = new AHRS();
 
-    Auto auto = new Auto(driver, shooter, climber, navx, timer);
+    Auto auto = new Auto(driver, shooter, climber, navx, matchTimer);
     Teleop teleop = new Teleop(driver, shooter, climber, navx);
  
 
     @Override
     public void robotInit() {
 
-        timer.reset();
-        timer.start();
+        matchTimer.reset();
+        matchTimer.start();
         navx.reset();
-        driver.resetEncoders();
-        driver.resetPIDs();
-        driver.setMotorBreaks();
-        driver.invertMotors();
-        driver.continouousInput();
+        driver.initialize();
 
     }
     

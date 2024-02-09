@@ -26,10 +26,12 @@ public class TeleopHelper {
     final XboxController xbox = new XboxController(0);
 
     public void drive(double XSpeed, double YSpeed, double TurnSpeed) {
-        double currentYawRadians = Math.toRadians(navx.getYaw());
-        double XSpeedField = XSpeed * Math.cos(currentYawRadians) - YSpeed * Math.sin(currentYawRadians);
-        double YSpeedField = XSpeed * Math.sin(currentYawRadians) + YSpeed * Math.cos(currentYawRadians);
-        driver.swerveDrive(XSpeedField * Constants.XdriveSensitivity, YSpeedField * Constants.YdriveSensitivity, TurnSpeed * Constants.turningSensitivity);
+        double[] speedsFieldOriented = Driver.fieldOrient(XSpeed, YSpeed, navx);
+        XSpeed = speedsFieldOriented[0] * Constants.XdriveSensitivity;
+        YSpeed = speedsFieldOriented[1] * Constants.YdriveSensitivity;
+        TurnSpeed = TurnSpeed * Constants.turningSensitivity;
+        
+        driver.swerveDrive(XSpeed, YSpeed, TurnSpeed);
     }
 
     public double removeDeadzone(int axisInput) {
