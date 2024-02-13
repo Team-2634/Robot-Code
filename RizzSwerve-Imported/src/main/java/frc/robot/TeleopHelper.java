@@ -26,7 +26,7 @@ public class TeleopHelper {
     final XboxController xbox = new XboxController(0);
 
     public void drive(double XSpeed, double YSpeed, double TurnSpeed) {
-        double[] speedsFieldOriented = Driver.fieldOrient(XSpeed, YSpeed, navx);
+        double[] speedsFieldOriented = driver.fieldOrient(XSpeed, YSpeed);
         XSpeed = speedsFieldOriented[0] * Constants.XdriveSensitivity;
         YSpeed = speedsFieldOriented[1] * Constants.YdriveSensitivity;
         TurnSpeed = TurnSpeed * Constants.turningSensitivity;

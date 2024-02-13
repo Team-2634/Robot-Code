@@ -6,12 +6,12 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
@@ -19,6 +19,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 public class Driver {
+    AHRS navx;
+    public Driver(AHRS navx) {
+        this.navx = navx;
+    }
+
     final PIDController pidFrontLeftTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
     final PIDController pidFrontRightTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
     final PIDController pidBackLeftTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
@@ -62,10 +67,11 @@ public class Driver {
     public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
         frontLeftWheelLocation, frontRightWheelLocation, backLeftWheelLocation, backRightWheelLocation);
         
-    SwerveDriveOdometry swerveOdometry = new SwerveDriveOdometry(
+    SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
         kinematics, 
-        new Rotation2d(), 
-        modulePositionArray
+        navx.getRotation2d(), 
+        modulePositionArray,
+        new Pose2d()
     );
 
     //rotations counted by motor -> rotations wheel side -> distance travelled (meters) 
@@ -125,6 +131,7 @@ public class Driver {
 
         return moduleStatesArray;
     }
+    
     /**
      * Optimize module state so that module does not have to turn more than 90 degrees.
      * @param id
@@ -139,13 +146,8 @@ public class Driver {
     }
 
     private void swerveModuleDrive(int module, SwerveModuleState moduleState) {
-        SmartDashboard.putNumber("module" + module + " speed",moduleState.speedMetersPerSecond);
-        SmartDashboard.putNumber("module" + module + " direction",moduleState.angle.getDegrees());
 
         SwerveModuleState optimizedState = swerveOptimizeModuleState(module, moduleState);
-        SmartDashboard.putNumber("module" + module + " speedoptimised",optimizedState.speedMetersPerSecond);
-        SmartDashboard.putNumber("module" + module + " directionoptimised",optimizedState.angle.getDegrees());
-
 
         double drivePower = optimizedState.speedMetersPerSecond / Constants.maxSpeedMpS;
         
@@ -153,20 +155,27 @@ public class Driver {
             steerMotorArray[module].getPosition().getValue() * ticksToRadsTurning, 
             optimizedState.angle.getRadians()
         );
-        SmartDashboard.putNumber("module" + module + " rawsensordata", steerMotorArray[module].getPosition().getValue());
-        SmartDashboard.putNumber("module" + module + " recordedturnposition", steerMotorArray[module].getPosition().getValue() * ticksToRadsTurning);
 
-        SmartDashboard.putNumber("module" + module + " drive power", drivePower);
-        SmartDashboard.putNumber("module" + module + " turn power", turnPower);
+        // SmartDashboard.putNumber("module" + module + " speed",moduleState.speedMetersPerSecond);
+        // SmartDashboard.putNumber("module" + module + " direction",moduleState.angle.getDegrees());
+
+        // SmartDashboard.putNumber("module" + module + " speedoptimised",optimizedState.speedMetersPerSecond);
+        // SmartDashboard.putNumber("module" + module + " directionoptimised",optimizedState.angle.getDegrees());
+
+        // SmartDashboard.putNumber("module" + module + " rawsensordata", steerMotorArray[module].getPosition().getValue());
+        // SmartDashboard.putNumber("module" + module + " recordedturnposition", steerMotorArray[module].getPosition().getValue() * ticksToRadsTurning);
+
+        // SmartDashboard.putNumber("module" + module + " drive power", drivePower);
+        // SmartDashboard.putNumber("module" + module + " turn power", turnPower);
             
         driveMotorArray[module].set(drivePower);
         steerMotorArray[module].set(turnPower);
     }
 
     public void swerveDrive(double xSpeed, double ySpeed, double rotSpeed) {
-        SmartDashboard.putNumber("inputX", xSpeed);
-        SmartDashboard.putNumber("inputY", ySpeed);
-        SmartDashboard.putNumber("inputRot", rotSpeed);
+        // SmartDashboard.putNumber("inputX", xSpeed);
+        // SmartDashboard.putNumber("inputY", ySpeed);
+        // SmartDashboard.putNumber("inputRot", rotSpeed);
         xSpeed = Constants.clamp(xSpeed, -1, 1);
         ySpeed = Constants.clamp(ySpeed, -1, 1);
         SwerveModuleState[] moduleStateArray = swerveInputToModuleStates(xSpeed, ySpeed, rotSpeed);
@@ -179,7 +188,7 @@ public class Driver {
     }
 
     
-    public final static double[] fieldOrient(double XSpeed, double YSpeed, AHRS navx) {
+    public final double[] fieldOrient(double XSpeed, double YSpeed) {
         double currentYawRadians = Math.toRadians(navx.getYaw());
         double XSpeedField = XSpeed * Math.cos(currentYawRadians) - YSpeed * Math.sin(currentYawRadians);
         double YSpeedField = XSpeed * Math.sin(currentYawRadians) + YSpeed * Math.cos(currentYawRadians);
@@ -204,132 +213,11 @@ public class Driver {
         return swerveModulePositionArray;
     }
 
-    public Pose2d updatePose(AHRS navx) {
-        return swerveOdometry.update(new Rotation2d(navx.getAngle()), getModulePositionArray());
+    public Pose2d updatePose() {
+        return poseEstimator.update(new Rotation2d(navx.getAngle()), getModulePositionArray());
     }
 
-    // public void resetTurnEncoders() {
-    //     frontLeftSteer.setPosition(0);
-    //     frontRightSteer.setPosition(0);
-    //     backLeftSteer.setPosition(0);
-    //     backRightSteer.setPosition(0);
-    // }
-
-    // public void resetTurnPIDs(){
-    //     pidFrontLeftTurn.reset();
-    //     pidFrontRightTurn.reset();
-    //     pidBackLeftTurn.reset();
-    //     pidBackRightTurn.reset();
-    // }
-
-    // public void setMotorBreaks() {
-    //     frontLeftDrive.setNeutralMode(NeutralModeValue.Brake);
-    //     frontRightDrive.setNeutralMode(NeutralModeValue.Brake);
-    //     backLeftDrive.setNeutralMode(NeutralModeValue.Brake);
-    //     backRightDrive.setNeutralMode(NeutralModeValue.Brake);
-
-    //     frontLeftSteer.setNeutralMode(NeutralModeValue.Brake);
-    //     frontRightSteer.setNeutralMode(NeutralModeValue.Brake);
-    //     backLeftSteer.setNeutralMode(NeutralModeValue.Brake);
-    //     backRightSteer.setNeutralMode(NeutralModeValue.Brake);
-    // }
-
-    // public void invertMotors() {
-    //     frontLeftSteer.setInverted(true);
-    //     frontRightSteer.setInverted(true);
-    //     backLeftSteer.setInverted(true);
-    //     backRightSteer.setInverted(true);
-
-    //     frontLeftDrive.setInverted(true);
-    //     frontRightDrive.setInverted(true);
-    //     backLeftDrive.setInverted(true);
-    //     backRightDrive.setInverted(true);
-    // }
-
-    // public void continouousInput() {
-    //     pidFrontLeftTurn.enableContinuousInput(-Math.PI, Math.PI);
-    //     pidFrontRightTurn.enableContinuousInput(-Math.PI, Math.PI);
-    //     pidBackLeftTurn.enableContinuousInput(-Math.PI, Math.PI);
-    //     pidBackRightTurn.enableContinuousInput(-Math.PI, Math.PI);
-    // }
-
-
-    // public void swerveSetTurnPower(int module, SwerveModuleState moduleState) {
-    //     double power = pidArray[module].calculate(
-    //         steerMotorArray[module].getPosition().getValue() * ticksToRadsTurning, moduleState.angle.getRadians());
-
-    //     steerMotorArray[module].set(power);
-    // }
-
-    // public void swerveSetDrivePower(int module, SwerveModuleState moduleState) {
-    //     double power = moduleState.speedMetersPerSecond / Constants.maxSpeedMpS;
-
-    //     driveMotorArray[module].set(power);
-    // }
-
-
-    // //i hate this swerve drive mega function i want to break this down
-    // public void swerveDrive(double xSpeed, double ySpeed, double rotSpeed) {
-    //     ChassisSpeeds desiredSpeeds = new ChassisSpeeds(xSpeed * Constants.maxSpeedMpS, ySpeed * Constants.maxSpeedMpS, rotSpeed);
-
-    //     // make desiredSpeeds into speeds and angles for each module
-    //     SwerveModuleState[] moduleStates = m_kinematics.toSwerveModuleStates(desiredSpeeds);
-
-    //     // normalize module values to remove impossible speed values
-    //     SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, maxSpeedMpS);
-
-    //     SwerveModuleState frontLeftModule = moduleStates[0];
-    //     SwerveModuleState frontRightModule = moduleStates[1];
-    //     SwerveModuleState backLeftModule = moduleStates[2];
-    //     SwerveModuleState backRightModule = moduleStates[3];
-
-    //     // optimize wheel angles (ex. wheel is at 359deg and needs to go to 1deg. wheel
-    //     // will now go 2deg instead of 358deg)
-
-    //     double frontLeftSensorPos = frontLeftSteer.getSelectedSensorPosition() * kTurningEncoderTicksToRad;
-    //     double frontRightSensorPos = frontRightSteer.getSelectedSensorPosition() * kTurningEncoderTicksToRad;
-    //     double backLeftSensorPos = backLeftSteer.getSelectedSensorPosition() * kTurningEncoderTicksToRad;
-    //     double backRightSensorPos = backRightSteer.getSelectedSensorPosition() * kTurningEncoderTicksToRad;
-
-    //     var frontLeftCurrentAngle = new Rotation2d(frontLeftSensorPos);
-    //     var frontRightCurrentAngle = new Rotation2d(frontRightSensorPos);
-    //     var backLeftCurrentAngle = new Rotation2d(backLeftSensorPos);
-    //     var backRightCurrentAngle = new Rotation2d(backRightSensorPos);
-
-    //     var frontLeftOptimized = SwerveModuleState.optimize(frontLeftModule, frontLeftCurrentAngle);
-    //     var frontRightOptimized = SwerveModuleState.optimize(frontRightModule, frontRightCurrentAngle);
-    //     var backLeftOptimized = SwerveModuleState.optimize(backLeftModule, backLeftCurrentAngle);
-    //     var backRightOptimized = SwerveModuleState.optimize(backRightModule, backRightCurrentAngle);
-
-    //     // set steer motor power to the pid output of current position in radians and
-    //     // desired position in radians
-    //     double frontLeftTurnPower = pidFrontLeftTurn.calculate(
-    //             frontLeftSteer.getSelectedSensorPosition() * kTurningEncoderTicksToRad,
-    //             frontLeftOptimized.angle.getRadians());
-    //     double frontRightTurnPower = pidFrontRightTurn.calculate(
-    //             frontRightSteer.getSelectedSensorPosition() * kTurningEncoderTicksToRad,
-    //             frontRightOptimized.angle.getRadians());
-    //     double backLeftTurnPower = pidBackLeftTurn.calculate(
-    //             backLeftSteer.getSelectedSensorPosition() * kTurningEncoderTicksToRad,
-    //             backLeftOptimized.angle.getRadians());
-    //     double backRightTurnPower = pidBackRightTurn.calculate(
-    //             backRightSteer.getSelectedSensorPosition() * kTurningEncoderTicksToRad,
-    //             backRightOptimized.angle.getRadians());
-
-    //     // positive is clockwise (right side up)
-    //     frontLeftSteer.set(frontLeftTurnPower);
-    //     frontRightSteer.set(frontRightTurnPower);
-    //     backLeftSteer.set(backLeftTurnPower);
-    //     backRightSteer.set(backRightTurnPower);
-
-    //     // set drive power to desired speed div max speed to get value between 0 and 1
-    //     frontLeftDrive.set(frontLeftOptimized.speedMetersPerSecond / maxSpeedMpS);
-    //     frontRightDrive.set(frontRightOptimized.speedMetersPerSecond / maxSpeedMpS);
-    //     backLeftDrive.set(backLeftOptimized.speedMetersPerSecond / maxSpeedMpS);
-    //     backRightDrive.set(backRightOptimized.speedMetersPerSecond / maxSpeedMpS);
-    // }
-
-
-
-
+    public Pose2d getPose() {
+        return poseEstimator.getEstimatedPosition();
+    }
 }

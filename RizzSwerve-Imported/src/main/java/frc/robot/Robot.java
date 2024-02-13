@@ -13,11 +13,11 @@ import frc.robot.systems.Shooter;
 
 public class Robot extends TimedRobot {
 
-    Driver driver = new Driver();
+    AHRS navx = new AHRS();
+    Driver driver = new Driver(navx);
     Shooter shooter = new Shooter();
     Climber climber = new Climber();
     Timer matchTimer = new Timer();
-    AHRS navx = new AHRS();
 
     Auto auto = new Auto(driver, shooter, climber, navx, matchTimer);
     Teleop teleop = new Teleop(driver, shooter, climber, navx);
@@ -35,7 +35,7 @@ public class Robot extends TimedRobot {
     
     @Override
     public void robotPeriodic() {
-        driver.updatePose(navx);
+        driver.updatePose();
     }
     
     @Override

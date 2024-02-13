@@ -48,6 +48,12 @@ public class Constants {
     public final static double kiAutoRotate = 0;
     public final static double kdAutoRotate = 0.0000075;
 
+    //auto
+    public final static double maxAutoVelocity = 1;
+    public final static double maxAutoAccel = 1;
+    public final static double autoPositionToleranceMeters = 0.05;
+    public final static double autoRotationToleranceRadians = 0.05;
+
     //drivetrain properties
     public final static double kWheelDiameterInches = 3.75;
     public final static double kDriveMotorGearRatio = 1 / 8.14;
