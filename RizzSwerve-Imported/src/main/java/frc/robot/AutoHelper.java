@@ -81,7 +81,13 @@ public class AutoHelper {
     }
 
     public boolean intake() {
+        shooter.collectNote(1);
 
+        if (true) {
+            return true;
+        } else {
+            return false;
+        }
     }
     
 
