@@ -120,7 +120,7 @@ public class Driver {
         ChassisSpeeds desiredSpeeds = new ChassisSpeeds(
             xSpeed * Constants.maxSpeedMpS, 
             ySpeed * Constants.maxSpeedMpS, 
-            turnSpeed
+            turnSpeed * Constants.maxSpeedRotation
         );
 
         // make desiredSpeeds into speeds and angles for each module

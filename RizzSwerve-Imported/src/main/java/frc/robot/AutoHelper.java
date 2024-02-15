@@ -52,42 +52,30 @@ public class AutoHelper {
         }
     }
 
-    public boolean driveToPosition(Pose2d endPose) {
+    public void driveToPosition(Pose2d endPose) {
         Pose2d startPose = driver.getPose();
             double xSpeed = autoXPID.calculate(startPose.getX(), endPose.getX());
             double ySpeed = autoYPID.calculate(startPose.getY(), endPose.getY()); 
             double rotSpeed = autoTurnPID.calculate(startPose.getRotation().getRadians(), endPose.getRotation().getRadians());
         
         driver.swerveDrive(xSpeed, ySpeed, rotSpeed);
-
-        if (autoXPID.atSetpoint() &&
-            autoYPID.atSetpoint() &&
-            autoTurnPID.atSetpoint() 
-        ) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
-    public boolean shootNote() {
+    public boolean atTargetPosition() {
+        return (autoXPID.atSetpoint() && autoYPID.atSetpoint() && autoTurnPID.atSetpoint()) ? true : false;
+
+    }
+
+    public void shootNote() {
         shooter.shootNote(1, 1);
-
-        if (true) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
-    public boolean intake() {
+    public void intake() {
         shooter.collectNote(1);
+    }
 
-        if (true) {
-            return true;
-        } else {
-            return false;
-        }
+    public boolean hasNote() {
+        return true; //shooter.hasNote();
     }
     
 

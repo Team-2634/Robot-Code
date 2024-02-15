@@ -21,6 +21,49 @@ public class Auto {
         timer.reset();
         timer.start();    
     }
+
+    boolean driveFinished;
+    boolean shootFinished;
+    int counter = 0;
+    public void autoProgramTest() {
+        switch (counter) {
+            case 0:
+                autoHelper.driveToPosition(autoHelper.setDesiredPose(1, 1, Math.PI/2));
+
+                if (autoHelper.atTargetPosition()) {driveFinished = true;}
+                //driveFinished = autoHelper.atTargetPosition();
+                if (driveFinished) {counter += 1; driveFinished = false;}
+                break;
+            case 1:
+                autoHelper.driveToPosition(autoHelper.setDesiredPose(0, 0, 0));
+                if (autoHelper.atTargetPosition()) {driveFinished = true;}  
+
+                autoHelper.shootNote();
+                if (!autoHelper.hasNote()) {shootFinished = true;}
+                if (driveFinished && shootFinished) {counter += 1; driveFinished = shootFinished = false;}
+                break;
+            // case 2:
+
+            //     if (autoHelper.driveToPosition(autoHelper.setDesiredPose(0, 0, 0))) {counter += 1;}
+            //     break;
+            // case 3:
+
+            //     if (autoHelper.driveToPosition(autoHelper.setDesiredPose(0, 0, 0))) {counter += 1;}
+            //     break;
+            // case 4:
+            //     if () {counter += 1;}
+            //     break;
+            // case 5:
+            //     if () {counter += 1;}
+            //     break;
+            // case 6:
+            //     if () {counter += 1;}
+            //     break;
+
+            default: autoHelper.stop();
+                break;
+        }
+    }
     
     
     // public void autoMidBalance() {
@@ -79,35 +122,6 @@ public class Auto {
     //     }
     // }
     
-    int counter = 0;
-    public void autoProgramTest() {
-        switch (counter) {
-            case 0:
-                if (autoHelper.driveToPosition(autoHelper.setDesiredPose(1, 1, Math.PI/2))) {counter += 1;}
-                break;
-            case 1:
-                if (autoHelper.driveToPosition(autoHelper.setDesiredPose(0, 0, 0))) {counter += 1;}
-                break;
-            case 2:
-                if (autoHelper.driveToPosition(autoHelper.setDesiredPose(0, 0, 0))) {counter += 1;}
-                break;
-            case 3:
-                if (autoHelper.driveToPosition(autoHelper.setDesiredPose(0, 0, 0))) {counter += 1;}
-                break;
-            // case 4:
-            //     if () {counter += 1;}
-            //     break;
-            // case 5:
-            //     if () {counter += 1;}
-            //     break;
-            // case 6:
-            //     if () {counter += 1;}
-            //     break;
-
-            default: autoHelper.stop();
-                break;
-        }
-    }
 
 
 

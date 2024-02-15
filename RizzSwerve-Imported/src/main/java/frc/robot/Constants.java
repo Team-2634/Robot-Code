@@ -47,12 +47,13 @@ public class Constants {
     public final static double kpAutoRotate = 1;
     public final static double kiAutoRotate = 0;
     public final static double kdAutoRotate = 0.0000075;
-
+    
+    public final static double autoPositionToleranceMeters = 0.05;
+    public final static double autoRotationToleranceRadians = 0.05;
+    
     //auto
     public final static double maxAutoVelocity = 1;
     public final static double maxAutoAccel = 1;
-    public final static double autoPositionToleranceMeters = 0.05;
-    public final static double autoRotationToleranceRadians = 0.05;
 
     //drivetrain properties
     public final static double kWheelDiameterInches = 3.75;
@@ -64,6 +65,8 @@ public class Constants {
     public final static double YdriveSensitivity = 1; 
     public final static double turningSensitivity = 1;
     public final static double maxSpeedMpS = 1; 
+    public final static double maxSpeedRotation = 1; 
+
 
     public final static double controllerDeadzone = 0.1;
 
