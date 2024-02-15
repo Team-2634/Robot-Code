@@ -52,6 +52,10 @@ public class AutoHelper {
         }
     }
 
+    /**
+     * Drives to a position given meters from origin (starting position) and radians
+     * @param endPose
+     */
     public void driveToPosition(Pose2d endPose) {
         Pose2d startPose = driver.getPose();
             double xSpeed = autoXPID.calculate(startPose.getX(), endPose.getX());

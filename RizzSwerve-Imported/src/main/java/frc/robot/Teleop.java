@@ -15,7 +15,7 @@ public class Teleop {
     
     
     public void drive() {
-        teleopHelper.drive(teleopHelper.removeDeadzone(1), teleopHelper.removeDeadzone(0), teleopHelper.removeDeadzone(4));
+        teleopHelper.drive(teleopHelper.getAxisValue(1), teleopHelper.getAxisValue(0), teleopHelper.getAxisValue(4));
     }
 
     

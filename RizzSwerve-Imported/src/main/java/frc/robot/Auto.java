@@ -22,8 +22,8 @@ public class Auto {
         timer.start();    
     }
 
-    boolean driveFinished;
-    boolean shootFinished;
+    boolean driveFinished = false;
+    boolean shootFinished = false;
     int counter = 0;
     public void autoProgramTest() {
         switch (counter) {
@@ -31,25 +31,32 @@ public class Auto {
                 autoHelper.driveToPosition(autoHelper.setDesiredPose(1, 1, Math.PI/2));
 
                 if (autoHelper.atTargetPosition()) {driveFinished = true;}
-                //driveFinished = autoHelper.atTargetPosition();
                 if (driveFinished) {counter += 1; driveFinished = false;}
                 break;
+
             case 1:
-                autoHelper.driveToPosition(autoHelper.setDesiredPose(0, 0, 0));
+                autoHelper.driveToPosition(autoHelper.setDesiredPose(0.5, 0, 0));
                 if (autoHelper.atTargetPosition()) {driveFinished = true;}  
 
                 autoHelper.shootNote();
                 if (!autoHelper.hasNote()) {shootFinished = true;}
                 if (driveFinished && shootFinished) {counter += 1; driveFinished = shootFinished = false;}
                 break;
-            // case 2:
 
-            //     if (autoHelper.driveToPosition(autoHelper.setDesiredPose(0, 0, 0))) {counter += 1;}
-            //     break;
-            // case 3:
+            case 2:
+                autoHelper.driveToPosition(autoHelper.setDesiredPose(-0.5, -0.5, -Math.PI/2));
 
-            //     if (autoHelper.driveToPosition(autoHelper.setDesiredPose(0, 0, 0))) {counter += 1;}
-            //     break;
+                if (autoHelper.atTargetPosition()) {driveFinished = true;}
+                if (driveFinished) {counter += 1; driveFinished = false;}
+                break;
+
+            case 3:
+                autoHelper.driveToPosition(autoHelper.setDesiredPose(1, 1, Math.PI/2));
+
+                if (autoHelper.atTargetPosition()) {driveFinished = true;}
+                if (driveFinished) {counter += 1; driveFinished = false;}
+                break;
+
             // case 4:
             //     if () {counter += 1;}
             //     break;

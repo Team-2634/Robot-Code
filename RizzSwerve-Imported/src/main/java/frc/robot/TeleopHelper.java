@@ -34,7 +34,12 @@ public class TeleopHelper {
         driver.swerveDrive(XSpeed, YSpeed, TurnSpeed);
     }
 
-    public double removeDeadzone(int axisInput) {
+    /**
+     * Get axis and remove deadzone from controller input
+     * @param axisInput axis ID
+     * @return
+     */
+    public double getAxisValue(int axisInput) {
         if (Math.abs(xbox.getRawAxis(axisInput)) < Constants.controllerDeadzone) {
             return 0;
         }
