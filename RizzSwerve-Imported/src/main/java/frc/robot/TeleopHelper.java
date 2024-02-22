@@ -34,6 +34,14 @@ public class TeleopHelper {
         driver.swerveDrive(XSpeed, YSpeed, TurnSpeed);
     }
 
+    public void shoot(boolean input) {
+        shooter.shootNote(input);
+    }
+
+    public void intake(boolean input) {
+        shooter.collectNote(input);
+    }
+
     /**
      * Get axis and remove deadzone from controller input
      * @param axisInput axis ID

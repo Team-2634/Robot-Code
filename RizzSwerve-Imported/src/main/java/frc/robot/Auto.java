@@ -3,6 +3,7 @@ package frc.robot;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Shooter;
@@ -26,36 +27,37 @@ public class Auto {
     boolean shootFinished = false;
     int counter = 0;
     public void autoProgramTest() {
+        SmartDashboard.putNumber("auto",counter);
         switch (counter) {
             case 0:
-                autoHelper.driveToPosition(autoHelper.setDesiredPose(1, 1, Math.PI/2));
+                autoHelper.driveToPosition(autoHelper.setDesiredPose(1, 1, 0));
 
                 if (autoHelper.atTargetPosition()) {driveFinished = true;}
                 if (driveFinished) {counter += 1; driveFinished = false;}
                 break;
 
             case 1:
-                autoHelper.driveToPosition(autoHelper.setDesiredPose(0.5, 0, 0));
+                autoHelper.driveToPosition(autoHelper.setDesiredPose(-1, -1, 0));
                 if (autoHelper.atTargetPosition()) {driveFinished = true;}  
 
-                autoHelper.shootNote();
-                if (!autoHelper.hasNote()) {shootFinished = true;}
-                if (driveFinished && shootFinished) {counter += 1; driveFinished = shootFinished = false;}
+                // autoHelper.shootNote();
+                // if (!autoHelper.hasNote()) {shootFinished = true;}
+                if (driveFinished /*&& shootFinished*/) {counter += 1; driveFinished = shootFinished = false;}
                 break;
 
-            case 2:
-                autoHelper.driveToPosition(autoHelper.setDesiredPose(-0.5, -0.5, -Math.PI/2));
+            // case 2:
+            //     autoHelper.driveToPosition(autoHelper.setDesiredPose(-0.5, -0.5, -Math.PI/2));
 
-                if (autoHelper.atTargetPosition()) {driveFinished = true;}
-                if (driveFinished) {counter += 1; driveFinished = false;}
-                break;
+            //     if (autoHelper.atTargetPosition()) {driveFinished = true;}
+            //     if (driveFinished) {counter += 1; driveFinished = false;}
+            //     break;
 
-            case 3:
-                autoHelper.driveToPosition(autoHelper.setDesiredPose(1, 1, Math.PI/2));
+            // case 3:
+            //     autoHelper.driveToPosition(autoHelper.setDesiredPose(1, 1, Math.PI/2));
 
-                if (autoHelper.atTargetPosition()) {driveFinished = true;}
-                if (driveFinished) {counter += 1; driveFinished = false;}
-                break;
+            //     if (autoHelper.atTargetPosition()) {driveFinished = true;}
+            //     if (driveFinished) {counter += 1; driveFinished = false;}
+            //     break;
 
             // case 4:
             //     if () {counter += 1;}

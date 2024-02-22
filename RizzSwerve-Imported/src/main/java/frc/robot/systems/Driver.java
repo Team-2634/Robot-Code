@@ -19,11 +19,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 public class Driver {
-    AHRS navx;
-    public Driver(AHRS navx) {
-        this.navx = navx;
-    }
-
+    AHRS navx = new AHRS();
+    
     final PIDController pidFrontLeftTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
     final PIDController pidFrontRightTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
     final PIDController pidBackLeftTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
@@ -43,10 +40,10 @@ public class Driver {
     public final TalonFX backRightSteer = new TalonFX(Constants.backRightSteerID);
     public final TalonFX[] steerMotorArray = {frontLeftSteer, frontRightSteer, backLeftSteer, backRightSteer};
 
-    public final CANcoder frontLeftAbsEncoder = new CANcoder(Constants.frontLeftAbsEncoderID);
-    public final CANcoder frontRightAbsEncoder = new CANcoder(Constants.frontRightAbsEncoderID);
-    public final CANcoder backLeftAbsEncoder = new CANcoder(Constants.backLeftAbsEncoderID);
-    public final CANcoder backRightAbsEncoder = new CANcoder(Constants.backRightAbsEncoderID);
+    // public final CANcoder frontLeftAbsEncoder = new CANcoder(Constants.frontLeftAbsEncoderID);
+    // public final CANcoder frontRightAbsEncoder = new CANcoder(Constants.frontRightAbsEncoderID);
+    // public final CANcoder backLeftAbsEncoder = new CANcoder(Constants.backLeftAbsEncoderID);
+    // public final CANcoder backRightAbsEncoder = new CANcoder(Constants.backRightAbsEncoderID);
 
     final Translation2d frontLeftWheelLocation = new Translation2d(0.325, 0.325);
     final Translation2d frontRightWheelLocation = new Translation2d(0.325, -0.325);
@@ -75,13 +72,14 @@ public class Driver {
     );
 
     //rotations counted by motor -> rotations wheel side -> distance travelled (meters) 
-    public final double ticksToMetersDrive = Constants.kDriveMotorGearRatio * (Units.inchesToMeters(Constants.kWheelDiameterInches) * Math.PI);
+    public final double ticksToMetersDrive = Constants.driveMotorGearRatio * (Units.inchesToMeters(Constants.wheelDiameterInches) * Math.PI);
     //rotations counted by motor -> rotations output side -> rads turned
-    public final double ticksToRadsTurning = Constants.kTurningMotorGearRatio * 2 * Math.PI;
+    public final double ticksToRadsTurning = Constants.turningMotorGearRatio * 2 * Math.PI;
 
     private void initializeModule(int module) {
         driveMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
         driveMotorArray[module].setInverted(true);
+        driveMotorArray[module].setPosition(0);
 
         steerMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
         steerMotorArray[module].setInverted(true);
@@ -96,6 +94,8 @@ public class Driver {
         initializeModule(1);
         initializeModule(2);
         initializeModule(3);
+        poseEstimator.resetPosition(navx.getRotation2d(), modulePositionArray, getPose());
+        navx.reset();
     }
 
     /**
@@ -214,7 +214,7 @@ public class Driver {
     }
 
     public Pose2d updatePose() {
-        return poseEstimator.update(new Rotation2d(navx.getAngle()), getModulePositionArray());
+        return poseEstimator.update(new Rotation2d(Math.toRadians(navx.getAngle())), getModulePositionArray());
     }
 
     public Pose2d getPose() {

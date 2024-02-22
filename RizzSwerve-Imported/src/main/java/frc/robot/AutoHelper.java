@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Shooter;
@@ -28,16 +29,18 @@ public class AutoHelper {
         this.timer = timer;
     }
 
-    ProfiledPIDController autoXPID = new ProfiledPIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto, new TrapezoidProfile.Constraints(Constants.maxAutoVelocity, Constants.maxAutoAccel));
-    ProfiledPIDController autoYPID = new ProfiledPIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto, new TrapezoidProfile.Constraints(Constants.maxAutoVelocity, Constants.maxAutoAccel));
+    PIDController autoXPID = new PIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto);
+    PIDController autoYPID = new PIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto);
+    // ProfiledPIDController autoXPID = new ProfiledPIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto, new TrapezoidProfile.Constraints(Constants.maxSpeedMpS, Constants.maxAutoAccel));
+    // ProfiledPIDController autoYPID = new ProfiledPIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto, new TrapezoidProfile.Constraints(Constants.maxAutoVelocity, Constants.maxAutoAccel));
     PIDController autoTurnPID = new PIDController(Constants.kpAutoRotate, Constants.kiAutoRotate, Constants.kdAutoRotate);
 
     void initialize() {
         autoXPID.setTolerance(Constants.autoPositionToleranceMeters);
-        autoXPID.reset(driver.getPose().getX());
+        autoXPID.reset(/*driver.getPose().getX()*/);
         
         autoYPID.setTolerance(Constants.autoPositionToleranceMeters);
-        autoYPID.reset(driver.getPose().getY());
+        autoYPID.reset(/*driver.getPose().getY()*/);
 
         autoTurnPID.setTolerance(Constants.autoRotationToleranceRadians);
         autoTurnPID.reset();
@@ -58,11 +61,21 @@ public class AutoHelper {
      */
     public void driveToPosition(Pose2d endPose) {
         Pose2d startPose = driver.getPose();
-            double xSpeed = autoXPID.calculate(startPose.getX(), endPose.getX());
-            double ySpeed = autoYPID.calculate(startPose.getY(), endPose.getY()); 
-            double rotSpeed = autoTurnPID.calculate(startPose.getRotation().getRadians(), endPose.getRotation().getRadians());
-        
-        driver.swerveDrive(xSpeed, ySpeed, rotSpeed);
+        SmartDashboard.putNumber("inputX", startPose.getX());
+        SmartDashboard.putNumber("inputY", startPose.getY());
+        SmartDashboard.putNumber("inputRot", startPose.getRotation().getRadians());
+        SmartDashboard.putNumber("outputX", endPose.getX());
+        SmartDashboard.putNumber("outputY", endPose.getY());
+        SmartDashboard.putNumber("outputRot", endPose.getRotation().getRadians());
+        double xSpeed = autoXPID.calculate(startPose.getX(), endPose.getX());
+        double ySpeed = autoYPID.calculate(startPose.getY(), endPose.getY()); 
+        double rotSpeed = autoTurnPID.calculate(startPose.getRotation().getRadians(), endPose.getRotation().getRadians());
+        SmartDashboard.putNumber("xSpeed", xSpeed);
+        SmartDashboard.putNumber("ySpeed", ySpeed);
+        SmartDashboard.putNumber("rotSpeed", rotSpeed);
+
+        double[] fieldOriented = driver.fieldOrient(xSpeed, ySpeed);
+        driver.swerveDrive(fieldOriented[0], fieldOriented[1], rotSpeed);
     }
 
     public boolean atTargetPosition() {
@@ -70,12 +83,12 @@ public class AutoHelper {
 
     }
 
-    public void shootNote() {
-        shooter.shootNote(1, 1);
-    }
+    // public void shootNote() {
+    //     shooter.shootNote(1, 1);
+    // }
 
-    public void intake() {
-        shooter.collectNote(1);
+    public void intake(boolean input) {
+        shooter.collectNote(input);
     }
 
     public boolean hasNote() {
