@@ -45,6 +45,12 @@ public class Auto {
                 if (driveFinished /*&& shootFinished*/) {counter += 1; driveFinished = shootFinished = false;}
                 break;
 
+            case 2:
+                autoHelper.driveToPosition(autoHelper.setDesiredPose(3, 2, 0))
+                autoHelper.angleArmToPosition(68)
+                
+                if (autoHelper.atTargetPosition()) {driveFinished = true}
+                if (driveFinished) {counter += 1; driveFinished = false}
             // case 2:
             //     autoHelper.driveToPosition(autoHelper.setDesiredPose(-0.5, -0.5, -Math.PI/2));
 

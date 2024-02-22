@@ -83,6 +83,11 @@ public class AutoHelper {
 
     }
 
+    public void angleArmToPosition(double angle) {
+        
+    }
+
+    
     // public void shootNote() {
     //     shooter.shootNote(1, 1);
     // }
