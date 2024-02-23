@@ -11,14 +11,9 @@ public class ShuffleDash{
     static Map<String, Boolean> boolMap = new Hashtable<>();
 
 
-    public void shuffleboard(){
-        intMap.put("navx", 0);
-        
-    }
-
-    public void print(int ex){
-        SmartDashboard.putNumber("Number", ex);
-    }
+    public void shuffledash(){
+        boolMap.put("Controller A", false);
+    } 
 
     public static void update(String key, int value){
         intMap.put(key, value);
@@ -33,7 +28,6 @@ public class ShuffleDash{
             SmartDashboard.putNumber(entry.getKey(), entry.getValue());
         }
     }
-
 
     public static void boolLoop(){
         for(Map.Entry<String, Boolean> entry : boolMap.entrySet()){

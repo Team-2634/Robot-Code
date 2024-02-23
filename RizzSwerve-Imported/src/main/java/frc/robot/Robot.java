@@ -7,7 +7,10 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Shooter;
-import frc.robot.systems.SmartDash;
+import frc.robot.systems.ShuffleDash;
+import frc.robot.systems.ShuffleDash;
+
+import edu.wpi.first.wpilibj.XboxController;
 
 
 
@@ -18,10 +21,10 @@ public class Robot extends TimedRobot {
     Climber climber = new Climber();
     Timer matchTimer = new Timer();
     AHRS navx = new AHRS();
-    SmartDash smartDash = new SmartDash();
-
     Auto auto = new Auto(driver, shooter, climber, navx, matchTimer);
     Teleop teleop = new Teleop(driver, shooter, climber, navx);
+
+    XboxController control = new XboxController(0);
  
 
     @Override
@@ -32,11 +35,13 @@ public class Robot extends TimedRobot {
         navx.reset();
         driver.initialize();
 
+        ShuffleDash.update("Controller A", control.getAButton());
     }
     
     @Override
     public void robotPeriodic() {
-        smartDash.print(5);
+        ShuffleDash.intLoop();
+        ShuffleDash.boolLoop();
     }
     
     @Override

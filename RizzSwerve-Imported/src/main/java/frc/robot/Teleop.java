@@ -12,8 +12,6 @@ public class Teleop {
         teleopHelper = new TeleopHelper(driver, shooter, climber, navx);
     }
     
-    
-    
     public void drive() {
         teleopHelper.drive(teleopHelper.removeDeadzone(1), teleopHelper.removeDeadzone(0), teleopHelper.removeDeadzone(4));
     }
