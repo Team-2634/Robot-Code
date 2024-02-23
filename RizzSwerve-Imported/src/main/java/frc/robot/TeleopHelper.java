@@ -26,7 +26,7 @@ public class TeleopHelper {
     final XboxController xbox = new XboxController(0);
 
     public void drive(double XSpeed, double YSpeed, double TurnSpeed) {
-        double[] speedsFieldOriented = Driver.fieldOrient(XSpeed, YSpeed, navx);
+        double[] speedsFieldOriented = driver.fieldOrient(XSpeed, YSpeed);
         XSpeed = speedsFieldOriented[0] * Constants.XdriveSensitivity;
         YSpeed = speedsFieldOriented[1] * Constants.YdriveSensitivity;
         TurnSpeed = TurnSpeed * Constants.turningSensitivity;
@@ -34,7 +34,20 @@ public class TeleopHelper {
         driver.swerveDrive(XSpeed, YSpeed, TurnSpeed);
     }
 
-    public double removeDeadzone(int axisInput) {
+    public void shoot(boolean input) {
+        shooter.shootNote(input);
+    }
+
+    public void intake(boolean input) {
+        shooter.collectNote(input);
+    }
+
+    /**
+     * Get axis and remove deadzone from controller input
+     * @param axisInput axis ID
+     * @return
+     */
+    public double getAxisValue(int axisInput) {
         if (Math.abs(xbox.getRawAxis(axisInput)) < Constants.controllerDeadzone) {
             return 0;
         }

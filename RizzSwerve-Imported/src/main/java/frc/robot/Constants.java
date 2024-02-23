@@ -20,15 +20,15 @@ public class Constants {
     //configurable stuff
 
     //device IDs
-    public final static int frontLeftDriveID = 1;
-    public final static int frontRightDriveID = 3;
-    public final static int backLeftDriveID = 5;
-    public final static int backRightDriveID = 7;
+    public final static int frontLeftDriveID = 0;
+    public final static int frontRightDriveID = 2;
+    public final static int backLeftDriveID = 4;
+    public final static int backRightDriveID = 6;
 
-    public final static int frontLeftSteerID = 0;
-    public final static int frontRightSteerID = 2;
-    public final static int backLeftSteerID = 4;
-    public final static int backRightSteerID = 6;
+    public final static int frontLeftSteerID = 1;
+    public final static int frontRightSteerID = 3;
+    public final static int backLeftSteerID = 5;
+    public final static int backRightSteerID = 7;
     
     public final static int frontLeftAbsEncoderID = 3;
     public final static int frontRightAbsEncoderID = 0;
@@ -40,24 +40,33 @@ public class Constants {
     public final static double kiDrive = 0;
     public final static double kdDrive = 0;
 
-    public final static double kpAuto = 1;
+    public final static double kpAuto = 0.2;
     public final static double kiAuto = 0;
     public final static double kdAuto = 0.0000075;
 
-    public final static double kpAutoRotate = 1;
+    public final static double kpAutoRotate = 0.1;
     public final static double kiAutoRotate = 0;
     public final static double kdAutoRotate = 0.0000075;
+    
+    public final static double autoPositionToleranceMeters = 0.2;
+    public final static double autoRotationToleranceRadians = 0.2;
+    
+    //auto
+    public final static double maxAutoVelocity = 0.1;
+    public final static double maxAutoAccel = 0.1;
 
     //drivetrain properties
-    public final static double kWheelDiameterInches = 3.75;
-    public final static double kDriveMotorGearRatio = 1 / 8.14;
-    public final static double kTurningMotorGearRatio = 1.0 / (150.0 / 7.0);
-
+    public final static double wheelDiameterInches = 3.75;
+    public final static double driveMotorGearRatio = 1 / 8.14;
+    public final static double turningMotorGearRatio = 1.0 / (150.0 / 7.0);
+    public final static double armGearRatio = 1/64;
     //controller settings
     public final static double XdriveSensitivity = 1;
     public final static double YdriveSensitivity = 1; 
     public final static double turningSensitivity = 1;
-    public final static double maxSpeedMpS = 1; 
+    public final static double maxSpeedMpS = 0.1; 
+    public final static double maxSpeedRotation = 0.1; 
+
 
     public final static double controllerDeadzone = 0.1;
 
