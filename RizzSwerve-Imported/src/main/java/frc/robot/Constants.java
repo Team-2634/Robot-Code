@@ -60,6 +60,7 @@ public class Constants {
     public final static double driveMotorGearRatio = 1 / 8.14;
     public final static double turningMotorGearRatio = 1.0 / (150.0 / 7.0);
     public final static double armGearRatio = 1/64;
+
     //controller settings
     public final static double XdriveSensitivity = 1;
     public final static double YdriveSensitivity = 1; 
@@ -72,6 +73,11 @@ public class Constants {
 
     //field oriented on/off
     public final static boolean fieldOriented = true;
+
+    //arm
+    public final static double shootSpeed = 0.5;
+    public final static double intakeSpeed = 0.2;
+    public final static double armSpeed = 0.5;
 
     //functions
     public final static double clamp(double input, double min, double max) {
