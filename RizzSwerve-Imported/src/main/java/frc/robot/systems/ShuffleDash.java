@@ -12,7 +12,8 @@ public class ShuffleDash{
 
 
     public void shuffledash(){
-        boolMap.put("Controller A", false);
+
+        
     } 
 
     public static void update(String key, int value){

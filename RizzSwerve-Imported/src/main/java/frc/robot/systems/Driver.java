@@ -155,6 +155,22 @@ public class Driver {
         return speeds;
     }
 
+    public void electronicStatus(){
+        // !!
+        // isAlive() is set for deprecation
+        // !!
+
+        ShuffleDash.update("Back Left Drive", backLeftDrive.isAlive());
+        ShuffleDash.update("Back Left Steer", backLeftSteer.isAlive());
+        ShuffleDash.update("Front Left Steer", frontLeftSteer.isAlive());
+        ShuffleDash.update("Front Left Drive", frontLeftDrive.isAlive());
+        ShuffleDash.update("Front Right Steer", frontRightSteer.isAlive());
+        ShuffleDash.update("Front Right Drive", frontRightDrive.isAlive());
+        ShuffleDash.update("Back Right Steer", backRightSteer.isAlive());
+        ShuffleDash.update("Back Right Drive", backRightDrive.isAlive());
+
+    }
+
     // public void resetTurnEncoders() {
     //     frontLeftSteer.setPosition(0);
     //     frontRightSteer.setPosition(0);
