@@ -8,7 +8,6 @@ import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Shooter;
 import frc.robot.systems.ShuffleDash;
-import frc.robot.systems.ShuffleDash;
 
 import edu.wpi.first.wpilibj.XboxController;
 
@@ -35,11 +34,12 @@ public class Robot extends TimedRobot {
         navx.reset();
         driver.initialize();
 
-        ShuffleDash.update("Controller A", control.getAButton());
     }
     
     @Override
     public void robotPeriodic() {
+        driver.electronicStatus();
+
         ShuffleDash.intLoop();
         ShuffleDash.boolLoop();
     }
