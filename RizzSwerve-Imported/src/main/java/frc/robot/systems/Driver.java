@@ -6,16 +6,21 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 public class Driver {
+    AHRS navx = new AHRS();
+    
     final PIDController pidFrontLeftTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
     final PIDController pidFrontRightTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
     final PIDController pidBackLeftTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
@@ -35,27 +40,46 @@ public class Driver {
     public final TalonFX backRightSteer = new TalonFX(Constants.backRightSteerID);
     public final TalonFX[] steerMotorArray = {frontLeftSteer, frontRightSteer, backLeftSteer, backRightSteer};
 
-    public final CANcoder frontLeftAbsEncoder = new CANcoder(Constants.frontLeftAbsEncoderID);
-    public final CANcoder frontRightAbsEncoder = new CANcoder(Constants.frontRightAbsEncoderID);
-    public final CANcoder backLeftAbsEncoder = new CANcoder(Constants.backLeftAbsEncoderID);
-    public final CANcoder backRightAbsEncoder = new CANcoder(Constants.backRightAbsEncoderID);
+    // public final CANcoder frontLeftAbsEncoder = new CANcoder(Constants.frontLeftAbsEncoderID);
+    // public final CANcoder frontRightAbsEncoder = new CANcoder(Constants.frontRightAbsEncoderID);
+    // public final CANcoder backLeftAbsEncoder = new CANcoder(Constants.backLeftAbsEncoderID);
+    // public final CANcoder backRightAbsEncoder = new CANcoder(Constants.backRightAbsEncoderID);
 
     final Translation2d frontLeftWheelLocation = new Translation2d(0.325, 0.325);
     final Translation2d frontRightWheelLocation = new Translation2d(0.325, -0.325);
     final Translation2d backLeftWheelLocation = new Translation2d(-0.325, 0.325);
     final Translation2d backRightWheelLocation = new Translation2d(-0.325, -0.325);
 
-    SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
+    final SwerveModulePosition frontLeftModulePosition = new SwerveModulePosition();
+    final SwerveModulePosition frontRightModulePosition = new SwerveModulePosition();
+    final SwerveModulePosition backLeftModulePosition = new SwerveModulePosition();
+    final SwerveModulePosition backRightModulePosition = new SwerveModulePosition();
+    final SwerveModulePosition[] modulePositionArray = {
+        frontLeftModulePosition, 
+        frontRightModulePosition, 
+        backLeftModulePosition, 
+        backRightModulePosition
+    };
+
+    public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
         frontLeftWheelLocation, frontRightWheelLocation, backLeftWheelLocation, backRightWheelLocation);
+        
+    SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
+        kinematics, 
+        navx.getRotation2d(), 
+        modulePositionArray,
+        new Pose2d()
+    );
 
     //rotations counted by motor -> rotations wheel side -> distance travelled (meters) 
-    public final double ticksToMetersDrive = Constants.kDriveMotorGearRatio * (Units.inchesToMeters(Constants.kWheelDiameterInches) * Math.PI);
+    public final double ticksToMetersDrive = Constants.driveMotorGearRatio * (Units.inchesToMeters(Constants.wheelDiameterInches) * Math.PI);
     //rotations counted by motor -> rotations output side -> rads turned
-    final double ticksToRadsTurning = Constants.kTurningMotorGearRatio * 2 * Math.PI;
+    public final double ticksToRadsTurning = Constants.turningMotorGearRatio * 2 * Math.PI;
 
     private void initializeModule(int module) {
         driveMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
         driveMotorArray[module].setInverted(true);
+        driveMotorArray[module].setPosition(0);
 
         steerMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
         steerMotorArray[module].setInverted(true);
@@ -70,6 +94,8 @@ public class Driver {
         initializeModule(1);
         initializeModule(2);
         initializeModule(3);
+        poseEstimator.resetPosition(navx.getRotation2d(), modulePositionArray, getPose());
+        navx.reset();
     }
 
     /**
@@ -94,7 +120,7 @@ public class Driver {
         ChassisSpeeds desiredSpeeds = new ChassisSpeeds(
             xSpeed * Constants.maxSpeedMpS, 
             ySpeed * Constants.maxSpeedMpS, 
-            turnSpeed
+            turnSpeed * Constants.maxSpeedRotation
         );
 
         // make desiredSpeeds into speeds and angles for each module
@@ -105,6 +131,7 @@ public class Driver {
 
         return moduleStatesArray;
     }
+    
     /**
      * Optimize module state so that module does not have to turn more than 90 degrees.
      * @param id
@@ -129,12 +156,27 @@ public class Driver {
             steerMotorArray[module].getPosition().getValue() * ticksToRadsTurning, 
             optimizedState.angle.getRadians()
         );
+
+        // SmartDashboard.putNumber("module" + module + " speed",moduleState.speedMetersPerSecond);
+        // SmartDashboard.putNumber("module" + module + " direction",moduleState.angle.getDegrees());
+
+        // SmartDashboard.putNumber("module" + module + " speedoptimised",optimizedState.speedMetersPerSecond);
+        // SmartDashboard.putNumber("module" + module + " directionoptimised",optimizedState.angle.getDegrees());
+
+        // SmartDashboard.putNumber("module" + module + " rawsensordata", steerMotorArray[module].getPosition().getValue());
+        // SmartDashboard.putNumber("module" + module + " recordedturnposition", steerMotorArray[module].getPosition().getValue() * ticksToRadsTurning);
+
+        // SmartDashboard.putNumber("module" + module + " drive power", drivePower);
+        // SmartDashboard.putNumber("module" + module + " turn power", turnPower);
             
         driveMotorArray[module].set(drivePower);
         steerMotorArray[module].set(turnPower);
     }
 
     public void swerveDrive(double xSpeed, double ySpeed, double rotSpeed) {
+        // SmartDashboard.putNumber("inputX", xSpeed);
+        // SmartDashboard.putNumber("inputY", ySpeed);
+        // SmartDashboard.putNumber("inputRot", rotSpeed);
         xSpeed = Constants.clamp(xSpeed, -1, 1);
         ySpeed = Constants.clamp(ySpeed, -1, 1);
         SwerveModuleState[] moduleStateArray = swerveInputToModuleStates(xSpeed, ySpeed, rotSpeed);
@@ -147,7 +189,7 @@ public class Driver {
     }
 
     
-    public final static double[] fieldOrient(double XSpeed, double YSpeed, AHRS navx) {
+    public final double[] fieldOrient(double XSpeed, double YSpeed) {
         double currentYawRadians = Math.toRadians(navx.getYaw());
         double XSpeedField = XSpeed * Math.cos(currentYawRadians) - YSpeed * Math.sin(currentYawRadians);
         double YSpeedField = XSpeed * Math.sin(currentYawRadians) + YSpeed * Math.cos(currentYawRadians);
@@ -155,21 +197,6 @@ public class Driver {
         return speeds;
     }
 
-    public void electronicStatus(){
-        // !!
-        // isAlive() is set for deprecation
-        // !!
-
-        ShuffleDash.update("Back Left Drive", backLeftDrive.isAlive());
-        ShuffleDash.update("Back Left Steer", backLeftSteer.isAlive());
-        ShuffleDash.update("Front Left Steer", frontLeftSteer.isAlive());
-        ShuffleDash.update("Front Left Drive", frontLeftDrive.isAlive());
-        ShuffleDash.update("Front Right Steer", frontRightSteer.isAlive());
-        ShuffleDash.update("Front Right Drive", frontRightDrive.isAlive());
-        ShuffleDash.update("Back Right Steer", backRightSteer.isAlive());
-        ShuffleDash.update("Back Right Drive", backRightDrive.isAlive());
-
-    }
 
     // public void resetTurnEncoders() {
     //     frontLeftSteer.setPosition(0);
@@ -177,122 +204,55 @@ public class Driver {
     //     backLeftSteer.setPosition(0);
     //     backRightSteer.setPosition(0);
     // }
+    SwerveModulePosition getModulePosition(int module) {
+        return new SwerveModulePosition(
+            readDriveEncoder(module) * ticksToMetersDrive, 
+            new Rotation2d(readTurnEncoder(module) * ticksToRadsTurning)
+        );
+    }
 
-    // public void resetTurnPIDs(){
-    //     pidFrontLeftTurn.reset();
-    //     pidFrontRightTurn.reset();
-    //     pidBackLeftTurn.reset();
-    //     pidBackRightTurn.reset();
-    // }
+    SwerveModulePosition[] getModulePositionArray() {
+        SwerveModulePosition[] swerveModulePositionArray = {
+            getModulePosition(0),
+            getModulePosition(1),
+            getModulePosition(2),
+            getModulePosition(3)
+        };
+        return swerveModulePositionArray;
+    }
 
-    // public void setMotorBreaks() {
-    //     frontLeftDrive.setNeutralMode(NeutralModeValue.Brake);
-    //     frontRightDrive.setNeutralMode(NeutralModeValue.Brake);
-    //     backLeftDrive.setNeutralMode(NeutralModeValue.Brake);
-    //     backRightDrive.setNeutralMode(NeutralModeValue.Brake);
+    public Pose2d updatePose() {
+        return poseEstimator.update(new Rotation2d(Math.toRadians(navx.getAngle())), getModulePositionArray());
+    }
 
-    //     frontLeftSteer.setNeutralMode(NeutralModeValue.Brake);
-    //     frontRightSteer.setNeutralMode(NeutralModeValue.Brake);
-    //     backLeftSteer.setNeutralMode(NeutralModeValue.Brake);
-    //     backRightSteer.setNeutralMode(NeutralModeValue.Brake);
-    // }
-
-    // public void invertMotors() {
-    //     frontLeftSteer.setInverted(true);
-    //     frontRightSteer.setInverted(true);
-    //     backLeftSteer.setInverted(true);
-    //     backRightSteer.setInverted(true);
-
-    //     frontLeftDrive.setInverted(true);
-    //     frontRightDrive.setInverted(true);
-    //     backLeftDrive.setInverted(true);
-    //     backRightDrive.setInverted(true);
-    // }
-
-    // public void continouousInput() {
-    //     pidFrontLeftTurn.enableContinuousInput(-Math.PI, Math.PI);
-    //     pidFrontRightTurn.enableContinuousInput(-Math.PI, Math.PI);
-    //     pidBackLeftTurn.enableContinuousInput(-Math.PI, Math.PI);
-    //     pidBackRightTurn.enableContinuousInput(-Math.PI, Math.PI);
-    // }
-
-
-    // public void swerveSetTurnPower(int module, SwerveModuleState moduleState) {
-    //     double power = pidArray[module].calculate(
-    //         steerMotorArray[module].getPosition().getValue() * ticksToRadsTurning, moduleState.angle.getRadians());
-
-    //     steerMotorArray[module].set(power);
-    // }
-
-    // public void swerveSetDrivePower(int module, SwerveModuleState moduleState) {
-    //     double power = moduleState.speedMetersPerSecond / Constants.maxSpeedMpS;
-
-    //     driveMotorArray[module].set(power);
-    // }
-
-
-    // //i hate this swerve drive mega function i want to break this down
-    // public void swerveDrive(double xSpeed, double ySpeed, double rotSpeed) {
-    //     ChassisSpeeds desiredSpeeds = new ChassisSpeeds(xSpeed * Constants.maxSpeedMpS, ySpeed * Constants.maxSpeedMpS, rotSpeed);
-
-    //     // make desiredSpeeds into speeds and angles for each module
-    //     SwerveModuleState[] moduleStates = m_kinematics.toSwerveModuleStates(desiredSpeeds);
-
-    //     // normalize module values to remove impossible speed values
-    //     SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, maxSpeedMpS);
-
-    //     SwerveModuleState frontLeftModule = moduleStates[0];
-    //     SwerveModuleState frontRightModule = moduleStates[1];
-    //     SwerveModuleState backLeftModule = moduleStates[2];
-    //     SwerveModuleState backRightModule = moduleStates[3];
-
-    //     // optimize wheel angles (ex. wheel is at 359deg and needs to go to 1deg. wheel
-    //     // will now go 2deg instead of 358deg)
-
-    //     double frontLeftSensorPos = frontLeftSteer.getSelectedSensorPosition() * kTurningEncoderTicksToRad;
-    //     double frontRightSensorPos = frontRightSteer.getSelectedSensorPosition() * kTurningEncoderTicksToRad;
-    //     double backLeftSensorPos = backLeftSteer.getSelectedSensorPosition() * kTurningEncoderTicksToRad;
-    //     double backRightSensorPos = backRightSteer.getSelectedSensorPosition() * kTurningEncoderTicksToRad;
-
-    //     var frontLeftCurrentAngle = new Rotation2d(frontLeftSensorPos);
-    //     var frontRightCurrentAngle = new Rotation2d(frontRightSensorPos);
-    //     var backLeftCurrentAngle = new Rotation2d(backLeftSensorPos);
-    //     var backRightCurrentAngle = new Rotation2d(backRightSensorPos);
-
-    //     var frontLeftOptimized = SwerveModuleState.optimize(frontLeftModule, frontLeftCurrentAngle);
-    //     var frontRightOptimized = SwerveModuleState.optimize(frontRightModule, frontRightCurrentAngle);
-    //     var backLeftOptimized = SwerveModuleState.optimize(backLeftModule, backLeftCurrentAngle);
-    //     var backRightOptimized = SwerveModuleState.optimize(backRightModule, backRightCurrentAngle);
-
-    //     // set steer motor power to the pid output of current position in radians and
-    //     // desired position in radians
-    //     double frontLeftTurnPower = pidFrontLeftTurn.calculate(
-    //             frontLeftSteer.getSelectedSensorPosition() * kTurningEncoderTicksToRad,
-    //             frontLeftOptimized.angle.getRadians());
-    //     double frontRightTurnPower = pidFrontRightTurn.calculate(
-    //             frontRightSteer.getSelectedSensorPosition() * kTurningEncoderTicksToRad,
-    //             frontRightOptimized.angle.getRadians());
-    //     double backLeftTurnPower = pidBackLeftTurn.calculate(
-    //             backLeftSteer.getSelectedSensorPosition() * kTurningEncoderTicksToRad,
-    //             backLeftOptimized.angle.getRadians());
-    //     double backRightTurnPower = pidBackRightTurn.calculate(
-    //             backRightSteer.getSelectedSensorPosition() * kTurningEncoderTicksToRad,
-    //             backRightOptimized.angle.getRadians());
-
-    //     // positive is clockwise (right side up)
-    //     frontLeftSteer.set(frontLeftTurnPower);
-    //     frontRightSteer.set(frontRightTurnPower);
-    //     backLeftSteer.set(backLeftTurnPower);
-    //     backRightSteer.set(backRightTurnPower);
-
-    //     // set drive power to desired speed div max speed to get value between 0 and 1
-    //     frontLeftDrive.set(frontLeftOptimized.speedMetersPerSecond / maxSpeedMpS);
-    //     frontRightDrive.set(frontRightOptimized.speedMetersPerSecond / maxSpeedMpS);
-    //     backLeftDrive.set(backLeftOptimized.speedMetersPerSecond / maxSpeedMpS);
-    //     backRightDrive.set(backRightOptimized.speedMetersPerSecond / maxSpeedMpS);
-    // }
+    public Pose2d getPose() {
+        return poseEstimator.getEstimatedPosition();
+    }
 
 
 
+    private Boolean seeIfElectronicHasInput(TalonFX motor){
+        double motorSpeed = motor.get();
+        if (motorSpeed > 0.2){
+            return true;
+        } else {
+            return false;
+        }
+    }
 
+    public void electronicStatus(){
+        // !!
+        // isAlive() is set for deprecation
+        // !!
+
+        ShuffleDash.update("Back Left Drive", seeIfElectronicHasInput(backLeftDrive));
+        ShuffleDash.update("Back Left Steer", seeIfElectronicHasInput(backLeftSteer));
+        ShuffleDash.update("Front Left Steer", seeIfElectronicHasInput(frontLeftSteer));
+        ShuffleDash.update("Front Left Drive", seeIfElectronicHasInput(frontLeftDrive));
+        ShuffleDash.update("Front Right Steer", seeIfElectronicHasInput(frontRightSteer));
+        ShuffleDash.update("Front Right Drive", seeIfElectronicHasInput(frontRightDrive));
+        ShuffleDash.update("Back Right Steer", seeIfElectronicHasInput(backRightSteer));
+        ShuffleDash.update("Back Right Drive", seeIfElectronicHasInput(backRightDrive));
+
+    }
 }
