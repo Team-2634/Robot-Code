@@ -4,30 +4,33 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
 
 public class Shooter {
-    private final CANSparkMax intake = new CANSparkMax(9, MotorType.kBrushless);
+    // private final CANSparkMax intake = new CANSparkMax(9, MotorType.kBrushless);
 
-    private final CANSparkMax shooterMotorLeft = new CANSparkMax(0, MotorType.kBrushless);
-    private final CANSparkMax shooterMotorRight = new CANSparkMax(0, MotorType.kBrushless);
-    
-    // private final TalonFX ShooterMotorLeft = new TalonFX(0);
-    // private final TalonFX ShooterMotorRight = new TalonFX(0);
-    
-    // private final TalonFX ArmMotor_L = new TalonFX(0);
-    // private final TalonFX ArmMotor_R = new TalonFX(0);
+    // private final CANSparkMax shooterMotorLeft = new CANSparkMax(0, MotorType.kBrushless);
+    // private final CANSparkMax shooterMotorRight = new CANSparkMax(0, MotorType.kBrushless);
 
-    // private final TalonFX PickUpMotor = new TalonFX(0);
+    // private final CANSparkMax armMotorLeft = new CANSparkMax(0, MotorType.kBrushless);
+    // private final CANSparkMax armMotorRight = new CANSparkMax(0, MotorType.kBrushless);
+    
+    private final TalonFX shooterMotorLeft = new TalonFX(8); 
+    private final TalonFX shooterMotorRight = new TalonFX(9);
+    
+    private final TalonFX armMotorLeft = new TalonFX(0);
+    private final TalonFX armMotorRight = new TalonFX(0);
+
+    private final TalonFX intake = new TalonFX(10);
+
+    private final ArmFeedforward armFF = new ArmFeedforward(0, 0, 0);
+    private final PIDController armPID = new PIDController(0, 0, 0);
     
     // Timer LaunchTimer;
-    public void collectNote(boolean condition){
-        if (condition) {
-            intake.set(0.5);    
-        }
-        else {
-            intake.set(0);
-        }
+    public void collectNote(double speed){
+        intake.set(speed);
     }
    
     // public void RotateArm(double value){
@@ -35,16 +38,10 @@ public class Shooter {
     //     ArmMotor_R.set(value);
     // }
 
-    public void shootNote(boolean condition //double seconds, double speed
+    public void shootNote(double speed //double seconds, double speed
     ) {
-        if (condition) {
-            shooterMotorLeft.set(0.5);
-            shooterMotorRight.set(0.5);
-        }
-        else {
-            shooterMotorLeft.set(0);
-            shooterMotorRight.set(0);
-        }
+        shooterMotorLeft.set(speed);
+        shooterMotorRight.set(speed);
         
         // LaunchTimer.reset();
         // LaunchTimer.start();
@@ -56,6 +53,21 @@ public class Shooter {
         // ShooterMotor_L.set(0.0);
         // ShooterMotor_R.set(0.0);
 
+    }
+
+    public void moveArm(double speed) {
+        armMotorLeft.set(speed);
+        armMotorRight.set(speed);
+    }
+
+    public double getArmRadians() {
+        return armMotorLeft.getPosition().getValueAsDouble() / 2 / Math.PI;
+    }
+
+    public void moveArmPID(double position) {
+        double power = armFF.calculate(getArmRadians(), position) + armPID.calculate(getArmRadians(), position);
+        armMotorLeft.setVoltage(power);
+        armMotorRight.setVoltage(power);
     }
 
 }

@@ -93,13 +93,20 @@ public class AutoHelper {
     // }
 
     public void intake(boolean input) {
-        shooter.collectNote(input);
+        if (input) {
+            shooter.collectNote(Constants.intakeSpeed);
+        } else {
+            shooter.collectNote(0);
+        }
     }
 
     public boolean hasNote() {
         return true; //shooter.hasNote();
     }
     
+    public void armToPosition(double position) {
+        shooter.moveArmPID(position);
+    }
 
     public Pose2d getPose() {
         return driver.getPose();

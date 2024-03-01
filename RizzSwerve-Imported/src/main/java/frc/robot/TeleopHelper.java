@@ -26,6 +26,11 @@ public class TeleopHelper {
     final XboxController xbox = new XboxController(0);
 
     public void drive(double XSpeed, double YSpeed, double TurnSpeed) {
+        if (xbox.getRightBumper()) {
+            XSpeed /= 3;
+            YSpeed /= 3;
+            TurnSpeed /= 3;
+        }
         double[] speedsFieldOriented = driver.fieldOrient(XSpeed, YSpeed);
         XSpeed = speedsFieldOriented[0] * Constants.XdriveSensitivity;
         YSpeed = speedsFieldOriented[1] * Constants.YdriveSensitivity;
@@ -34,14 +39,38 @@ public class TeleopHelper {
         driver.swerveDrive(XSpeed, YSpeed, TurnSpeed);
     }
 
-    public void shoot(boolean input) {
+    public void shoot(double input) {
         shooter.shootNote(input);
+        // if (input) {
+        //     shooter.shootNote(Constants.shootSpeed);
+        // } else {
+        //     shooter.shootNote(0);
+        // }
+    } 
+
+    public void intake(double input, boolean yButton) {
+        
+        // if (bButton) {
+        //     shooter.collectNote(Constants.intakeSpeed);
+         if (yButton) {
+            shooter.collectNote(-0.1);
+        } else {
+            shooter.collectNote(input/3);
+        }
+        // else {
+        //     shooter.collectNote(0);
+        // }
     }
 
-    public void intake(boolean input) {
-        shooter.collectNote(input);
+    public void arm(boolean up, boolean down) {
+        if (up) {
+            shooter.moveArm(Constants.armSpeed);
+        } else if (down) {
+            shooter.moveArm(-Constants.armSpeed);
+        } else {
+            shooter.moveArm(0);
+        }
     }
-
     /**
      * Get axis and remove deadzone from controller input
      * @param axisInput axis ID

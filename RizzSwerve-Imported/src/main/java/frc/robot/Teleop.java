@@ -21,14 +21,16 @@ public class Teleop {
     }
 
     public void shoot() {
-        teleopHelper.shoot(xbox.getAButton());
+        teleopHelper.shoot(teleopHelper.getAxisValue(2));
     }
 
     public void intake() {
-        teleopHelper.intake(xbox.getBButton());
+        teleopHelper.intake(teleopHelper.getAxisValue(3), xbox.getYButton());
     }
 
-
+    public void arm() {
+        teleopHelper.arm(xbox.getRightBumper(), xbox.getLeftBumper());
+    }
 
 
 }
