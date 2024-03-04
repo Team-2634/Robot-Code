@@ -7,15 +7,7 @@ public class Constants {
     public final static double talonEncoder_TicksPerRev = 2048;
     public final static double neoEncoder_TicksPerRev = 42;
 
-    public final static double frontLeftAbsEncoderOffset = 197.19;
-    public final static double frontRightAbsEncoderOffset = 31.8;
-    public final static double backLeftAbsEncoderOffset = 285.205;
-    public final static double backRightAbsEncoderOffset = 50.4;
-
     public final static double maxDegree = 360;
-
-    public final static double maxVelocity_MetersPerSeconds = 6;
-    public final static double maxAccel_MetersPerSecondsSquared = 3;
 
     //configurable stuff
 
@@ -29,7 +21,14 @@ public class Constants {
     public final static int frontRightSteerID = 3;
     public final static int backLeftSteerID = 5;
     public final static int backRightSteerID = 7;
-    
+
+    public final static String canivore = "arm";
+    public final static int leftArmID = 0;
+    public final static int rightArmID = 0;
+    public final static int leftShootID = 0;
+    public final static int rightShootID = 0;
+    public final static int intakeID = 0;
+
     public final static int frontLeftAbsEncoderID = 3;
     public final static int frontRightAbsEncoderID = 0;
     public final static int backLeftAbsEncoderID = 2;
@@ -55,11 +54,22 @@ public class Constants {
     public final static double maxAutoVelocity = 0.1;
     public final static double maxAutoAccel = 0.1;
 
-    //drivetrain properties
+    //robot properties
+    public final static double frontLeftAbsEncoderOffset = 197.19;
+    public final static double frontRightAbsEncoderOffset = 31.8;
+    public final static double backLeftAbsEncoderOffset = 285.205;
+    public final static double backRightAbsEncoderOffset = 50.4;
+
     public final static double wheelDiameterInches = 3.75;
     public final static double driveMotorGearRatio = 1 / 8.14;
     public final static double turningMotorGearRatio = 1.0 / (150.0 / 7.0);
     public final static double armGearRatio = 1/64;
+    public final static double armOffset = 0;
+
+    //arm
+    public final static double shootSpeed = 0.5;
+    public final static double intakeSpeed = 0.2;
+    public final static double armSpeed = 0.5;
 
     //controller settings
     public final static double XdriveSensitivity = 1;
@@ -68,17 +78,12 @@ public class Constants {
     public final static double maxSpeedMpS = 0.1; 
     public final static double maxSpeedRotation = 0.1; 
 
-
     public final static double controllerDeadzone = 0.1;
 
     //field oriented on/off
     public final static boolean fieldOriented = true;
 
-    //arm
-    public final static double shootSpeed = 0.5;
-    public final static double intakeSpeed = 0.2;
-    public final static double armSpeed = 0.5;
-
+    
     //functions
     public final static double clamp(double input, double min, double max) {
         return Math.max(Math.min(input, max), min);

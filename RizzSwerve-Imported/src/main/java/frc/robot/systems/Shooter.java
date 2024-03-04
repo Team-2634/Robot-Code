@@ -7,6 +7,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Constants;
 
 public class Shooter {
     // private final CANSparkMax intake = new CANSparkMax(9, MotorType.kBrushless);
@@ -17,13 +18,13 @@ public class Shooter {
     // private final CANSparkMax armMotorLeft = new CANSparkMax(0, MotorType.kBrushless);
     // private final CANSparkMax armMotorRight = new CANSparkMax(0, MotorType.kBrushless);
     
-    private final TalonFX shooterMotorLeft = new TalonFX(8); 
-    private final TalonFX shooterMotorRight = new TalonFX(9);
+    private final TalonFX shooterMotorLeft = new TalonFX(Constants.leftShootID, Constants.canivore); 
+    private final TalonFX shooterMotorRight = new TalonFX(Constants.rightShootID, Constants.canivore);
     
-    private final TalonFX armMotorLeft = new TalonFX(0);
-    private final TalonFX armMotorRight = new TalonFX(0);
+    private final TalonFX armMotorLeft = new TalonFX(Constants.leftArmID, Constants.canivore);
+    private final TalonFX armMotorRight = new TalonFX(Constants.rightArmID, Constants.canivore);
 
-    private final TalonFX intake = new TalonFX(10);
+    private final TalonFX intake = new TalonFX(Constants.intakeID, Constants.canivore);
 
     private final ArmFeedforward armFF = new ArmFeedforward(0, 0, 0);
     private final PIDController armPID = new PIDController(0, 0, 0);
@@ -61,11 +62,11 @@ public class Shooter {
     }
 
     public double getArmRadians() {
-        return armMotorLeft.getPosition().getValueAsDouble() / 2 / Math.PI;
+        return armMotorLeft.getPosition().getValueAsDouble() * Constants.armGearRatio / 2 / Math.PI;
     }
 
     public void moveArmPID(double position) {
-        double power = armFF.calculate(getArmRadians(), position) + armPID.calculate(getArmRadians(), position);
+        double power = armFF.calculate(getArmRadians() - Constants.armOffset, position) + armPID.calculate(getArmRadians(), position);
         armMotorLeft.setVoltage(power);
         armMotorRight.setVoltage(power);
     }
