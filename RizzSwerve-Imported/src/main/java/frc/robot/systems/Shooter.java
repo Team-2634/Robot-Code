@@ -55,6 +55,14 @@ public class Shooter {
 
     }
 
+    // public void shootNoteFull() {
+    //     shootNote(1);
+    //     if (shooterMotorLeft.getRotorVelocity().getValue()>100 && shooterMotorRight.getRotorVelocity().getValue()>100) {
+            
+    //         collectNote(0.33);
+    //     }
+    // }
+
     public void moveArm(double speed) {
         armMotorLeft.set(speed);
         armMotorRight.set(speed);
