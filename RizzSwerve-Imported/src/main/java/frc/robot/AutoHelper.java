@@ -61,18 +61,18 @@ public class AutoHelper {
      */
     public void driveToPosition(Pose2d endPose) {
         Pose2d startPose = driver.getPose();
-        SmartDashboard.putNumber("inputX", startPose.getX());
-        SmartDashboard.putNumber("inputY", startPose.getY());
-        SmartDashboard.putNumber("inputRot", startPose.getRotation().getRadians());
-        SmartDashboard.putNumber("outputX", endPose.getX());
-        SmartDashboard.putNumber("outputY", endPose.getY());
-        SmartDashboard.putNumber("outputRot", endPose.getRotation().getRadians());
+        // SmartDashboard.putNumber("inputX", startPose.getX());
+        // SmartDashboard.putNumber("inputY", startPose.getY());
+        // SmartDashboard.putNumber("inputRot", startPose.getRotation().getRadians());
+        // SmartDashboard.putNumber("outputX", endPose.getX());
+        // SmartDashboard.putNumber("outputY", endPose.getY());
+        // SmartDashboard.putNumber("outputRot", endPose.getRotation().getRadians());
         double xSpeed = autoXPID.calculate(startPose.getX(), endPose.getX());
         double ySpeed = autoYPID.calculate(startPose.getY(), endPose.getY()); 
         double rotSpeed = autoTurnPID.calculate(startPose.getRotation().getRadians(), endPose.getRotation().getRadians());
-        SmartDashboard.putNumber("xSpeed", xSpeed);
-        SmartDashboard.putNumber("ySpeed", ySpeed);
-        SmartDashboard.putNumber("rotSpeed", rotSpeed);
+        // SmartDashboard.putNumber("xSpeed", xSpeed);
+        // SmartDashboard.putNumber("ySpeed", ySpeed);
+        // SmartDashboard.putNumber("rotSpeed", rotSpeed);
 
         double[] fieldOriented = driver.fieldOrient(xSpeed, ySpeed);
         driver.swerveDrive(fieldOriented[0], fieldOriented[1], rotSpeed);

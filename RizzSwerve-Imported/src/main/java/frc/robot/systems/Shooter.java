@@ -1,6 +1,7 @@
 package frc.robot.systems;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
@@ -29,6 +30,14 @@ public class Shooter {
     private final ArmFeedforward armFF = new ArmFeedforward(0, 0, 0);
     private final PIDController armPID = new PIDController(0, 0, 0);
     
+    public void initialize() {
+        armMotorLeft.setNeutralMode(NeutralModeValue.Brake);
+        armMotorRight.setNeutralMode(NeutralModeValue.Brake);
+
+        armMotorLeft.setInverted(true);
+        armMotorRight.setInverted(false);
+    }
+
     // Timer LaunchTimer;
     public void collectNote(double speed){
         intake.set(speed);
@@ -39,21 +48,9 @@ public class Shooter {
     //     ArmMotor_R.set(value);
     // }
 
-    public void shootNote(double speed //double seconds, double speed
-    ) {
-        shooterMotorLeft.set(speed);
-        shooterMotorRight.set(speed);
-        
-        // LaunchTimer.reset();
-        // LaunchTimer.start();
-        // if (LaunchTimer.get() > seconds){
-        //     ShooterMotor_L.set(speed);
-        //     ShooterMotor_R.set(speed);
-        // }
-        
-        // ShooterMotor_L.set(0.0);
-        // ShooterMotor_R.set(0.0);
-
+    public void shootNote(double speed) {
+        shooterMotorLeft.set(-speed);
+        shooterMotorRight.set(-speed);
     }
 
     // public void shootNoteFull() {
@@ -77,6 +74,12 @@ public class Shooter {
         double power = armFF.calculate(getArmRadians() - Constants.armOffset, position) + armPID.calculate(getArmRadians(), position);
         armMotorLeft.setVoltage(power);
         armMotorRight.setVoltage(power);
+    }
+
+    public void isHardStopped() {
+        if (0 < armMotorLeft.getPosition().getValue() && armMotorLeft.getPosition().getValue() < Constants.maxArmRotation) {
+            
+        }
     }
 
 }

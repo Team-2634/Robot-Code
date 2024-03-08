@@ -22,17 +22,21 @@ public class Constants {
     public final static int backLeftSteerID = 5;
     public final static int backRightSteerID = 7;
 
-    public final static String canivore = "arm";
-    public final static int leftArmID = 0;
-    public final static int rightArmID = 0;
-    public final static int leftShootID = 0;
-    public final static int rightShootID = 0;
-    public final static int intakeID = 0;
+    public final static String canivore = "rio";
+    public final static int leftArmID = 8;
+    public final static int rightArmID = 9;
+    public final static int leftShootID = 11;
+    public final static int rightShootID = 12;
+    public final static int intakeID = 10;
 
-    public final static int frontLeftAbsEncoderID = 3;
-    public final static int frontRightAbsEncoderID = 0;
+    public final static int leftClimbID = 14;
+    public final static int rightClimbID = 13;
+
+
+    public final static int frontLeftAbsEncoderID = 0;
+    public final static int frontRightAbsEncoderID = 1;
     public final static int backLeftAbsEncoderID = 2;
-    public final static int backRightAbsEncoderID = 1;
+    public final static int backRightAbsEncoderID = 3;
 
     //PID values
     public final static double kpDrive = 0.3;
@@ -55,21 +59,26 @@ public class Constants {
     public final static double maxAutoAccel = 0.1;
 
     //robot properties
-    public final static double frontLeftAbsEncoderOffset = 197.19;
-    public final static double frontRightAbsEncoderOffset = 31.8;
-    public final static double backLeftAbsEncoderOffset = 285.205;
-    public final static double backRightAbsEncoderOffset = 50.4;
+    public final static double frontLeftAbsEncoderOffset = 0.060;
+    public final static double frontRightAbsEncoderOffset = -0.478;
+    public final static double backLeftAbsEncoderOffset = -0.183;
+    public final static double backRightAbsEncoderOffset = 0.134;
 
     public final static double wheelDiameterInches = 3.75;
     public final static double driveMotorGearRatio = 1 / 8.14;
     public final static double turningMotorGearRatio = 1.0 / (150.0 / 7.0);
     public final static double armGearRatio = 1/64;
     public final static double armOffset = 0;
+    public final static double maxClimb = 396;
+    public final static double maxArmRotation = 640;
 
-    //arm
+
+    //arm speeds
     public final static double shootSpeed = 0.5;
-    public final static double intakeSpeed = 0.2;
-    public final static double armSpeed = 0.5;
+    public final static double intakeSpeed = 0.5;
+    public final static double armSpeed = 0.2;
+    public final static double climbSpeed = 1;
+
 
     //controller settings
     public final static double XdriveSensitivity = 1;
