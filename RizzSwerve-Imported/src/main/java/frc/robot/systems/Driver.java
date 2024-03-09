@@ -89,6 +89,12 @@ public class Driver {
         new Pose2d()
     );
 
+    Limelight limelight;
+
+    public Driver(Limelight ll) {
+        this.limelight = ll;
+    }
+
     //rotations counted by motor -> rotations wheel side -> distance travelled (meters) 
     public final double ticksToMetersDrive = Constants.driveMotorGearRatio * (Units.inchesToMeters(Constants.wheelDiameterInches) * Math.PI);
     //rotations counted by motor -> rotations output side -> rads turned
@@ -121,7 +127,7 @@ public class Driver {
         poseEstimator.resetPosition(navx.getRotation2d(), modulePositionArray, getPose());
         navx.reset();
     }
-    
+
     public double readAbsEncoder(int module) {
         encoderArray[module].getPosition().refresh();
         return encoderArray[module].getAbsolutePosition().getValue();
@@ -190,20 +196,20 @@ public class Driver {
             optimizedState.angle.getRadians()
         );
 
-        SmartDashboard.putNumber("module" + module + " speed",moduleState.speedMetersPerSecond);
-        SmartDashboard.putNumber("module" + module + " direction",moduleState.angle.getDegrees());
+        // SmartDashboard.putNumber("module" + module + " speed",moduleState.speedMetersPerSecond);
+        // SmartDashboard.putNumber("module" + module + " direction",moduleState.angle.getDegrees());
 
-        SmartDashboard.putNumber("module" + module + " speedoptimised",optimizedState.speedMetersPerSecond);
-        SmartDashboard.putNumber("module" + module + " directionoptimised",optimizedState.angle.getDegrees());
+        // SmartDashboard.putNumber("module" + module + " speedoptimised",optimizedState.speedMetersPerSecond);
+        // SmartDashboard.putNumber("module" + module + " directionoptimised",optimizedState.angle.getDegrees());
 
-        SmartDashboard.putNumber("module" + module + " rawsensordata", steerMotorArray[module].getPosition().getValue());
-        SmartDashboard.putNumber("module" + module + " recordedturnposition", steerMotorArray[module].getPosition().getValue() * ticksToRadsTurning);
+        // SmartDashboard.putNumber("module" + module + " rawsensordata", steerMotorArray[module].getPosition().getValue());
+        // SmartDashboard.putNumber("module" + module + " recordedturnposition", steerMotorArray[module].getPosition().getValue() * ticksToRadsTurning);
 
-        SmartDashboard.putNumber("module" + module + " drive power", drivePower);
-        SmartDashboard.putNumber("module" + module + " turn power", turnPower);
+        // SmartDashboard.putNumber("module" + module + " drive power", drivePower);
+        // SmartDashboard.putNumber("module" + module + " turn power", turnPower);
             
-        SmartDashboard.putNumber("module" + module + " encoder raw", encoderArray[module].getAbsolutePosition().getValue());
-        SmartDashboard.putNumber("module" + module + " encoder rads", encoderArray[module].getPosition().getValue() * 2 * Math.PI);
+        // SmartDashboard.putNumber("module" + module + " encoder raw", encoderArray[module].getAbsolutePosition().getValue());
+        // SmartDashboard.putNumber("module" + module + " encoder rads", encoderArray[module].getPosition().getValue() * 2 * Math.PI);
         
         driveMotorArray[module].set(drivePower);
         steerMotorArray[module].set(turnPower);
@@ -257,4 +263,7 @@ public class Driver {
     public Pose2d getPose() {
         return poseEstimator.getEstimatedPosition();
     }
+
+    
+
 }

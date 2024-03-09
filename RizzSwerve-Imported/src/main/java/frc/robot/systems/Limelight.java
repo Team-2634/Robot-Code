@@ -1,26 +1,26 @@
-// package frc.robot.systems;
+package frc.robot.systems;
 
-// import edu.wpi.first.networktables.NetworkTable;
-// import edu.wpi.first.networktables.NetworkTableEntry;
-// import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
-// public class Limelight {
+public class Limelight {
     
-//     NetworkTableEntry tx;
-//     NetworkTableEntry ty;
-//     NetworkTableEntry ta;
-//     NetworkTableEntry botPose;
+    public double tx;
+    public double ty;
+    public double ta;
+    public double[] botPose;
 
-//     public void updateLimelight() {
-//         NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-//         tx = table.getEntry("tx");
-//         ty = table.getEntry("ty");
-//         ta = table.getEntry("ta");
-//         botPose = table.getEntry("botpose");
-//     }
+    public void updateLimelight() {
+        tx = LimelightHelpers.getTX("");
+        ty = LimelightHelpers.getTY("");
+        ta = LimelightHelpers.getTA("");
+        botPose = LimelightHelpers.getBotPose("");
+    }
 
-//     public void updatePoseLimelight() {
-//         double limelightBotPose = botPose.get
-//     }
+    public void updatePoseLimelight() {
+        
+    }
 
-// }
+
+}

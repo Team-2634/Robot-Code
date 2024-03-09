@@ -2,9 +2,11 @@ package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
+import frc.robot.systems.Limelight;
 import frc.robot.systems.Shooter;
 
 public class TeleopHelper {
@@ -13,17 +15,24 @@ public class TeleopHelper {
     Shooter shooter;
     Climber climber;
     AHRS navx;
+    Limelight limelight;
 
-    public TeleopHelper(Driver driver, Shooter shooter, Climber climber, AHRS navx) {
+    public TeleopHelper(Driver driver, Shooter shooter, Climber climber, AHRS navx, Limelight limelight) {
         this.driver = driver;
         this.shooter = shooter;
         this.climber = climber;
         this.navx = navx;
+        this.limelight = limelight;
     }
 
     final XboxController xbox = new XboxController(0);
 
-    public void drive(double XSpeed, double YSpeed, double TurnSpeed, boolean modSpeed) {
+    public void drive(double XSpeed, double YSpeed, double TurnSpeed, boolean modSpeed, boolean goLimelight) {
+        
+        if (goLimelight ) {
+            TurnSpeed = limelightRotate();
+        }
+
         if (modSpeed) {
             XSpeed /= 3;
             YSpeed /= 3;
@@ -37,6 +46,11 @@ public class TeleopHelper {
         driver.swerveDrive(XSpeed, YSpeed, TurnSpeed);
     }
 
+    PIDController rotatePID = new PIDController(Constants.kpBotRotate, Constants.kiBotRotate, Constants.kdBotRotate);
+    public double limelightRotate() {
+        return rotatePID.calculate(limelight.tx, 0);
+    }
+
     public void shoot(double input) {
         shooter.shootNote(input);
         // if (input) {
@@ -48,22 +62,17 @@ public class TeleopHelper {
 
     public void intake(double input, boolean yButton) {
         
-        // if (bButton) {
-        //     shooter.collectNote(Constants.intakeSpeed);
          if (yButton) {
             shooter.collectNote(0.2);
         } else {
             shooter.collectNote(-input/3);
         }
-        // else {
-        //     shooter.collectNote(0);
-        // }
     }
 
     public void arm(boolean up, boolean down) {
-        if (up) {
+        if (up && !shooter.isHardStoppedHigh()) {
             shooter.moveArm(Constants.armSpeed);
-        } else if (down) {
+        } else if (down && !shooter.isHardStoppedLow()) {
             shooter.moveArm(-Constants.armSpeed);
         } else {
             shooter.moveArm(0);
@@ -71,9 +80,9 @@ public class TeleopHelper {
     }
 
     public void climb(boolean aButton, boolean bButton) {
-        if (aButton) {
+        if (aButton && !climber.isHardStoppedHigh()) {
             climber.climb(Constants.climbSpeed);
-        } else if (bButton) {
+        } else if (bButton && !climber.isHardStoppedLow()) {
             climber.climb(-Constants.climbSpeed);
         } else {
             climber.climb(0);
