@@ -107,8 +107,17 @@ public class AutoHelper {
         }
     }
 
+    boolean noteRoutineFlag = true;
+    double time;
     public boolean hasNote() {
-        return true; //shooter.hasNote();
+        if (noteRoutineFlag) {
+            time = Timer.getFPGATimestamp();
+            noteRoutineFlag = false;
+        }
+        if (Timer.getFPGATimestamp() > time) {
+            return true;
+        }
+        return false; //shooter.hasNote();
     }
     
     public void armToPosition(double position) {

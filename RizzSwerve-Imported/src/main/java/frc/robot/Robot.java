@@ -56,6 +56,9 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("climb position", climber.getClimbPosition());
         SmartDashboard.putNumber("RArm", shooter.armMotorLeft.getPosition().getValue());
         SmartDashboard.putNumber("LArm", shooter.armMotorRight.getPosition().getValue());
+    
+        SmartDashboard.putBoolean("null", auto.autoHelper.atTargetPosition());
+    
     }
     
     @Override
@@ -67,11 +70,12 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
 
-        atuo.isRed = true;
+        auto.isRed = true;
 
+// auto.autoHelper.driveToPosition(new Pose2d(1,0,new rota));
         // auto.autoProgramTest();
         // auto.autoAmpTwoNote();
-        auto.autoSpeakerTwoNote();
+        // auto.autoSpeakerTwoNote();
     }
     
     @Override

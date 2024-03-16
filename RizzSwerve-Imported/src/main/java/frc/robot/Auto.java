@@ -52,8 +52,8 @@ public class Auto {
         timer.start();    
     }
 
-    public isRed = false;
-    public invertIfRed(double inputY) {
+    public boolean isRed = false;
+    public double invertIfRed(double inputY) {
         if (isRed) {
             return -inputY;
         } else return inputY;
@@ -71,7 +71,7 @@ public class Auto {
         SmartDashboard.putNumber("auto",counter);
         switch (counter) {
             case 0:
-                autoHelper.angleArmToPosition(Constants.ampPosition);
+                autoHelper.angleArmToPosition(Constants.closeSpeakerPosition);
 
                 if (autoHelper.armAtPosition()) {armFinished = true;}
                 if (armFinished) {counter += 1; armFinished = false;}

@@ -105,9 +105,9 @@ public class TeleopHelper {
     }
 
     public void arm(boolean up, boolean down) {
-        if (up && !shooter.isHardStoppedHigh()) {
+        if (up) {
             shooter.moveArm(Constants.armSpeed);
-        } else if (down && !shooter.isHardStoppedLow()) {
+        } else if (down) {
             shooter.moveArm(-Constants.armSpeed);
         } else {
             shooter.moveArm(0);
