@@ -105,9 +105,9 @@ public class TeleopHelper {
     }
 
     public void arm(boolean up, boolean down) {
-        if (up) {
+        if (up && !shooter.isHardStoppedHigh()) {
             shooter.moveArm(Constants.armSpeed);
-        } else if (down) {
+        } else if (down && !shooter.isHardStoppedLow()) {
             shooter.moveArm(-Constants.armSpeed);
         } else {
             shooter.moveArm(0);
@@ -123,6 +123,13 @@ public class TeleopHelper {
             climber.climb(0);
         }
     }
+
+    public void panic(boolean AAAA) {
+        if (AAAA) {
+            driver.panicReset();
+        }
+    }
+
     /**
      * Get axis and remove deadzone from controller input
      * @param axisInput axis ID

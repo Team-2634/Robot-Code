@@ -72,10 +72,9 @@ public class Robot extends TimedRobot {
 
         auto.isRed = true;
 
-// auto.autoHelper.driveToPosition(new Pose2d(1,0,new rota));
         // auto.autoProgramTest();
         // auto.autoAmpTwoNote();
-        // auto.autoSpeakerTwoNote();
+        auto.autoSpeakerTwoNote();
     }
     
     @Override
@@ -89,11 +88,11 @@ public class Robot extends TimedRobot {
         teleop.intake();
         teleop.shoot();
         teleop.climb();
-        teleop.arm();
+        // teleop.arm();
 
         //EXPEREMENTAL STUFF THAT WILL BREAK EVERYTHING
         // teleop.drive();
-        // teleop.armPID();
+        teleop.armPID();
         // teleop.intake();
         // teleop.climb();
         // teleop.shootRoutine();

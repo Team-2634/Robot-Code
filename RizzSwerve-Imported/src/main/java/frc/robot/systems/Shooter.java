@@ -61,18 +61,19 @@ public class Shooter {
     }
 
     double shotTime;
-    boolean noteRoutineFlag = true;
+    Timer timer = new Timer();
+    public boolean noteRoutineFlag = true;
 
     public void shootNoteRoutine() {
         if (noteRoutineFlag) {
             noteRoutineFlag = false;
-            shotTime = Timer.getFPGATimestamp() + 0.5;
+            shotTime = timer.get() + 0.5;
         }
         shootNote(1);
-        if (Timer.getFPGATimestamp() > shotTime) {
+        if (timer.get() > shotTime) {
             collectNote(1);
         }
-        if (Timer.getFPGATimestamp() > shotTime + 0.5) {
+        if (timer.get() > shotTime + 0.5) {
             noteRoutineFlag = true;
         }
     }
@@ -103,7 +104,7 @@ public class Shooter {
     }
 
     public boolean isHardStoppedHigh() {
-        if (armMotorLeft.getPosition().getValue() < Constants.maxArmRotationRads) {
+        if (getArmRadians() < Constants.maxArmRotationRads) {
             return false;
         } else return true;
     }

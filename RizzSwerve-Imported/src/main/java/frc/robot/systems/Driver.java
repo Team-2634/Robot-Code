@@ -267,6 +267,8 @@ public class Driver {
         return poseEstimator.getEstimatedPosition();
     }
 
-    
+    public void panicReset() {
+        initialize();
+    }
 
 }

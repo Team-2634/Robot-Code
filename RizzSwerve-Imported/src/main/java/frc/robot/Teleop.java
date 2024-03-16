@@ -38,6 +38,9 @@ public class Teleop {
         teleopHelper.climb(xbox.getAButton(), xbox.getBButton());
     }
 
+    public void panic() {
+        teleopHelper.panic(xbox.getStartButton());
+    }
     //experemental
     public void shootRoutine() {
         teleopHelper.shootRoutine(xbox.getRightTriggerAxis() > 0.5);
