@@ -34,7 +34,7 @@ public class Shooter {
     
     public void initialize() {
         armPID.setTolerance(Constants.armPIDTolerance);
-        
+
         armMotorLeft.setNeutralMode(NeutralModeValue.Brake);
         armMotorRight.setNeutralMode(NeutralModeValue.Brake);
 
@@ -61,16 +61,19 @@ public class Shooter {
     }
 
     double shotTime;
-    boolean flag = true;
+    boolean noteRoutineFlag = true;
 
     public void shootNoteRoutine() {
-        if (flag) {
-            flag = false;
+        if (noteRoutineFlag) {
+            noteRoutineFlag = false;
             shotTime = Timer.getFPGATimestamp() + 0.5;
         }
         shootNote(1);
         if (Timer.getFPGATimestamp() > shotTime) {
             collectNote(1);
+        }
+        if (Timer.getFPGATimestamp() > shotTime + 0.5) {
+            noteRoutineFlag = true;
         }
     }
 

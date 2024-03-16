@@ -129,7 +129,6 @@ public class Driver {
         initializeModule(3);
         poseEstimator.resetPosition(navx.getRotation2d(), modulePositionArray, getPose());
         navx.reset();
-        startingAngleOffset = navx.getYaw();
     }
 
     public double readAbsEncoder(int module) {

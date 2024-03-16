@@ -66,7 +66,9 @@ public class Robot extends TimedRobot {
     
     @Override
     public void autonomousPeriodic() {
-        auto.autoProgramTest();
+        // auto.autoProgramTest();
+        // auto.autoAmpTwoNote();
+        auto.autoSpeakerTwoNote();
     }
     
     @Override
@@ -81,5 +83,12 @@ public class Robot extends TimedRobot {
         teleop.shoot();
         teleop.climb();
         teleop.arm();
+
+        //EXPEREMENTAL STUFF THAT WILL BREAK EVERYTHING
+        // teleop.drive();
+        // teleop.armPID();
+        // teleop.intake();
+        // teleop.climb();
+        // teleop.shootRoutine();
     }
 }

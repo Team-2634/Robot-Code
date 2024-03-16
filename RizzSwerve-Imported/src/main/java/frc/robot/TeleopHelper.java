@@ -69,11 +69,11 @@ public class TeleopHelper {
 
     int currentState = 0;
     public void setArmState(boolean stateUp, boolean stateDown) {
-        if (stateUp && currentState <= 0) {
+        if (stateUp && currentState < 2) {
             currentState++;
         }
 
-        if (stateDown && currentState >= 2) {
+        if (stateDown && currentState > 0) {
             currentState--;
         }
 

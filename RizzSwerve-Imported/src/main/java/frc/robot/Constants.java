@@ -79,9 +79,9 @@ public class Constants {
     public final static double armGearRatio = (1.0 / 64.0) / 4;
     public final static double armOffset = 0;
     public final static double minClimb = -2;
-    public final static double maxClimb = 396;
-    public final static double minArmRotationRads = 0.05;
-    public final static double maxArmRotationRads = 3.7;
+    public final static double maxClimb = 250;
+    public final static double minArmRotationRads = -1.40;
+    public final static double maxArmRotationRads = 0.60;
 
     //arm speeds
     public final static double shootSpeed = 0.5;
@@ -90,10 +90,9 @@ public class Constants {
     public final static double climbSpeed = 1;
 
     //set positions
-
-    public final static double pickupPosition = 0.001;
-    public final static double closeSpeakerPosition = 0.441;
-    public final static double ampPosition = 3.488;
+    public final static double pickupPosition = -1.4;
+    public final static double closeSpeakerPosition = -0.95;
+    public final static double ampPosition = 0.4;
 
     //controller settings
     public final static double XdriveSensitivity = 1;
