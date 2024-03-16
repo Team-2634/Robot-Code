@@ -52,6 +52,13 @@ public class Auto {
         timer.start();    
     }
 
+    public isRed = false;
+    public invertIfRed(double inputY) {
+        if (isRed) {
+            return -inputY;
+        } else return inputY;
+    }
+
     boolean driveFinished = false;
     boolean armFinished = false;
     boolean intakeFinished = false;
@@ -79,7 +86,64 @@ public class Auto {
 
             case 2:
                 autoHelper.angleArmToPosition(Constants.pickupPosition);
-                autoHelper.driveToPosition(autoHelper.setDesiredPose(noteX[0], noteY[0], Math.toRadians(45)));
+                autoHelper.driveToPosition(autoHelper.setDesiredPose(noteX[0], invertIfRed(noteY[0]), Math.toRadians(45)));
+                autoHelper.intake(true);
+
+                if (autoHelper.atTargetPosition()) {driveFinished = true;}
+                if (autoHelper.armAtPosition()) {armFinished = true;}
+                if (autoHelper.hasNote()) {intakeFinished = true;}
+                if (driveFinished && armFinished && intakeFinished) {counter += 1; driveFinished = false; armFinished = false; intakeFinished = false;}
+                break;
+
+            case 3:
+                autoHelper.angleArmToPosition(Constants.closeSpeakerPosition);
+                autoHelper.driveToPosition(autoHelper.setDesiredPose(speakerPosX, invertIfRed(speakerPosY), 0));
+
+                if (autoHelper.atTargetPosition()) {driveFinished = true;}
+                if (autoHelper.armAtPosition()) {armFinished = true;}
+                if (driveFinished && armFinished) {counter += 1; driveFinished = false; armFinished = false;}
+                break;
+
+            case 4:
+                autoHelper.shooter.shootNoteRoutine();
+                
+                if (!autoHelper.hasNote()) {shootFinished = true;}
+                if (shootFinished) {counter += 1; shootFinished = false;}
+                break;
+
+            case 5:
+                autoHelper.driveToPosition(autoHelper.setDesiredPose(Units.inchesToMeters(180), Units.inchesToMeters(211), counter));;
+                
+                if (autoHelper.atTargetPosition()) {driveFinished = true;}
+                if (driveFinished) {counter += 1; driveFinished = false;}
+                break;
+
+            default:
+                autoHelper.stop();
+                break;
+        }
+    }
+
+    public void autoAmpTwoNote() {
+        SmartDashboard.putNumber("auto",counter);
+        switch (counter) {
+            case 0:
+                autoHelper.angleArmToPosition(Constants.closeSpeakerPosition);
+
+                if (autoHelper.armAtPosition()) {armFinished = true;}
+                if (armFinished) {counter += 1; armFinished = false;}
+                break;
+            
+            case 1:
+                autoHelper.shooter.shootNoteRoutine();
+
+                if (!autoHelper.hasNote()) {shootFinished = true;}
+                if (shootFinished) {counter += 1; shootFinished = false;}
+                break;
+
+            case 2:
+                autoHelper.angleArmToPosition(Constants.pickupPosition);
+                autoHelper.driveToPosition(autoHelper.setDesiredPose(noteX[1], noteY[1], 0));
                 autoHelper.intake(true);
 
                 if (autoHelper.atTargetPosition()) {driveFinished = true;}
@@ -117,8 +181,7 @@ public class Auto {
         }
     }
 
-    public void autoAmpTwoNote() {
-        SmartDashboard.putNumber("auto",counter);
+    public void autoSupport() {
         switch (counter) {
             case 0:
                 autoHelper.angleArmToPosition(Constants.closeSpeakerPosition);

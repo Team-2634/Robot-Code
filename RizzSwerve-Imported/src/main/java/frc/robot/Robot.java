@@ -66,6 +66,9 @@ public class Robot extends TimedRobot {
     
     @Override
     public void autonomousPeriodic() {
+
+        atuo.isRed = true;
+
         // auto.autoProgramTest();
         // auto.autoAmpTwoNote();
         auto.autoSpeakerTwoNote();

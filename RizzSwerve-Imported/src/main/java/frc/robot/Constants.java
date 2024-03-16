@@ -43,7 +43,7 @@ public class Constants {
     public final static double kiDrive = 0;
     public final static double kdDrive = 0;
 
-    public final static double kpArm = 0.3;
+    public final static double kpArm = 1;
     public final static double kiArm = 0;
     public final static double kdArm = 0;    
 
@@ -87,7 +87,7 @@ public class Constants {
     public final static double shootSpeed = 0.5;
     public final static double intakeSpeed = 0.5;
     public final static double armSpeed = 0.75;
-    public final static double climbSpeed = 1;
+    public final static double climbSpeed = 0.3;
 
     //set positions
     public final static double pickupPosition = -1.4;
