@@ -99,6 +99,7 @@ public class TeleopHelper {
         
          if (yButton) {
             shooter.collectNote(0.2);
+            shooter.shootNote(-0.2);
         } else {
             shooter.collectNote(-input/3);
         }

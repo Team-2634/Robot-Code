@@ -82,6 +82,8 @@ public class Auto {
             
             case 1:
                 autoHelper.shooter.shootNoteRoutine();
+                autoHelper.angleArmToPosition(Constants.closeSpeakerPosition);
+
 
                 SmartDashboard.putBoolean("Auto State 1: shoot", shootFinished);
 
@@ -106,7 +108,7 @@ public class Auto {
 
             case 3:
                 autoHelper.angleArmToPosition(Constants.closeSpeakerPosition);
-                autoHelper.driveToPosition(autoHelper.setDesiredPose(speakerPosX, invertIfRed(speakerPosY), 0));
+                autoHelper.driveToPosition(autoHelper.setDesiredPose(0, 0, 0));
 
                 SmartDashboard.putBoolean("Auto State 3: drive", driveFinished);
                 SmartDashboard.putBoolean("Auto State 3: arm", armFinished);

@@ -43,6 +43,8 @@ public class Shooter {
 
         shooterMotorLeft.setInverted(false);
         shooterMotorRight.setInverted(false);
+
+        timer.start();
     }
 
     // Timer LaunchTimer;
