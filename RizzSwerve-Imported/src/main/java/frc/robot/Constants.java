@@ -49,14 +49,19 @@ public class Constants {
 
     public final static double kpBotTranslation = 0.2;
     public final static double kiBotTranslation = 0;
-    public final static double kdBotTranslation = 0.0000075;
+    public final static double kdBotTranslation = 0;
 
     public final static double kpBotRotate = 0.1;
     public final static double kiBotRotate = 0;
-    public final static double kdBotRotate = 0.0000075;
+    public final static double kdBotRotate = 0;
+
+    public final static double kpLimelightAlign = 0.1;
+    public final static double kiLimelightAlign = 0;
+    public final static double kdLimelightAlign = 0;
     
-    public final static double autoPositionToleranceMeters = 0.2;
-    public final static double autoRotationToleranceRadians = 0.2;
+    public final static double autoPositionToleranceMeters = 0.1;
+    public final static double autoRotationToleranceRadians = 0.1;
+    public final static double armPIDTolerance = 0.1;
     
     //auto
     public final static double maxAutoVelocity = 0.1;
@@ -73,10 +78,10 @@ public class Constants {
     public final static double turningMotorGearRatio = 1.0 / (150.0 / 7.0);
     public final static double armGearRatio = (1.0 / 64.0) / 4;
     public final static double armOffset = 0;
+    public final static double minClimb = -2;
     public final static double maxClimb = 396;
-    public final static double maxArmRotation = 640;
-
-
+    public final static double minArmRotationRads = 0.05;
+    public final static double maxArmRotationRads = 3.7;
 
     //arm speeds
     public final static double shootSpeed = 0.5;
@@ -84,6 +89,11 @@ public class Constants {
     public final static double armSpeed = 0.75;
     public final static double climbSpeed = 1;
 
+    //set positions
+
+    public final static double pickupPosition = 0.001;
+    public final static double closeSpeakerPosition = 0.441;
+    public final static double ampPosition = 3.488;
 
     //controller settings
     public final static double XdriveSensitivity = 1;

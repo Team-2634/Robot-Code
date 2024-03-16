@@ -9,6 +9,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -100,9 +101,11 @@ public class Driver {
     //rotations counted by motor -> rotations output side -> rads turned
     public final double ticksToRadsTurning = Constants.turningMotorGearRatio * 2 * Math.PI;
 
+    double startingAngleOffset;
+
     private void initializeModule(int module) {
         driveMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
-        driveMotorArray[module].setInverted(true);
+        driveMotorArray[module].setInverted(false);
         driveMotorArray[module].setPosition(0);
 
         steerMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
@@ -126,6 +129,7 @@ public class Driver {
         initializeModule(3);
         poseEstimator.resetPosition(navx.getRotation2d(), modulePositionArray, getPose());
         navx.reset();
+        startingAngleOffset = navx.getYaw();
     }
 
     public double readAbsEncoder(int module) {
@@ -232,7 +236,7 @@ public class Driver {
 
     
     public final double[] fieldOrient(double XSpeed, double YSpeed) {
-        double currentYawRadians = Math.toRadians(navx.getYaw());
+        double currentYawRadians = MathUtil.angleModulus(Math.toRadians(navx.getYaw() - startingAngleOffset)); 
         double XSpeedField = XSpeed * Math.cos(currentYawRadians) - YSpeed * Math.sin(currentYawRadians);
         double YSpeedField = XSpeed * Math.sin(currentYawRadians) + YSpeed * Math.cos(currentYawRadians);
         double[] speeds = {XSpeedField, YSpeedField};

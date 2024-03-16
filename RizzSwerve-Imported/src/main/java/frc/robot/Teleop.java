@@ -19,7 +19,7 @@ public class Teleop {
     
     
     public void drive() {
-        teleopHelper.drive(teleopHelper.getAxisValue(1), teleopHelper.getAxisValue(0), teleopHelper.getAxisValue(4), xbox.getLeftStickButton(), xbox.getXButton());
+        teleopHelper.drive(-teleopHelper.getAxisValue(1), -teleopHelper.getAxisValue(0), -teleopHelper.getAxisValue(4), xbox.getLeftStickButton(), xbox.getXButton());
     }
 
     public void shoot() {
@@ -38,4 +38,12 @@ public class Teleop {
         teleopHelper.climb(xbox.getAButton(), xbox.getBButton());
     }
 
+    //experemental
+    public void shootRoutine() {
+        teleopHelper.shootRoutine(xbox.getRightTriggerAxis() > 0.5);
+    }
+
+    public void armPID() {
+        teleopHelper.setArmState(xbox.getLeftBumperPressed(), xbox.getRightBumperPressed());
+    }
 }

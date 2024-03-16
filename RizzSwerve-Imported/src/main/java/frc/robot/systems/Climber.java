@@ -15,7 +15,7 @@ public class Climber {
         rightClimb.setNeutralMode(NeutralModeValue.Brake);
 
         leftClimb.setInverted(true);
-        leftClimb.setInverted(false);
+        rightClimb.setInverted(false);
     }
 
     public void climb(double input) {
@@ -28,7 +28,7 @@ public class Climber {
     }
 
     public boolean isHardStoppedLow() {
-        if (2 < leftClimb.getPosition().getValue()) {
+        if (Constants.minClimb < leftClimb.getPosition().getValue()) {
             return false;
         } else return true;
     }

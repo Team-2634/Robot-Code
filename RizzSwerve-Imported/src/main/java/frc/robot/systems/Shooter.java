@@ -33,11 +33,16 @@ public class Shooter {
     private final PIDController armPID = new PIDController(Constants.kpArm, Constants.kiArm, Constants.kdArm);
     
     public void initialize() {
+        armPID.setTolerance(Constants.armPIDTolerance);
+        
         armMotorLeft.setNeutralMode(NeutralModeValue.Brake);
         armMotorRight.setNeutralMode(NeutralModeValue.Brake);
 
         armMotorLeft.setInverted(true);
         armMotorRight.setInverted(false);
+
+        shooterMotorLeft.setInverted(true);
+        shooterMotorRight.setInverted(true);
     }
 
     // Timer LaunchTimer;
@@ -51,17 +56,23 @@ public class Shooter {
     // }
 
     public void shootNote(double speed) {
-        shooterMotorLeft.set(-speed);
-        shooterMotorRight.set(-speed);
+        shooterMotorLeft.set(speed);
+        shooterMotorRight.set(speed);
     }
 
-    // public void shootNoteFull() {
-    //     shootNote(1);
-    //     if (shooterMotorLeft.getRotorVelocity().getValue()>100 && shooterMotorRight.getRotorVelocity().getValue()>100) {
-            
-    //         collectNote(0.33);
-    //     }
-    // }
+    double shotTime;
+    boolean flag = true;
+
+    public void shootNoteRoutine() {
+        if (flag) {
+            flag = false;
+            shotTime = Timer.getFPGATimestamp() + 0.5;
+        }
+        shootNote(1);
+        if (Timer.getFPGATimestamp() > shotTime) {
+            collectNote(1);
+        }
+    }
 
     public void moveArm(double speed) {
         armMotorLeft.set(speed);
@@ -78,14 +89,18 @@ public class Shooter {
         armMotorRight.set(power);
     }
 
+    public boolean atPosition() {
+        return armPID.atSetpoint();
+    }
+
     public boolean isHardStoppedLow() {
-        if (2 < armMotorLeft.getPosition().getValue()) {
+        if (Constants.minArmRotationRads < getArmRadians()) {
             return false;
         } else return true;
     }
 
     public boolean isHardStoppedHigh() {
-        if (armMotorLeft.getPosition().getValue() < Constants.maxArmRotation) {
+        if (armMotorLeft.getPosition().getValue() < Constants.maxArmRotationRads) {
             return false;
         } else return true;
     }

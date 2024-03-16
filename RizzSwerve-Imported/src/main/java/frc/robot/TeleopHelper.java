@@ -29,7 +29,7 @@ public class TeleopHelper {
 
     public void drive(double XSpeed, double YSpeed, double TurnSpeed, boolean modSpeed, boolean goLimelight) {
         
-        if (goLimelight ) {
+        if (goLimelight) {
             TurnSpeed = limelightRotate();
         }
 
@@ -47,6 +47,7 @@ public class TeleopHelper {
     }
 
     PIDController rotatePID = new PIDController(Constants.kpBotRotate, Constants.kiBotRotate, Constants.kdBotRotate);
+    
     public double limelightRotate() {
         return rotatePID.calculate(limelight.tx, 0);
     }
@@ -59,6 +60,40 @@ public class TeleopHelper {
         //     shooter.shootNote(0);
         // }
     } 
+
+    public void shootRoutine(boolean hold) {
+        if (hold) {
+            shooter.shootNoteRoutine();
+        }
+    }
+
+    int currentState = 0;
+    public void setArmState(boolean stateUp, boolean stateDown) {
+        if (stateUp && currentState <= 0) {
+            currentState++;
+        }
+
+        if (stateDown && currentState >= 2) {
+            currentState--;
+        }
+
+        switch (currentState) {
+            case 0:
+                shooter.moveArmPID(Constants.pickupPosition);
+                break;
+            case 1:
+                shooter.moveArmPID(Constants.closeSpeakerPosition);
+                break;
+            case 2:
+                shooter.moveArmPID(Constants.ampPosition);
+                break;
+
+            default:
+                currentState = 0;
+                break;
+        
+        }
+    }
 
     public void intake(double input, boolean yButton) {
         

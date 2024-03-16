@@ -18,9 +18,7 @@ public class Limelight {
         botPose = LimelightHelpers.getBotPose("");
     }
 
-    public void updatePoseLimelight() {
-        
-    }
+    
 
 
 }
