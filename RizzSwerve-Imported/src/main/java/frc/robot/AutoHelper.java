@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
+import frc.robot.systems.Limelight;
 import frc.robot.systems.Shooter;
 
 public class AutoHelper {
@@ -20,20 +21,22 @@ public class AutoHelper {
     Climber climber;
     AHRS navx;
     Timer timer;
+    Limelight limelight;
 
-    public AutoHelper(Driver driver, Shooter shooter, Climber climber, AHRS navx, Timer timer) {
+    public AutoHelper(Driver driver, Shooter shooter, Climber climber, AHRS navx, Timer timer, Limelight limelight) {
         this.driver = driver;
         this.shooter = shooter;
         this.climber = climber;
         this.navx = navx;
         this.timer = timer;
+        this.limelight = limelight;
     }
 
-    PIDController autoXPID = new PIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto);
-    PIDController autoYPID = new PIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto);
-    // ProfiledPIDController autoXPID = new ProfiledPIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto, new TrapezoidProfile.Constraints(Constants.maxSpeedMpS, Constants.maxAutoAccel));
+    PIDController autoXPID = new PIDController(Constants.kpBotTranslation, Constants.kiBotTranslation, Constants.kdBotTranslation);
+    PIDController autoYPID = new PIDController(Constants.kpBotTranslation, Constants.kiBotTranslation, Constants.kdBotTranslation);
+    // ProfiledPIDController autoXPID = new ProfiledPIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto, new TrapezoidProfile.Constraints(Constants.maxAutoVelocity, Constants.maxAutoAccel));
     // ProfiledPIDController autoYPID = new ProfiledPIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto, new TrapezoidProfile.Constraints(Constants.maxAutoVelocity, Constants.maxAutoAccel));
-    PIDController autoTurnPID = new PIDController(Constants.kpAutoRotate, Constants.kiAutoRotate, Constants.kdAutoRotate);
+    PIDController autoTurnPID = new PIDController(Constants.kpBotRotate, Constants.kiBotRotate, Constants.kdBotRotate);
 
     void initialize() {
         autoXPID.setTolerance(Constants.autoPositionToleranceMeters);
@@ -61,18 +64,18 @@ public class AutoHelper {
      */
     public void driveToPosition(Pose2d endPose) {
         Pose2d startPose = driver.getPose();
-        SmartDashboard.putNumber("inputX", startPose.getX());
-        SmartDashboard.putNumber("inputY", startPose.getY());
-        SmartDashboard.putNumber("inputRot", startPose.getRotation().getRadians());
-        SmartDashboard.putNumber("outputX", endPose.getX());
-        SmartDashboard.putNumber("outputY", endPose.getY());
-        SmartDashboard.putNumber("outputRot", endPose.getRotation().getRadians());
+        // SmartDashboard.putNumber("inputX", startPose.getX());
+        // SmartDashboard.putNumber("inputY", startPose.getY());
+        // SmartDashboard.putNumber("inputRot", startPose.getRotation().getRadians());
+        // SmartDashboard.putNumber("outputX", endPose.getX());
+        // SmartDashboard.putNumber("outputY", endPose.getY());
+        // SmartDashboard.putNumber("outputRot", endPose.getRotation().getRadians());
         double xSpeed = autoXPID.calculate(startPose.getX(), endPose.getX());
         double ySpeed = autoYPID.calculate(startPose.getY(), endPose.getY()); 
         double rotSpeed = autoTurnPID.calculate(startPose.getRotation().getRadians(), endPose.getRotation().getRadians());
-        SmartDashboard.putNumber("xSpeed", xSpeed);
-        SmartDashboard.putNumber("ySpeed", ySpeed);
-        SmartDashboard.putNumber("rotSpeed", rotSpeed);
+        // SmartDashboard.putNumber("xSpeed", xSpeed);
+        // SmartDashboard.putNumber("ySpeed", ySpeed);
+        // SmartDashboard.putNumber("rotSpeed", rotSpeed);
 
         double[] fieldOriented = driver.fieldOrient(xSpeed, ySpeed);
         driver.swerveDrive(fieldOriented[0], fieldOriented[1], rotSpeed);
@@ -84,7 +87,11 @@ public class AutoHelper {
     }
 
     public void angleArmToPosition(double angle) {
-        
+        shooter.moveArmPID(angle);
+    }
+
+    public boolean armAtPosition() {
+        return shooter.atPosition();
     }
 
     
