@@ -1,9 +1,5 @@
 //git merge develop
 //git checkout <your-feature-branch>
-
-//READ ME: I am not sure if the module state, gyro and such which require to be updated regularly... keep that in mind!! 
-//FURTHERMORE: reset and update method exists if needed, however it dose not re-get the gyro and modules, just their values... I think?
-//ONE MORE THINGS: pid values = 0 at the time of writing this :P
 package frc.robot.systems;
 
 import frc.robot.Constants;
@@ -123,7 +119,7 @@ public class AutoPathing{
         //SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(1, 3, 1);
     }
 
-    public void followTrajectory(){
+    public void followTrajectory_Init(){
         trajectoryGenerator();
         pidTrajectoryTrackers();
         HolonomicDriveController holoController = new HolonomicDriveController(xController, yController, thetaController);
@@ -146,6 +142,23 @@ public class AutoPathing{
     The Trajectory is converted into a series of SwerveModuleState objects using the SwerveDriveKinematics class. This involves calculating the desired speed and angle for each module based on the trajectory.
     The SwerveControllerCommand takes these SwerveModuleState objects and commands the individual swerve modules to achieve those states.
 */
+
+/* 
+ * example use:
+ * run AutoPathing(perams) first
+ * 
+ * update odometer if needed
+ * reset odometer if needed
+ * 
+ * run followTrajectory_Init()  in init
+ * run followTrajectory_Execute() for loop
+ * 
+ * sources of error:
+ * 1. not sure if followTrajectory_Execute() will run what was initialized every tick or update every tick
+ * 2. I am not sure if the module state, gyro and such which require to be updated regularly... keep that in mind!!
+ * 3. pid values = 0 at the time of writing this :P
+*/
+
 /* 
 // Update the odometry object in your main loop
 m_odometry.update(getGyroscopeRotation(), getModuleStates());
