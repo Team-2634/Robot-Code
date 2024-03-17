@@ -3,50 +3,67 @@ package frc.robot;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Limelight;
 import frc.robot.systems.Shooter;
 
 public class Teleop {
-    XboxController xbox = new XboxController(0);
+    XboxController xboxDrive = new XboxController(0);
+    XboxController xboxArm = new XboxController(1);
+    XboxController dev = new XboxController(5);
+
     TeleopHelper teleopHelper;
 
     public Teleop(Driver driver, Shooter shooter, Climber climber, AHRS navx, Limelight limelight) {
         teleopHelper = new TeleopHelper(driver, shooter, climber, navx, limelight);
     }
     
+    // public double removeDeadzone(int axisInput) {
+    //     if (Math.abs(xboxDrive.getRawAxis(axisInput)) < Constants.controllerDeadzone) {
+    //         return 0;
+    //     }
+    //     return xboxDrive.getRawAxis(axisInput);
+    // }
     
+    public double removeDeadzone(double input) {
+        if (Math.abs(input) < Constants.controllerDeadzone) {
+            return 0;
+        } 
+        return input;
+    }
     
     public void drive() {
-        teleopHelper.drive(-teleopHelper.getAxisValue(1), -teleopHelper.getAxisValue(0), -teleopHelper.getAxisValue(4), xbox.getLeftStickButton(), xbox.getXButton());
+        teleopHelper.drive(-removeDeadzone(xboxDrive.getLeftY()), -removeDeadzone(xboxDrive.getLeftX()), -removeDeadzone(xboxDrive.getRightX()), xboxDrive.getLeftStickButton(), xboxDrive.getXButton());
     }
 
     public void shoot() {
-        teleopHelper.shoot(teleopHelper.getAxisValue(3));
+        teleopHelper.shoot(removeDeadzone(xboxArm.getRightTriggerAxis()));
     }
 
     public void intake() {
-        teleopHelper.intake(teleopHelper.getAxisValue(2), xbox.getYButton());
+        teleopHelper.intake(removeDeadzone(xboxArm.getLeftTriggerAxis()), xboxArm.getYButton());
     }
 
     public void arm() {
-        teleopHelper.arm(xbox.getRightBumper(), xbox.getLeftBumper());
+        teleopHelper.arm(xboxArm.getRightBumper(), xboxArm.getLeftBumper());
     }
 
     public void climb() {
-        teleopHelper.climb(xbox.getAButton(), xbox.getBButton());
+        teleopHelper.climb(xboxDrive.getAButton(), xboxDrive.getBButton());
     }
 
     public void panic() {
-        teleopHelper.panic(xbox.getStartButton());
+        teleopHelper.panic(xboxDrive.getRawButton(7));
+        SmartDashboard.putBoolean("oops", true);
     }
     //experemental
     public void shootRoutine() {
-        teleopHelper.shootRoutine(xbox.getRightTriggerAxis() > 0.5);
+        teleopHelper.shootRoutine(xboxDrive.getRightTriggerAxis() > 0.5);
     }
 
     public void armPID() {
-        teleopHelper.setArmState(xbox.getLeftBumperPressed(), xbox.getRightBumperPressed());
+        teleopHelper.setArmState(xboxArm.getLeftBumperPressed(), xboxArm.getRightBumperPressed());
     }
 }

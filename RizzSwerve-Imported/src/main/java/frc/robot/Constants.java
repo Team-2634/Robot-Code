@@ -51,7 +51,7 @@ public class Constants {
     public final static double kiBotTranslation = 0;
     public final static double kdBotTranslation = 0;
 
-    public final static double kpBotRotate = 0.1;
+    public final static double kpBotRotate = 0.3;
     public final static double kiBotRotate = 0;
     public final static double kdBotRotate = 0;
 
@@ -68,10 +68,10 @@ public class Constants {
     public final static double maxAutoAccel = 0.1;
 
     //robot properties
-    public final static double frontLeftAbsEncoderOffset = 0.060;
-    public final static double frontRightAbsEncoderOffset = -0.478;
-    public final static double backLeftAbsEncoderOffset = -0.183;
-    public final static double backRightAbsEncoderOffset = 0.134;
+    public final static double frontLeftAbsEncoderOffset = 0.093;//0.060; //
+    public final static double frontRightAbsEncoderOffset = -0.484;//-0.478;
+    public final static double backLeftAbsEncoderOffset = -0.023;//0.333; //-0.183
+    public final static double backRightAbsEncoderOffset = 0.119;//0.134;
 
     public final static double wheelDiameterInches = 3.75;
     public final static double driveMotorGearRatio = 1 / 8.14;
@@ -93,7 +93,7 @@ public class Constants {
     public final static double pickupPosition = -1.2;
     public final static double closeSpeakerPosition = -0.80;
     public final static double farSpeakerPosition = -0.54;
-    public final static double ampPosition = 0.45;
+    public final static double ampPosition = 0.50;
 
     //controller settings
     public final static double XdriveSensitivity = 0.7;

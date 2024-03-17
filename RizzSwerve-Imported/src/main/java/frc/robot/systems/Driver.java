@@ -268,7 +268,7 @@ public class Driver {
     }
 
     public void panicReset() {
-        initialize();
+        navx.reset();
     }
 
 }

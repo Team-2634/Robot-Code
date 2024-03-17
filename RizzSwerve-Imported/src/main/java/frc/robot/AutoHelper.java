@@ -20,20 +20,20 @@ public class AutoHelper {
     Shooter shooter;
     Climber climber;
     AHRS navx;
-    Timer timer;
+    // Timer timer;
     Limelight limelight;
 
     public AutoHelper(Driver driver, Shooter shooter, Climber climber, AHRS navx, Timer timer, Limelight limelight) {
         this.driver = driver;
         this.shooter = shooter;
         this.climber = climber;
-        this.navx = navx;
+        // this.navx = navx;
         this.timer = timer;
         this.limelight = limelight;
     }
 
     PIDController autoXPID = new PIDController(Constants.kpBotTranslation, Constants.kiBotTranslation, Constants.kdBotTranslation);
-    PIDController autoYPID = new PIDController(Constants.kpBotTranslation, Constants.kiBotTranslation, Constants.kdBotTranslation);
+    PIDController autoYPID = new PIDController(Constants.kpBotTranslation*2, Constants.kiBotTranslation, Constants.kdBotTranslation);
     // ProfiledPIDController autoXPID = new ProfiledPIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto, new TrapezoidProfile.Constraints(Constants.maxAutoVelocity, Constants.maxAutoAccel));
     // ProfiledPIDController autoYPID = new ProfiledPIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto, new TrapezoidProfile.Constraints(Constants.maxAutoVelocity, Constants.maxAutoAccel));
     PIDController autoTurnPID = new PIDController(Constants.kpBotRotate, Constants.kiBotRotate, Constants.kdBotRotate);
@@ -64,9 +64,9 @@ public class AutoHelper {
      */
     public void driveToPosition(Pose2d endPose) {
         Pose2d startPose = driver.getPose();
-        // SmartDashboard.putNumber("inputX", startPose.getX());
-        // SmartDashboard.putNumber("inputY", startPose.getY());
-        // SmartDashboard.putNumber("inputRot", startPose.getRotation().getRadians());
+        SmartDashboard.putNumber("inputX", startPose.getX());
+        SmartDashboard.putNumber("inputY", startPose.getY());
+        SmartDashboard.putNumber("inputRot", startPose.getRotation().getRadians());
         // SmartDashboard.putNumber("outputX", endPose.getX());
         // SmartDashboard.putNumber("outputY", endPose.getY());
         // SmartDashboard.putNumber("outputRot", endPose.getRotation().getRadians());
@@ -78,7 +78,7 @@ public class AutoHelper {
         // SmartDashboard.putNumber("rotSpeed", rotSpeed);
 
         double[] fieldOriented = driver.fieldOrient(xSpeed, ySpeed);
-        driver.swerveDrive(fieldOriented[0], fieldOriented[1], rotSpeed);
+        driver.swerveDrive(fieldOriented[0], fieldOriented[1], -rotSpeed);
     }
 
     public boolean atTargetPosition() {
@@ -108,16 +108,41 @@ public class AutoHelper {
     }
 
     boolean noteRoutineFlag = true;
+    Timer timer = new Timer();
     double time;
     public boolean hasNote() {
         if (noteRoutineFlag) {
-            time = Timer.getFPGATimestamp();
+            time = timer.get() + 0.5;
             noteRoutineFlag = false;
         }
-        if (Timer.getFPGATimestamp() > time) {
+        if (timer.get() > time) {
             return true;
         }
         return false; //shooter.hasNote();
+    }
+
+    boolean shootFlag = true;
+    public void shoot(double input, double time) {
+        double timeEnd = 0;
+        if (shootFlag) {
+            shootFlag = false;
+            timeEnd = timer.get() + time;
+        }
+        if (timer.get() < timeEnd) {
+            shooter.shootNote(input);
+        } else {shootFlag = true;}
+    }
+
+    boolean intakeFlag;
+    public void intake(double input, double time) {
+        double timeEnd = 0;
+        if (intakeFlag) {
+            intakeFlag = false;
+            timeEnd = timer.get() + time;
+        }
+        if (timer.get() < timeEnd) {
+            shooter.collectNote(input);
+        } else {intakeFlag = true;}
     }
     
     public void armToPosition(double position) {
@@ -132,8 +157,16 @@ public class AutoHelper {
         return new Pose2d(x, y, new Rotation2d(rot));
     }
 
-    public void stop(){
+    public void stopDrive(){
         driver.swerveDrive(0, 0, 0);
+    }
+
+    public void stopIntake(){
+        shooter.collectNote(0);
+    }
+
+    public void stopShoot(){
+        shooter.shootNote(0);
     }
 
         // public void resetDriveEncoders() {

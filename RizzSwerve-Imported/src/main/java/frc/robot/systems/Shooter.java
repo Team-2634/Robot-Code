@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 public class Shooter {
@@ -38,6 +39,9 @@ public class Shooter {
         armMotorLeft.setNeutralMode(NeutralModeValue.Brake);
         armMotorRight.setNeutralMode(NeutralModeValue.Brake);
 
+        intake.setNeutralMode(NeutralModeValue.Brake);
+        intake.setInverted(true);
+
         armMotorLeft.setInverted(true);
         armMotorRight.setInverted(false);
 
@@ -49,6 +53,7 @@ public class Shooter {
 
     // Timer LaunchTimer;
     public void collectNote(double speed){
+        SmartDashboard.putNumber("intakePower", speed);
         intake.set(speed);
     }
    
@@ -58,6 +63,7 @@ public class Shooter {
     // }
 
     public void shootNote(double speed) {
+        SmartDashboard.putNumber("shootPower", speed);
         shooterMotorLeft.set(speed);
         shooterMotorRight.set(speed);
     }
@@ -69,13 +75,13 @@ public class Shooter {
     public void shootNoteRoutine() {
         if (noteRoutineFlag) {
             noteRoutineFlag = false;
-            shotTime = timer.get() + 0.5;
+            shotTime = timer.get() + 1;
         }
         shootNote(1);
         if (timer.get() > shotTime) {
-            collectNote(1);
+            collectNote(-0.3);
         }
-        if (timer.get() > shotTime + 0.5) {
+        if (timer.get() > shotTime + 1) {
             noteRoutineFlag = true;
         }
     }

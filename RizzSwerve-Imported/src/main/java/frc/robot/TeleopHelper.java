@@ -4,6 +4,7 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Limelight;
@@ -127,6 +128,7 @@ public class TeleopHelper {
 
     public void panic(boolean AAAA) {
         if (AAAA) {
+            SmartDashboard.putBoolean("PANIC", AAAA);
             driver.panicReset();
         }
     }
@@ -136,11 +138,5 @@ public class TeleopHelper {
      * @param axisInput axis ID
      * @return
      */
-    public double getAxisValue(int axisInput) {
-        if (Math.abs(xbox.getRawAxis(axisInput)) < Constants.controllerDeadzone) {
-            return 0;
-        }
-        return xbox.getRawAxis(axisInput);
-    }
-
+    
 }
