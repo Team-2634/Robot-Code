@@ -10,7 +10,7 @@ import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Limelight;
 import frc.robot.systems.Shooter;
-
+import frc.robot.Constants;
 
 
 
@@ -37,25 +37,32 @@ public class Robot extends TimedRobot {
         shooter.initialize();   
         climber.initialize();
         CameraServer.startAutomaticCapture();
+        auto.autoHelper.timer.start();
     }
     
     @Override
     public void robotPeriodic() {
         driver.updatePose();
-        // SmartDashboard.putNumber("positionFL", driver.readAbsEncoder(0));
-        // SmartDashboard.putNumber("positionFR", driver.readAbsEncoder(1));
-        // SmartDashboard.putNumber("positionBL", driver.readAbsEncoder(2));
-        // SmartDashboard.putNumber("positionBR", driver.readAbsEncoder(3));
+        SmartDashboard.putNumber("positionFL", driver.readAbsEncoder(0));
+        SmartDashboard.putNumber("positionFR", driver.readAbsEncoder(1));
+        SmartDashboard.putNumber("positionBL", driver.readAbsEncoder(2));
+        SmartDashboard.putNumber("positionBR", driver.readAbsEncoder(3));
 
-        // SmartDashboard.putNumber("positionFL rads", driver.readAbsEncoderRad(0));
-        // SmartDashboard.putNumber("positionFR rads", driver.readAbsEncoderRad(1));
-        // SmartDashboard.putNumber("positionBL rads", driver.readAbsEncoderRad(2));
-        // SmartDashboard.putNumber("positionBR rads", driver.readAbsEncoderRad(3));
+        //SmartDashboard.putNumber("positionFL rads", driver.readAbsEncoderRad(0));
+        //SmartDashboard.putNumber("positionFR rads", driver.readAbsEncoderRad(1));
+        //SmartDashboard.putNumber("positionBL rads", driver.readAbsEncoderRad(2));
+        //SmartDashboard.putNumber("positionBR rads", driver.readAbsEncoderRad(3));
+
+        // SmartDashboard.putNumber(null, kDefaultPeriod)
 
         SmartDashboard.putNumber("arm position", shooter.getArmRadians());
         SmartDashboard.putNumber("climb position", climber.getClimbPosition());
         SmartDashboard.putNumber("RArm", shooter.armMotorLeft.getPosition().getValue());
         SmartDashboard.putNumber("LArm", shooter.armMotorRight.getPosition().getValue());
+    
+
+        SmartDashboard.putBoolean("null", auto.autoHelper.atTargetPosition());
+    
     }
     
     @Override
@@ -67,7 +74,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
 
-        atuo.isRed = true;
+        auto.isRed = true;
 
         // auto.autoProgramTest();
         // auto.autoAmpTwoNote();
@@ -85,11 +92,12 @@ public class Robot extends TimedRobot {
         teleop.intake();
         teleop.shoot();
         teleop.climb();
-        teleop.arm();
+        // teleop.arm();
+        teleop.panic();
 
         //EXPEREMENTAL STUFF THAT WILL BREAK EVERYTHING
         // teleop.drive();
-        // teleop.armPID();
+        teleop.armPID();
         // teleop.intake();
         // teleop.climb();
         // teleop.shootRoutine();
