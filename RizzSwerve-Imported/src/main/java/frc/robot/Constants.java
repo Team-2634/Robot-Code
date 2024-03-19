@@ -32,7 +32,6 @@ public class Constants {
     public final static int leftClimbID = 14;
     public final static int rightClimbID = 13;
 
-
     public final static int frontLeftAbsEncoderID = 0;
     public final static int frontRightAbsEncoderID = 1;
     public final static int backLeftAbsEncoderID = 2;
@@ -95,11 +94,11 @@ public class Constants {
     public final static double farSpeakerPosition = -0.54;
     public final static double ampPosition = 0.50;
 
-    //controller settings
+    //controller settings 
     public final static double XdriveSensitivity = 0.7;
     public final static double YdriveSensitivity = 0.7; 
     public final static double turningSensitivity = 0.7;
-    public final static double maxSpeedMpS = 0.1; 
+    public final static double maxSpeedPercent = 1.0; 
     public final static double maxSpeedRotation = 0.1; 
 
     public final static double controllerDeadzone = 0.1;

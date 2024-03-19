@@ -11,7 +11,7 @@ import frc.robot.systems.Shooter;
 
 public class Teleop {
     XboxController xboxDrive = new XboxController(0);
-    XboxController xboxArm = new XboxController(1);
+    XboxController xboxArm = new XboxController(0);
     XboxController dev = new XboxController(5);
 
     TeleopHelper teleopHelper;

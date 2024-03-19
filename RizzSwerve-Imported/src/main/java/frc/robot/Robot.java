@@ -43,10 +43,10 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         driver.updatePose();
-        SmartDashboard.putNumber("positionFL", driver.readAbsEncoder(0));
-        SmartDashboard.putNumber("positionFR", driver.readAbsEncoder(1));
-        SmartDashboard.putNumber("positionBL", driver.readAbsEncoder(2));
-        SmartDashboard.putNumber("positionBR", driver.readAbsEncoder(3));
+        // SmartDashboard.putNumber("positionFL", driver.readAbsEncoder(0));
+        // SmartDashboard.putNumber("positionFR", driver.readAbsEncoder(1));
+        // SmartDashboard.putNumber("positionBL", driver.readAbsEncoder(2));
+        // SmartDashboard.putNumber("positionBR", driver.readAbsEncoder(3));
 
         //SmartDashboard.putNumber("positionFL rads", driver.readAbsEncoderRad(0));
         //SmartDashboard.putNumber("positionFR rads", driver.readAbsEncoderRad(1));
@@ -57,24 +57,42 @@ public class Robot extends TimedRobot {
 
         SmartDashboard.putNumber("arm position", shooter.getArmRadians());
         SmartDashboard.putNumber("climb position", climber.getClimbPosition());
-        SmartDashboard.putNumber("RArm", shooter.armMotorLeft.getPosition().getValue());
-        SmartDashboard.putNumber("LArm", shooter.armMotorRight.getPosition().getValue());
-    
+        
+        double totalAmperage = 
+            driver.driveMotorArray[0].getSupplyCurrent().getValue() + 
+            driver.driveMotorArray[1].getSupplyCurrent().getValue() + 
+            driver.driveMotorArray[2].getSupplyCurrent().getValue() + 
+            driver.driveMotorArray[3].getSupplyCurrent().getValue() + 
+            driver.steerMotorArray[0].getSupplyCurrent().getValue() + 
+            driver.steerMotorArray[1].getSupplyCurrent().getValue() + 
+            driver.steerMotorArray[2].getSupplyCurrent().getValue() + 
+            driver.steerMotorArray[3].getSupplyCurrent().getValue() + 
+            shooter.armMotorLeft.getSupplyCurrent().getValue() +
+            shooter.armMotorRight.getSupplyCurrent().getValue() +
+            shooter.shooterMotorLeft.getSupplyCurrent().getValue() +
+            shooter.shooterMotorRight.getSupplyCurrent().getValue() +
+            shooter.intake.getSupplyCurrent().getValue() +
+            climber.leftClimb.getSupplyCurrent().getValue() +
+            climber.rightClimb.getSupplyCurrent().getValue();
 
-        SmartDashboard.putBoolean("null", auto.autoHelper.atTargetPosition());
-    
+        SmartDashboard.putNumber("TOTAL AMPERAGE", totalAmperage);
+
     }
     
     @Override
     public void autonomousInit() {
         auto.restartTimer();
         driver.initialize();
+
+
+        // DO NOT FORGET TO SET STARTING POSITION
+
+        //in front of speaker
+        driver.startAuto(null);
     }
     
     @Override
     public void autonomousPeriodic() {
-
-        auto.isRed = true;
 
         // auto.autoProgramTest();
         // auto.autoAmpTwoNote();
@@ -89,8 +107,8 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         teleop.drive();
-        teleop.intake();
         teleop.shoot();
+        teleop.intake();
         teleop.climb();
         // teleop.arm();
         teleop.panic();

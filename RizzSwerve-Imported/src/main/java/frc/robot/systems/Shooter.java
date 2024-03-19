@@ -22,13 +22,13 @@ public class Shooter {
     // private final CANSparkMax armMotorLeft = new CANSparkMax(0, MotorType.kBrushless);
     // private final CANSparkMax armMotorRight = new CANSparkMax(0, MotorType.kBrushless);
     
-    private final TalonFX shooterMotorLeft = new TalonFX(Constants.leftShootID, Constants.canivore); 
-    private final TalonFX shooterMotorRight = new TalonFX(Constants.rightShootID, Constants.canivore);
+    public final TalonFX shooterMotorLeft = new TalonFX(Constants.leftShootID, Constants.canivore); 
+    public final TalonFX shooterMotorRight = new TalonFX(Constants.rightShootID, Constants.canivore);
     
     public final TalonFX armMotorLeft = new TalonFX(Constants.leftArmID, Constants.canivore);
     public final TalonFX armMotorRight = new TalonFX(Constants.rightArmID, Constants.canivore);
 
-    private final TalonFX intake = new TalonFX(Constants.intakeID, Constants.canivore);
+    public final TalonFX intake = new TalonFX(Constants.intakeID, Constants.canivore);
 
     private final ArmFeedforward armFF = new ArmFeedforward(0, 0, 0);
     private final PIDController armPID = new PIDController(Constants.kpArm, Constants.kiArm, Constants.kdArm);
