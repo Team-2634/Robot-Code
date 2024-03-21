@@ -46,8 +46,8 @@ public class AutoPathing{
     );
 
     TrajectoryConfig trajectoryConfig = new TrajectoryConfig(//motion planning: Where to next, While asking: where on the path am I?
-        Constants.maxVelocity_MetersPerSeconds, 
-        Constants.maxAccel_MetersPerSecondsSquared
+        Constants.maxAutoVelocity, // why auto only? note: this constanst use to be meters per second. idk the unit now
+        Constants.maxAutoAccel //why auto?
     );
 
     public Pose2d getPose(){ // pose2d holds x,y and roation 2d
@@ -111,7 +111,7 @@ public class AutoPathing{
             PID_DEAFULT,
             PID_DEAFULT,
             PID_DEAFULT,
-            new TrapezoidProfile.Constraints(Constants.maxVelocity_MetersPerSeconds, Constants.maxAccel_MetersPerSecondsSquared)
+            new TrapezoidProfile.Constraints(Constants.maxAutoVelocity, Constants.maxAutoAccel)
         );
         thetaController.enableContinuousInput(Math.PI,Math.PI);
         
@@ -128,7 +128,7 @@ public class AutoPathing{
             this::getPose, 
             kinematics,
             holoController,
-            moduleStatesArray); // need module states!!!
+            moduleStatesArray); 
         swerveControllerCoommand.initialize();
     }
 

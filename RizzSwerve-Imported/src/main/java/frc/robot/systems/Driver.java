@@ -28,6 +28,8 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
+import java.util.function.Consumer;
+
 public class Driver {
     AHRS navx = new AHRS();
     
@@ -175,6 +177,9 @@ public class Driver {
         return moduleStatesArray;
     }
     
+    public Consumer<SwerveModuleState[]> setModuleStatesArray_Consumer(double xSpeed, double ySpeed, double turnSpeed) {
+        CODE THIS STILL
+    }
     /**
      * Optimize module state so that module does not have to turn more than 90 degrees.
      * @param id
@@ -249,7 +254,7 @@ public class Driver {
         );
     }
 
-    SwerveModulePosition[] getModulePositionArray() {
+    public SwerveModulePosition[] getModulePositionArray() { // I AMDE THIS PUBLIC -> FIX LATER!!!
         SwerveModulePosition[] swerveModulePositionArray = {
             getModulePosition(0),
             getModulePosition(1),

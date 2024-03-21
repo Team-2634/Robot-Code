@@ -3,6 +3,7 @@ package frc.robot;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -10,7 +11,7 @@ import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Limelight;
 import frc.robot.systems.Shooter;
-import frc.robot.Constants;
+import frc.robot.systems.AutoPathing;
 
 
 
@@ -22,6 +23,8 @@ public class Robot extends TimedRobot {
     Shooter shooter = new Shooter();
     Climber climber = new Climber();
     Timer matchTimer = new Timer();
+
+    AutoPathing pather = new AutoPathing(driver.kinematics, navx, driver.getModulePositionArray(), driver.setModuleStatesArray_Consumer(0,0,0));
 
     Auto auto = new Auto(driver, shooter, climber, navx, matchTimer, limelight);
     Teleop teleop = new Teleop(driver, shooter, climber, navx, limelight);
@@ -79,6 +82,8 @@ public class Robot extends TimedRobot {
         // auto.autoProgramTest();
         // auto.autoAmpTwoNote();
         auto.autoSpeakerTwoNote();
+
+
     }
     
     @Override
