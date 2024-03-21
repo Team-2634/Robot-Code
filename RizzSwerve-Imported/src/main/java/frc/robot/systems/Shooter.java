@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 public class Shooter {
@@ -38,15 +39,21 @@ public class Shooter {
         armMotorLeft.setNeutralMode(NeutralModeValue.Brake);
         armMotorRight.setNeutralMode(NeutralModeValue.Brake);
 
+        intake.setNeutralMode(NeutralModeValue.Brake);
+        intake.setInverted(true);
+
         armMotorLeft.setInverted(true);
         armMotorRight.setInverted(false);
 
-        shooterMotorLeft.setInverted(true);
-        shooterMotorRight.setInverted(true);
+        shooterMotorLeft.setInverted(false);
+        shooterMotorRight.setInverted(false);
+
+        timer.start();
     }
 
     // Timer LaunchTimer;
     public void collectNote(double speed){
+        SmartDashboard.putNumber("intakePower", speed);
         intake.set(speed);
     }
    
@@ -56,23 +63,25 @@ public class Shooter {
     // }
 
     public void shootNote(double speed) {
+        SmartDashboard.putNumber("shootPower", speed);
         shooterMotorLeft.set(speed);
         shooterMotorRight.set(speed);
     }
 
     double shotTime;
-    boolean noteRoutineFlag = true;
+    Timer timer = new Timer();
+    public boolean noteRoutineFlag = true;
 
     public void shootNoteRoutine() {
         if (noteRoutineFlag) {
             noteRoutineFlag = false;
-            shotTime = Timer.getFPGATimestamp() + 0.5;
+            shotTime = timer.get() + 1;
         }
         shootNote(1);
-        if (Timer.getFPGATimestamp() > shotTime) {
-            collectNote(1);
+        if (timer.get() > shotTime) {
+            collectNote(-0.3);
         }
-        if (Timer.getFPGATimestamp() > shotTime + 0.5) {
+        if (timer.get() > shotTime + 1) {
             noteRoutineFlag = true;
         }
     }
@@ -103,7 +112,7 @@ public class Shooter {
     }
 
     public boolean isHardStoppedHigh() {
-        if (armMotorLeft.getPosition().getValue() < Constants.maxArmRotationRads) {
+        if (getArmRadians() < Constants.maxArmRotationRads) {
             return false;
         } else return true;
     }

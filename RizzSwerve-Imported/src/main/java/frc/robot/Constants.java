@@ -51,7 +51,7 @@ public class Constants {
     public final static double kiBotTranslation = 0;
     public final static double kdBotTranslation = 0;
 
-    public final static double kpBotRotate = 0.1;
+    public final static double kpBotRotate = 0.3;
     public final static double kiBotRotate = 0;
     public final static double kdBotRotate = 0;
 
@@ -68,10 +68,10 @@ public class Constants {
     public final static double maxAutoAccel = 0.1;
 
     //robot properties
-    public final static double frontLeftAbsEncoderOffset = 0.060;
-    public final static double frontRightAbsEncoderOffset = -0.478;
-    public final static double backLeftAbsEncoderOffset = -0.183;
-    public final static double backRightAbsEncoderOffset = 0.134;
+    public final static double frontLeftAbsEncoderOffset = 0.093;//0.060; //
+    public final static double frontRightAbsEncoderOffset = -0.484;//-0.478;
+    public final static double backLeftAbsEncoderOffset = -0.023;//0.333; //-0.183
+    public final static double backRightAbsEncoderOffset = 0.119;//0.134;
 
     public final static double wheelDiameterInches = 3.75;
     public final static double driveMotorGearRatio = 1 / 8.14;
@@ -79,25 +79,26 @@ public class Constants {
     public final static double armGearRatio = (1.0 / 64.0) / 4;
     public final static double armOffset = 0;
     public final static double minClimb = -2;
-    public final static double maxClimb = 250;
-    public final static double minArmRotationRads = -1.40;
-    public final static double maxArmRotationRads = 0.60;
+    public final static double maxClimb = 295;
+    public final static double minArmRotationRads = -1.10;
+    public final static double maxArmRotationRads = 0.50;
 
     //arm speeds
     public final static double shootSpeed = 0.5;
     public final static double intakeSpeed = 0.5;
     public final static double armSpeed = 0.75;
-    public final static double climbSpeed = 0.3;
+    public final static double climbSpeed = 1;
 
     //set positions
-    public final static double pickupPosition = -1.4;
-    public final static double closeSpeakerPosition = -0.95;
-    public final static double ampPosition = 0.4;
+    public final static double pickupPosition = -1.2;
+    public final static double closeSpeakerPosition = -0.80;
+    public final static double farSpeakerPosition = -0.54;
+    public final static double ampPosition = 0.50;
 
     //controller settings
-    public final static double XdriveSensitivity = 1;
-    public final static double YdriveSensitivity = 1; 
-    public final static double turningSensitivity = 1;
+    public final static double XdriveSensitivity = 0.7;
+    public final static double YdriveSensitivity = 0.7; 
+    public final static double turningSensitivity = 0.7;
     public final static double maxSpeedMpS = 0.1; 
     public final static double maxSpeedRotation = 0.1; 
 

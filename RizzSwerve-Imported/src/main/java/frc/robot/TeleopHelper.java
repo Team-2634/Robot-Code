@@ -4,6 +4,7 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Limelight;
@@ -99,6 +100,7 @@ public class TeleopHelper {
         
          if (yButton) {
             shooter.collectNote(0.2);
+            shooter.shootNote(-0.2);
         } else {
             shooter.collectNote(-input/3);
         }
@@ -123,16 +125,18 @@ public class TeleopHelper {
             climber.climb(0);
         }
     }
+
+    public void panic(boolean AAAA) {
+        if (AAAA) {
+            SmartDashboard.putBoolean("PANIC", AAAA);
+            driver.panicReset();
+        }
+    }
+
     /**
      * Get axis and remove deadzone from controller input
      * @param axisInput axis ID
      * @return
      */
-    public double getAxisValue(int axisInput) {
-        if (Math.abs(xbox.getRawAxis(axisInput)) < Constants.controllerDeadzone) {
-            return 0;
-        }
-        return xbox.getRawAxis(axisInput);
-    }
-
+    
 }

@@ -52,8 +52,8 @@ public class Auto {
         timer.start();    
     }
 
-    public isRed = false;
-    public invertIfRed(double inputY) {
+    public boolean isRed = false;
+    public double invertIfRed(double inputY) {
         if (isRed) {
             return -inputY;
         } else return inputY;
@@ -68,58 +68,93 @@ public class Auto {
      * start at speaker, score starting note, pickup and score note directly in front
      */
     public void autoSpeakerTwoNote() {
-        SmartDashboard.putNumber("auto",counter);
+        SmartDashboard.putNumber("Auto Phase:",counter);
+
         switch (counter) {
             case 0:
-                autoHelper.angleArmToPosition(Constants.ampPosition);
+                autoHelper.angleArmToPosition(Constants.closeSpeakerPosition);
+
+                SmartDashboard.putBoolean("Auto State 0: arm", armFinished);
 
                 if (autoHelper.armAtPosition()) {armFinished = true;}
                 if (armFinished) {counter += 1; armFinished = false;}
                 break;
             
             case 1:
+                // autoHelper.shoot(0.5, 2);
+                autoHelper.angleArmToPosition(Constants.closeSpeakerPosition);
                 autoHelper.shooter.shootNoteRoutine();
 
-                if (!autoHelper.hasNote()) {shootFinished = true;}
+                SmartDashboard.putBoolean("Auto State 1: shoot", shootFinished);
+
+                if (autoHelper.shooter.noteRoutineFlag) {shootFinished = true;}
                 if (shootFinished) {counter += 1; shootFinished = false;}
                 break;
 
             case 2:
-                autoHelper.angleArmToPosition(Constants.pickupPosition);
-                autoHelper.driveToPosition(autoHelper.setDesiredPose(noteX[0], invertIfRed(noteY[0]), Math.toRadians(45)));
-                autoHelper.intake(true);
+                // autoHelper.intake(0.5, 2);
+                // autoHelper.shoot(0.5, 2);
+                // autoHelper.angleArmToPosition(Constants.closeSpeakerPosition);
+                counter++;
+                autoHelper.stopIntake();
+                autoHelper.stopShoot();
 
-                if (autoHelper.atTargetPosition()) {driveFinished = true;}
-                if (autoHelper.armAtPosition()) {armFinished = true;}
-                if (autoHelper.hasNote()) {intakeFinished = true;}
-                if (driveFinished && armFinished && intakeFinished) {counter += 1; driveFinished = false; armFinished = false; intakeFinished = false;}
-                break;
+                SmartDashboard.putBoolean("Auto State 2: shoot", shootFinished);
 
-            case 3:
-                autoHelper.angleArmToPosition(Constants.closeSpeakerPosition);
-                autoHelper.driveToPosition(autoHelper.setDesiredPose(speakerPosX, invertIfRed(speakerPosY), 0));
-
-                if (autoHelper.atTargetPosition()) {driveFinished = true;}
-                if (autoHelper.armAtPosition()) {armFinished = true;}
-                if (driveFinished && armFinished) {counter += 1; driveFinished = false; armFinished = false;}
-                break;
-
-            case 4:
-                autoHelper.shooter.shootNoteRoutine();
-                
-                if (!autoHelper.hasNote()) {shootFinished = true;}
+                if (autoHelper.intakeFlag) {shootFinished = true;}
                 if (shootFinished) {counter += 1; shootFinished = false;}
                 break;
 
-            case 5:
-                autoHelper.driveToPosition(autoHelper.setDesiredPose(Units.inchesToMeters(180), Units.inchesToMeters(211), counter));;
+            // case 3:
+            //     autoHelper.angleArmToPosition(Constants.pickupPosition);
+            //     autoHelper.driveToPosition(autoHelper.setDesiredPose(Units.inchesToMeters(48), -0.3, Math.toRadians(0)));
+            //     autoHelper.intake(true);
+
+            //     SmartDashboard.putBoolean("Auto State 3: drive", driveFinished);
+            //     SmartDashboard.putBoolean("Auto State 3: arm", armFinished);
+            //     SmartDashboard.putBoolean("Auto State 3: intake", intakeFinished);
+
+            //     if (autoHelper.atTargetPosition()) {driveFinished = true;}
+            //     if (autoHelper.armAtPosition()) {armFinished = true;}
+            //     if (autoHelper.hasNote()) {intakeFinished = true;}
+            //     if (driveFinished && armFinished && intakeFinished) {counter += 1; driveFinished = false; armFinished = false; intakeFinished = false;}
+            //     break;
+
+            // case 4:
+            //     autoHelper.angleArmToPosition(Constants.closeSpeakerPosition);
+            //     autoHelper.driveToPosition(autoHelper.setDesiredPose(0, 0, 0));
+
+            //     SmartDashboard.putBoolean("Auto State 4: drive", driveFinished);
+            //     SmartDashboard.putBoolean("Auto State 4: arm", armFinished);
                 
-                if (autoHelper.atTargetPosition()) {driveFinished = true;}
-                if (driveFinished) {counter += 1; driveFinished = false;}
-                break;
+            //     if (autoHelper.atTargetPosition()) {driveFinished = true;}
+            //     if (autoHelper.armAtPosition()) {armFinished = true;}
+            //     if (driveFinished && armFinished) {counter += 1; driveFinished = false; armFinished = false;}
+            //     break;
+
+            // case 5:
+            //     autoHelper.shooter.shootNoteRoutine();
+            //     autoHelper.stopDrive();
+
+            //     SmartDashboard.putBoolean("Auto State 5: shoot", shootFinished);
+                
+            //     if (!autoHelper.hasNote()) {shootFinished = true;}
+            //     if (shootFinished) {counter += 1; shootFinished = false;}
+            //     break;
+
+            // case 6:
+            //     autoHelper.driveToPosition(autoHelper.setDesiredPose(Units.inchesToMeters(180), Units.inchesToMeters(211), 0));
+                
+            //     SmartDashboard.putBoolean("Auto State 6: drive", driveFinished);
+
+            //     if (autoHelper.atTargetPosition()) {driveFinished = true;}
+            //     if (driveFinished) {counter += 1; driveFinished = false;}
+            //     break;
 
             default:
-                autoHelper.stop();
+                autoHelper.stopDrive();
+                autoHelper.stopIntake();
+                autoHelper.stopShoot();
                 break;
         }
     }
@@ -176,7 +211,7 @@ public class Auto {
                 break;
 
             default:
-                autoHelper.stop();
+                autoHelper.stopDrive();
                 break;
         }
     }
@@ -232,7 +267,7 @@ public class Auto {
                 break;
 
             default:
-                autoHelper.stop();
+                autoHelper.stopDrive();
                 break;
         }
     }
@@ -286,7 +321,7 @@ public class Auto {
             //     if () {counter += 1;}
             //     break;
 
-            default: autoHelper.stop();
+            default: autoHelper.stopDrive();
                 break;
         }
     }
