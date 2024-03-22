@@ -7,6 +7,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
@@ -45,9 +46,9 @@ public class AutoHelper {
         autoYPID.setTolerance(Constants.autoPositionToleranceMeters);
         autoYPID.reset(/*driver.getPose().getY()*/);
 
+        autoTurnPID.enableContinuousInput(-Math.PI, Math.PI);
         autoTurnPID.setTolerance(Constants.autoRotationToleranceRadians);
         autoTurnPID.reset();
-        autoTurnPID.enableContinuousInput(-Math.PI, Math.PI);
     }
 
     public boolean timerInterval_Auto(double min, double max) {
@@ -64,21 +65,21 @@ public class AutoHelper {
      */
     public void driveToPosition(Pose2d endPose) {
         Pose2d startPose = driver.getPose();
-        SmartDashboard.putNumber("inputX", startPose.getX());
-        SmartDashboard.putNumber("inputY", startPose.getY());
+        SmartDashboard.putNumber("inputX", Units.metersToFeet(startPose.getX()));
+        SmartDashboard.putNumber("inputY", Units.metersToFeet(startPose.getY()));
         SmartDashboard.putNumber("inputRot", startPose.getRotation().getRadians());
         // SmartDashboard.putNumber("outputX", endPose.getX());
         // SmartDashboard.putNumber("outputY", endPose.getY());
-        // SmartDashboard.putNumber("outputRot", endPose.getRotation().getRadians());
+        SmartDashboard.putNumber("outputRot", endPose.getRotation().getRadians());
         double xSpeed = autoXPID.calculate(startPose.getX(), endPose.getX());
         double ySpeed = autoYPID.calculate(startPose.getY(), endPose.getY()); 
         double rotSpeed = autoTurnPID.calculate(startPose.getRotation().getRadians(), endPose.getRotation().getRadians());
-        // SmartDashboard.putNumber("xSpeed", xSpeed);
-        // SmartDashboard.putNumber("ySpeed", ySpeed);
-        // SmartDashboard.putNumber("rotSpeed", rotSpeed);
+        SmartDashboard.putNumber("xSpeed", xSpeed);
+        SmartDashboard.putNumber("ySpeed", ySpeed);
+        SmartDashboard.putNumber("rotSpeed", rotSpeed);
 
         double[] fieldOriented = driver.fieldOrient(xSpeed, ySpeed);
-        driver.swerveDrive(fieldOriented[0], fieldOriented[1], -rotSpeed);
+        driver.swerveDrive(fieldOriented[0], fieldOriented[1], rotSpeed);
     }
 
     public boolean atTargetPosition() {
@@ -121,29 +122,29 @@ public class AutoHelper {
         return false; //shooter.hasNote();
     }
 
-    boolean shootFlag = true;
-    public void shoot(double input, double time) {
-        double timeEnd = 0;
-        if (shootFlag) {
-            shootFlag = false;
-            timeEnd = timer.get() + time;
-        }
-        if (timer.get() < timeEnd) {
-            shooter.shootNote(input);
-        } else {shootFlag = true;}
-    }
+    // boolean shootFlag = true;
+    // public void shoot(double input, double time) {
+    //     double timeEnd = 0;
+    //     if (shootFlag) {
+    //         shootFlag = false;
+    //         timeEnd = timer.get() + time;
+    //     }
+    //     if (timer.get() < timeEnd) {
+    //         shooter.shootNote(input);
+    //     } else {shootFlag = true;}
+    // }
 
-    boolean intakeFlag;
-    public void intake(double input, double time) {
-        double timeEnd = 0;
-        if (intakeFlag) {
-            intakeFlag = false;
-            timeEnd = timer.get() + time;
-        }
-        if (timer.get() < timeEnd) {
-            shooter.collectNote(input);
-        } else {intakeFlag = true;}
-    }
+    // boolean intakeFlag;
+    // public void intake(double input, double time) {
+    //     double timeEnd = 0;
+    //     if (intakeFlag) {
+    //         intakeFlag = false;
+    //         timeEnd = timer.get() + time;
+    //     }
+    //     if (timer.get() < timeEnd) {
+    //         shooter.collectNote(input);
+    //     } else {intakeFlag = true;}
+    // }
     
     public void armToPosition(double position) {
         shooter.moveArmPID(position);

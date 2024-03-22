@@ -99,10 +99,10 @@ public class TeleopHelper {
     public void intake(double input, boolean yButton) {
         
          if (yButton) {
-            shooter.collectNote(0.2);
+            shooter.collectNote(-0.2);
             shooter.shootNote(-0.2);
         } else {
-            shooter.collectNote(-input/3);
+            shooter.collectNote(input/3);
         }
     }
 

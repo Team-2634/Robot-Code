@@ -107,18 +107,18 @@ public class Driver {
         driveMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
         driveMotorArray[module].setInverted(false);
         driveMotorArray[module].setPosition(0);
-        TalonFXConfiguration driveConfig = new TalonFXConfiguration();
-        driveConfig.CurrentLimits.SupplyCurrentLimit = 30;
-        driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        driveMotorArray[module].getConfigurator().apply(driveConfig);
+        // TalonFXConfiguration driveConfig = new TalonFXConfiguration();
+        // driveConfig.CurrentLimits.SupplyCurrentLimit = 40;
+        // driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        // driveMotorArray[module].getConfigurator().apply(driveConfig);
 
         steerMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
         steerMotorArray[module].setInverted(true);
         steerMotorArray[module].setPosition(0);
-        TalonFXConfiguration steerConfig = new TalonFXConfiguration();
-        steerConfig.CurrentLimits.SupplyCurrentLimit = 20;
-        steerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        steerMotorArray[module].getConfigurator().apply(driveConfig);
+        // TalonFXConfiguration steerConfig = new TalonFXConfiguration();
+        // steerConfig.CurrentLimits.SupplyCurrentLimit = 30;
+        // steerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        // steerMotorArray[module].getConfigurator().apply(steerConfig);
 
 
         pidArray[module].reset();
@@ -143,9 +143,10 @@ public class Driver {
     private double navxOffset = 0;
     
     public void startAuto(Pose2d startPose) {
-        poseEstimator.resetPosition(navx.getRotation2d(), modulePositionArray, startPose);
         navx.zeroYaw();
+        navx.setAngleAdjustment(startPose.getRotation().getDegrees());
         navxOffset = startPose.getRotation().getDegrees();
+        poseEstimator.resetPosition(navx.getRotation2d(), modulePositionArray, startPose);
     }
 
     public double readAbsEncoder(int module) {
@@ -209,7 +210,7 @@ public class Driver {
 
         SwerveModuleState optimizedState = swerveOptimizeModuleState(module, moduleState);
 
-        double drivePower = optimizedState.speedMetersPerSecond * Constants.maxSpeedPercent;
+        double drivePower = optimizedState.speedMetersPerSecond; // * Constants.maxSpeedPercent;
         
         double turnPower = pidArray[module].calculate(
             readAbsEncoderRad(module), //steerMotorArray[module].getPosition().getValue() * ticksToRadsTurning, 
@@ -251,7 +252,7 @@ public class Driver {
     }
     
     public final double[] fieldOrient(double XSpeed, double YSpeed) {
-        double currentYawRadians = MathUtil.angleModulus(Math.toRadians(navx.getYaw() - navxOffset)); 
+        double currentYawRadians = MathUtil.angleModulus(-navx.getRotation2d().getRadians()); 
         double XSpeedField = XSpeed * Math.cos(currentYawRadians) - YSpeed * Math.sin(currentYawRadians);
         double YSpeedField = XSpeed * Math.sin(currentYawRadians) + YSpeed * Math.cos(currentYawRadians);
         double[] speeds = {XSpeedField, YSpeedField};
@@ -260,7 +261,7 @@ public class Driver {
 
     SwerveModulePosition getModulePosition(int module) {
         return new SwerveModulePosition(
-            readDriveEncoder(module) * ticksToMetersDrive, 
+            readDriveEncoder(module) * Constants.driveRotsToMeter, 
             new Rotation2d(readAbsEncoderRad(module))
         );
     }
@@ -276,7 +277,7 @@ public class Driver {
     }
 
     public Pose2d updatePose() {
-        return poseEstimator.update(new Rotation2d(Math.toRadians(navx.getAngle())), getModulePositionArray());
+        return poseEstimator.update(navx.getRotation2d(), getModulePositionArray());
     }
 
     public Pose2d getPose() {

@@ -40,7 +40,7 @@ public class Shooter {
         armMotorRight.setNeutralMode(NeutralModeValue.Brake);
 
         intake.setNeutralMode(NeutralModeValue.Brake);
-        intake.setInverted(true);
+        intake.setInverted(false);
 
         armMotorLeft.setInverted(true);
         armMotorRight.setInverted(false);
@@ -79,7 +79,7 @@ public class Shooter {
         }
         shootNote(1);
         if (timer.get() > shotTime) {
-            collectNote(-0.3);
+            collectNote(0.3);
         }
         if (timer.get() > shotTime + 1) {
             noteRoutineFlag = true;
