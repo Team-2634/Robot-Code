@@ -62,15 +62,14 @@ public class TeleopHelper {
     }
 
     public double calculateArmAngle(){
-        double botToSpeakerDist = (Constants.floorToTarget - Constants.floorToLimelight) / (Math.tan(Constants.limelightAngle + limelight.ty));
+        double botToSpeakerDist = (Constants.floorToTarget - Constants.floorToLimelight) / (Math.tan((Constants.limelightAngle + limelight.ty) * Constants.degToRad));
         double limelightToSpeakerAngle = Math.atan((Constants.targetToSpeaker + Constants.floorToTarget - Constants.floorToLimelight) / botToSpeakerDist);
         // double limelightToSpeakerLength = botToSpeakerDist / Math.cos(limelightToSpeakerAngle);
         double limelightToSpeakerLength = Math.sqrt(Math.pow(botToSpeakerDist, 2) + Math.pow(Constants.floorToTarget + Constants.targetToSpeaker - Constants.floorToLimelight, 2));
         double angleThree = Math.asin((Constants.armLength * Math.sin(Constants.shooterToSpeakerAngle)) / limelightToSpeakerLength);
-        double angleFour = 180 - angleThree - 55; // Find missing angle
-        double angleArm = 180 - limelightToSpeakerAngle - angleFour;
-        double armOffset = angleArm - 55;
-        return armOffset * Math.PI / 180;
+        double angleFour = (180 * Constants.degToRad) - angleThree - (55 * Constants.degToRad); // Find missing angle
+        double angleArm = (180 * Constants.degToRad) - limelightToSpeakerAngle - angleFour;
+        return angleArm - (55 * Constants.degToRad);
     }
 
     public void shoot(double input) {
