@@ -46,12 +46,12 @@ public class Constants {
     public final static double kiArm = 0;
     public final static double kdArm = 0;    
 
-    public final static double kpBotTranslation = 0.2;
-    public final static double kiBotTranslation = 0;
+    public final static double kpBotTranslation = 0.3;
+    public final static double kiBotTranslation = 0.05;
     public final static double kdBotTranslation = 0;
 
     public final static double kpBotRotate = 0.5;
-    public final static double kiBotRotate = 0;
+    public final static double kiBotRotate = 0.02;
     public final static double kdBotRotate = 0;
 
     public final static double kpLimelightAlign = 0.1;
@@ -64,7 +64,7 @@ public class Constants {
     
     //auto
     public final static double maxAutoVelocity = 0.5;
-    public final static double maxAutoAccel = 0.5;
+    public final static double maxAutoAccel = 1;
 
     //robot properties
     public final static double frontLeftAbsEncoderOffset = 0.093;//0.060; //
@@ -100,7 +100,7 @@ public class Constants {
     public final static double XdriveSensitivity = 1;
     public final static double YdriveSensitivity = 1; 
     public final static double turningSensitivity = 1;
-    public final static double maxSpeedPercent = 0.7; 
+    public final static double maxSpeedPercent = 0.6; 
     public final static double maxSpeedRotation = 1.0; 
 
     public final static double controllerDeadzone = 0.1;
@@ -113,6 +113,15 @@ public class Constants {
     public final static double clamp(double input, double min, double max) {
         return Math.max(Math.min(input, max), min);
     }
+
+    // field dimensions for limelight in inches or degrees
+    public final static double floorToTarget = 57; 
+    public final static double targetToSpeaker = 23;
+    public final static double floorToLimelight = 17; 
+    public final static double armLength = 25;
+
+    public final static double limelightAngle = 24; 
+    public final static double shooterToSpeakerAngle = 55;
 
 
 

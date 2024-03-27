@@ -2,12 +2,14 @@ package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import java.lang.Math;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Limelight;
+import frc.robot.systems.LimelightHelpers;
 import frc.robot.systems.Shooter;
 
 public class TeleopHelper {
@@ -28,21 +30,27 @@ public class TeleopHelper {
 
     final XboxController xbox = new XboxController(0);
 
-    public void drive(double XSpeed, double YSpeed, double TurnSpeed, boolean modSpeed, boolean goLimelight) {
+    public void drive(double XSpeed, double YSpeed, double TurnSpeed, boolean boost, boolean goLimelight, boolean disableFieldOrient) {
         
         if (goLimelight) {
             TurnSpeed = limelightRotate();
         }
 
-        if (modSpeed) {
+        if (boost) {
             XSpeed /= 3;
             YSpeed /= 3;
             TurnSpeed /= 3;
         }
-        double[] speedsFieldOriented = driver.fieldOrient(XSpeed, YSpeed);
-        XSpeed = speedsFieldOriented[0] * Constants.XdriveSensitivity;
-        YSpeed = speedsFieldOriented[1] * Constants.YdriveSensitivity;
-        TurnSpeed = TurnSpeed * Constants.turningSensitivity;
+
+        if (!disableFieldOrient) {
+            double[] speedsFieldOriented = driver.fieldOrient(XSpeed, YSpeed);
+            XSpeed = speedsFieldOriented[0];
+            YSpeed = speedsFieldOriented[1];
+        
+        }
+        XSpeed *= Constants.XdriveSensitivity;
+        YSpeed *= Constants.YdriveSensitivity;
+        TurnSpeed *= Constants.turningSensitivity;
         
         driver.swerveDrive(XSpeed, YSpeed, TurnSpeed);
     }
@@ -51,6 +59,18 @@ public class TeleopHelper {
     
     public double limelightRotate() {
         return rotatePID.calculate(limelight.tx, 0);
+    }
+
+    public double calculateArmAngle(){
+        double botToSpeakerDist = (Constants.floorToTarget - Constants.floorToLimelight) / (Math.tan(Constants.limelightAngle + limelight.ty));
+        double limelightToSpeakerAngle = Math.atan((Constants.targetToSpeaker + Constants.floorToTarget - Constants.floorToLimelight) / botToSpeakerDist);
+        // double limelightToSpeakerLength = botToSpeakerDist / Math.cos(limelightToSpeakerAngle);
+        double limelightToSpeakerLength = Math.sqrt(Math.pow(botToSpeakerDist, 2) + Math.pow(Constants.floorToTarget + Constants.targetToSpeaker - Constants.floorToLimelight, 2));
+        double angleThree = Math.asin((Constants.armLength * Math.sin(Constants.shooterToSpeakerAngle)) / limelightToSpeakerLength);
+        double angleFour = 180 - angleThree - 55; // Find missing angle
+        double angleArm = 180 - limelightToSpeakerAngle - angleFour;
+        double armOffset = angleArm - 55;
+        return armOffset * Math.PI / 180;
     }
 
     public void shoot(double input) {
@@ -106,6 +126,7 @@ public class TeleopHelper {
         }
     }
 
+
     public void arm(boolean up, boolean down) {
         if (up && !shooter.isHardStoppedHigh()) {
             shooter.moveArm(Constants.armSpeed);
@@ -132,6 +153,24 @@ public class TeleopHelper {
             driver.panicReset();
         }
     }
+
+    public void limelightArmAngle(boolean xButton){
+        limelight.updateLimelight();
+
+        if(xButton){
+            LimelightHelpers.setLEDMode_ForceOn("");
+            if(limelight.tv){
+                shooter.moveArmPID(calculateArmAngle());
+            }
+        } else {
+            LimelightHelpers.setLEDMode_ForceOff("");
+        }
+
+    }
+
+    // public boolean detectTarget(boolean xButton){
+    //     return limelight.tv;
+    // }
 
     /**
      * Get axis and remove deadzone from controller input

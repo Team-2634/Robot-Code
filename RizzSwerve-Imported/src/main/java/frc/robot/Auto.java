@@ -98,13 +98,13 @@ public class Auto {
             };
             return objectYRed[number];
         }
-    }
+    } 
 
-    double speakerXBlue = Units.inchesToMeters(41);
-    double speakerYBlue = Units.inchesToMeters(231);
+    // double speakerXBlue = Units.inchesToMeters(41);
+    // double speakerYBlue = Units.inchesToMeters(231);
 
-    double speakerXRed = Units.inchesToMeters(609);
-    double speakerYRed = Units.inchesToMeters(231);
+    // double speakerXRed = Units.inchesToMeters(609);
+    // double speakerYRed = Units.inchesToMeters(231);
 
 
 
@@ -125,7 +125,9 @@ public class Auto {
     boolean shootFinished = false;
     int counter = 0;
 
-    public void autoThreeNoteFront() {
+    public void autoSpeakerThreeNote() {
+        SmartDashboard.putNumber("Auto Phase:",counter);
+
         switch (counter) {
             case 0:
                 autoHelper.angleArmToPosition(Constants.closeSpeakerPosition);
@@ -159,20 +161,35 @@ public class Auto {
 
             case 3:
                 autoHelper.angleArmToPosition(Constants.pickupPosition);
-                autoHelper.driveToPosition(autoHelper.setDesiredPose(getObjectPositionX(2), getObjectPositionY(2), Math.toRadians(0)));
-                autoHelper.intake(true);
+                // autoHelper.driveToPosition(autoHelper.setDesiredPose(getObjectPositionX(2), getObjectPositionY(2), Math.toRadians(0)));
+                // autoHelper.intake(true);
 
                 SmartDashboard.putBoolean("Auto State 3: drive", driveFinished);
                 SmartDashboard.putBoolean("Auto State 3: arm", armFinished);
                 SmartDashboard.putBoolean("Auto State 3: intake", intakeFinished);
 
-                if (autoHelper.atTargetPosition()) {driveFinished = true;}
+                // if (autoHelper.atTargetPosition()) {driveFinished = true;}
                 if (autoHelper.armAtPosition()) {armFinished = true;}
                 if (autoHelper.hasNote()) {intakeFinished = true;}
-                if (driveFinished && armFinished && intakeFinished) {counter += 1; driveFinished = false; armFinished = false; intakeFinished = false;}
+                if (armFinished) {counter += 1; driveFinished = false; armFinished = false; intakeFinished = false;}
                 break;
 
             case 4:
+                autoHelper.angleArmToPosition(Constants.pickupPosition);
+                autoHelper.driveToPosition(autoHelper.setDesiredPose(getObjectPositionX(2), getObjectPositionY(2), Math.toRadians(0)));
+                autoHelper.intake(0.3);
+
+                SmartDashboard.putBoolean("Auto State 3: drive", driveFinished);
+                SmartDashboard.putBoolean("Auto State 3: arm", armFinished);
+                SmartDashboard.putBoolean("Auto State 3: intake", intakeFinished);
+
+                // if (autoHelper.atTargetPosition()) {driveFinished = true;}
+                // if (autoHelper.armAtPosition()) {armFinished = true;}
+                if (autoHelper.hasNote()) {intakeFinished = true;}
+                if (intakeFinished) {counter += 1; driveFinished = false; armFinished = false; intakeFinished = false;}
+                break;
+
+            case 5:
                 autoHelper.angleArmToPosition(Constants.closeSpeakerPosition);
                 autoHelper.driveToPosition(autoHelper.setDesiredPose(getObjectPositionX(0), getObjectPositionY(0), 0));
 
@@ -184,18 +201,41 @@ public class Auto {
                 if (driveFinished && armFinished) {counter += 1; driveFinished = false; armFinished = false;}
                 break;
 
-            case 5:
+            case 6:
+                autoHelper.angleArmToPosition(Constants.closeSpeakerPosition);
                 autoHelper.shooter.shootNoteRoutine();
                 autoHelper.stopDrive();
 
                 SmartDashboard.putBoolean("Auto State 5: shoot", shootFinished);
                 
-                if (!autoHelper.hasNote()) {shootFinished = true;}
+                if (autoHelper.shooter.noteRoutineFlag) {shootFinished = true;}
                 if (shootFinished) {counter += 1; shootFinished = false;}
                 break;
 
-            case 6:
-                autoHelper.driveToPosition(autoHelper.setDesiredPose(Units.inchesToMeters(180), Units.inchesToMeters(211), 0));
+            case 7:
+                autoHelper.angleArmToPosition(Constants.pickupPosition);
+                autoHelper.driveToPosition(autoHelper.setDesiredPose(getObjectPositionX(3), getObjectPositionY(3), Math.PI/4));
+                autoHelper.intake(0.3);
+                SmartDashboard.putBoolean("Auto State 6: drive", driveFinished);
+
+                if (autoHelper.hasNote()) {intakeFinished = true;}
+                if (intakeFinished) {counter += 1; intakeFinished = false;}
+                break;
+            
+            case 8:
+                autoHelper.stopIntake();
+                autoHelper.angleArmToPosition(Constants.closeSpeakerPosition);
+                autoHelper.driveToPosition(autoHelper.setDesiredPose(getObjectPositionX(0), getObjectPositionY(0), 0));
+
+                SmartDashboard.putBoolean("Auto State 6: drive", driveFinished);
+
+                if (autoHelper.atTargetPosition()) {driveFinished = true;}
+                if (driveFinished) {counter += 1; driveFinished = false;}
+                break;
+
+            case 9:
+                autoHelper.angleArmToPosition(Constants.closeSpeakerPosition);
+                autoHelper.shooter.shootNoteRoutine();
                 
                 SmartDashboard.putBoolean("Auto State 6: drive", driveFinished);
 
@@ -210,6 +250,8 @@ public class Auto {
                 break;
         }
     }
+
+
     /**
      * start at speaker, score starting note, pickup and score note directly in front
      */
@@ -265,19 +307,32 @@ public class Auto {
             case 4:
                 autoHelper.angleArmToPosition(Constants.pickupPosition);
                 autoHelper.driveToPosition(autoHelper.setDesiredPose(getObjectPositionX(2), getObjectPositionY(2), Math.toRadians(0)));
-                autoHelper.intake(true);
+                autoHelper.intake(0.5);
 
-                SmartDashboard.putBoolean("Auto State 3: drive", driveFinished);
-                SmartDashboard.putBoolean("Auto State 3: arm", armFinished);
-                SmartDashboard.putBoolean("Auto State 3: intake", intakeFinished);
+                // SmartDashboard.putBoolean("Auto State 3: drive", driveFinished);
+                // SmartDashboard.putBoolean("Auto State 3: arm", armFinished);
+                // SmartDashboard.putBoolean("Auto State 3: intake", intakeFinished);
 
-                if (autoHelper.atTargetPosition()) {driveFinished = true;}
-                if (autoHelper.armAtPosition()) {armFinished = true;}
+                // if (autoHelper.atTargetPosition()) {driveFinished = true;}
+                // if (autoHelper.armAtPosition()) {armFinished = true;}
                 if (autoHelper.hasNote()) {intakeFinished = true;}
-                if (driveFinished && armFinished && intakeFinished) {counter += 1; driveFinished = false; armFinished = false; intakeFinished = false;}
+                if (intakeFinished) {counter += 1; driveFinished = false; armFinished = false; intakeFinished = false;}
                 break;
 
             case 5:
+                autoHelper.prepNote();  
+                
+                // SmartDashboard.putBoolean("Auto State 3: drive", driveFinished);
+                // SmartDashboard.putBoolean("Auto State 3: arm", armFinished);
+                // SmartDashboard.putBoolean("Auto State 3: intake", intakeFinished);
+
+                // if (autoHelper.atTargetPosition()) {driveFinished = true;}
+                // if (autoHelper.armAtPosition()) {armFinished = true;}
+                if (autoHelper.delay(0.3)) {intakeFinished = true;}
+                if (intakeFinished) {counter += 1; driveFinished = false; armFinished = false; intakeFinished = false;}
+                break;
+
+            case 6:
                 autoHelper.angleArmToPosition(Constants.closeSpeakerPosition);
                 autoHelper.driveToPosition(autoHelper.setDesiredPose(getObjectPositionX(0), getObjectPositionY(0), 0));
 
@@ -289,17 +344,18 @@ public class Auto {
                 if (driveFinished && armFinished) {counter += 1; driveFinished = false; armFinished = false;}
                 break;
 
-            case 6:
+            case 7:
+                autoHelper.angleArmToPosition(Constants.closeSpeakerPosition);
                 autoHelper.shooter.shootNoteRoutine();
                 autoHelper.stopDrive();
 
                 SmartDashboard.putBoolean("Auto State 5: shoot", shootFinished);
                 
-                if (!autoHelper.hasNote()) {shootFinished = true;}
+                if (autoHelper.shooter.noteRoutineFlag) {shootFinished = true;}
                 if (shootFinished) {counter += 1; shootFinished = false;}
                 break;
 
-            case 7:
+            case 8:
                 autoHelper.driveToPosition(autoHelper.setDesiredPose(Units.inchesToMeters(180), Units.inchesToMeters(211), 0));
                 
                 SmartDashboard.putBoolean("Auto State 6: drive", driveFinished);

@@ -39,6 +39,9 @@ public class Shooter {
         armMotorLeft.setNeutralMode(NeutralModeValue.Brake);
         armMotorRight.setNeutralMode(NeutralModeValue.Brake);
 
+        shooterMotorLeft.setNeutralMode(NeutralModeValue.Brake);
+        shooterMotorRight.setNeutralMode(NeutralModeValue.Brake);
+
         intake.setNeutralMode(NeutralModeValue.Brake);
         intake.setInverted(false);
 
@@ -97,6 +100,9 @@ public class Shooter {
 
     public void moveArmPID(double position) {
         double power = armPID.calculate(getArmRadians(), position); // + armFF.calculate(getArmRadians() - Constants.armOffset, position - Constants.armOffset);
+        if (getArmRadians() < Constants.pickupPosition && Math.abs(position - getArmRadians()) < 0.1) {
+            power = 0;
+        }
         armMotorLeft.set(power);
         armMotorRight.set(power);
     }

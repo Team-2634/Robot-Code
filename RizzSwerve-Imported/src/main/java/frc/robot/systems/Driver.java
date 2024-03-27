@@ -226,8 +226,8 @@ public class Driver {
         // SmartDashboard.putNumber("module" + module + " rawsensordata", steerMotorArray[module].getPosition().getValue());
         // SmartDashboard.putNumber("module" + module + " recordedturnposition", steerMotorArray[module].getPosition().getValue() * ticksToRadsTurning);
 
-        SmartDashboard.putNumber("module" + module + " drive power", drivePower);
-        SmartDashboard.putNumber("module" + module + " turn power", turnPower);
+        // SmartDashboard.putNumber("module" + module + " drive power", drivePower);
+        // SmartDashboard.putNumber("module" + module + " turn power", turnPower);
             
         // SmartDashboard.putNumber("module" + module + " encoder raw", encoderArray[module].getAbsolutePosition().getValue());
         // SmartDashboard.putNumber("module" + module + " encoder rads", encoderArray[module].getPosition().getValue() * 2 * Math.PI);
