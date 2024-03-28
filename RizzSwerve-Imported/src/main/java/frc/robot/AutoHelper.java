@@ -1,12 +1,15 @@
 package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
@@ -33,21 +36,23 @@ public class AutoHelper {
     }
 
     PIDController autoXPID = new PIDController(Constants.kpBotTranslation, Constants.kiBotTranslation, Constants.kdBotTranslation);
-    PIDController autoYPID = new PIDController(Constants.kpBotTranslation*2, Constants.kiBotTranslation, Constants.kdBotTranslation);
-    // ProfiledPIDController autoXPID = new ProfiledPIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto, new TrapezoidProfile.Constraints(Constants.maxAutoVelocity, Constants.maxAutoAccel));
-    // ProfiledPIDController autoYPID = new ProfiledPIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto, new TrapezoidProfile.Constraints(Constants.maxAutoVelocity, Constants.maxAutoAccel));
+    PIDController autoYPID = new PIDController(Constants.kpBotTranslation, Constants.kiBotTranslation, Constants.kdBotTranslation);
+    // ProfiledPIDController autoXPID = new ProfiledPIDController(Constants.kpBotTranslation, Constants.kiBotTranslation, Constants.kdBotTranslation, new TrapezoidProfile.Constraints(Constants.maxAutoVelocity, Constants.maxAutoAccel));
+    // ProfiledPIDController autoYPID = new ProfiledPIDController(Constants.kpBotTranslation, Constants.kiBotTranslation, Constants.kdBotTranslation, new TrapezoidProfile.Constraints(Constants.maxAutoVelocity, Constants.maxAutoAccel));
     PIDController autoTurnPID = new PIDController(Constants.kpBotRotate, Constants.kiBotRotate, Constants.kdBotRotate);
+
+    ColorSensorV3 noteSensor = new ColorSensorV3(I2C.Port.kMXP);
 
     void initialize() {
         autoXPID.setTolerance(Constants.autoPositionToleranceMeters);
-        autoXPID.reset(/*driver.getPose().getX()*/);
+        autoXPID.reset();//driver.getPose().getX());
         
         autoYPID.setTolerance(Constants.autoPositionToleranceMeters);
-        autoYPID.reset(/*driver.getPose().getY()*/);
+        autoYPID.reset();//driver.getPose().getY());
 
+        autoTurnPID.enableContinuousInput(-Math.PI, Math.PI);
         autoTurnPID.setTolerance(Constants.autoRotationToleranceRadians);
         autoTurnPID.reset();
-        autoTurnPID.enableContinuousInput(-Math.PI, Math.PI);
     }
 
     public boolean timerInterval_Auto(double min, double max) {
@@ -64,26 +69,32 @@ public class AutoHelper {
      */
     public void driveToPosition(Pose2d endPose) {
         Pose2d startPose = driver.getPose();
-        SmartDashboard.putNumber("inputX", startPose.getX());
-        SmartDashboard.putNumber("inputY", startPose.getY());
+        SmartDashboard.putNumber("inputX", Units.metersToInches(startPose.getX()));//Units.metersToFeet(startPose.getX()));
+        SmartDashboard.putNumber("inputY", Units.metersToInches(startPose.getY()));//Units.metersToFeet(startPose.getY()));
         SmartDashboard.putNumber("inputRot", startPose.getRotation().getRadians());
-        // SmartDashboard.putNumber("outputX", endPose.getX());
-        // SmartDashboard.putNumber("outputY", endPose.getY());
-        // SmartDashboard.putNumber("outputRot", endPose.getRotation().getRadians());
+        SmartDashboard.putNumber("outputX", Units.metersToInches(endPose.getX()));
+        SmartDashboard.putNumber("outputY", Units.metersToInches(endPose.getY()));
+        SmartDashboard.putNumber("outputRot", endPose.getRotation().getRadians());
         double xSpeed = autoXPID.calculate(startPose.getX(), endPose.getX());
         double ySpeed = autoYPID.calculate(startPose.getY(), endPose.getY()); 
         double rotSpeed = autoTurnPID.calculate(startPose.getRotation().getRadians(), endPose.getRotation().getRadians());
-        // SmartDashboard.putNumber("xSpeed", xSpeed);
-        // SmartDashboard.putNumber("ySpeed", ySpeed);
-        // SmartDashboard.putNumber("rotSpeed", rotSpeed);
+        SmartDashboard.putNumber("xSpeed", xSpeed);
+        SmartDashboard.putNumber("ySpeed", ySpeed);
+        SmartDashboard.putNumber("rotSpeed", rotSpeed);
 
         double[] fieldOriented = driver.fieldOrient(xSpeed, ySpeed);
-        driver.swerveDrive(fieldOriented[0], fieldOriented[1], -rotSpeed);
+        driver.swerveDrive(fieldOriented[0], fieldOriented[1], rotSpeed);
+        
     }
 
     public boolean atTargetPosition() {
-        return (autoXPID.atSetpoint() && autoYPID.atSetpoint() && autoTurnPID.atSetpoint()) ? true : false;
-
+        boolean at = (autoXPID.atSetpoint() && autoYPID.atSetpoint() && autoTurnPID.atSetpoint()) ? true : false;
+        if (at) {
+            autoXPID.reset();//driver.getPose().getX());
+            autoYPID.reset();//driver.getPose().getY());
+            autoTurnPID.reset();
+        }
+        return at;
     }
 
     public void angleArmToPosition(double angle) {
@@ -99,51 +110,59 @@ public class AutoHelper {
     //     shooter.shootNote(1, 1);
     // }
 
-    public void intake(boolean input) {
-        if (input) {
-            shooter.collectNote(Constants.intakeSpeed);
-        } else {
-            shooter.collectNote(0);
-        }
+    public void intake(double input) {
+        shooter.shootNote(-0.1);
+        shooter.collectNote(input);
     }
 
-    boolean noteRoutineFlag = true;
     Timer timer = new Timer();
-    double time;
+    
     public boolean hasNote() {
-        if (noteRoutineFlag) {
-            time = timer.get() + 0.5;
-            noteRoutineFlag = false;
+        return noteSensor.getRed() > 400;
+    }
+
+    public boolean delayFlag = true;
+    public double delayStopTime = 0;
+    public boolean delay(double delay) {
+        if (delayFlag) {
+            delayStopTime = timer.get() + delay;
+            delayFlag = false;
         }
-        if (timer.get() > time) {
+        if (timer.get() > delayStopTime) {
+            delayFlag = true;
             return true;
+        } else {
+            return false;
         }
-        return false; //shooter.hasNote();
     }
 
-    boolean shootFlag = true;
-    public void shoot(double input, double time) {
-        double timeEnd = 0;
-        if (shootFlag) {
-            shootFlag = false;
-            timeEnd = timer.get() + time;
-        }
-        if (timer.get() < timeEnd) {
-            shooter.shootNote(input);
-        } else {shootFlag = true;}
+    public void prepNote() {
+        shooter.collectNote(-0.1);
     }
 
-    boolean intakeFlag;
-    public void intake(double input, double time) {
-        double timeEnd = 0;
-        if (intakeFlag) {
-            intakeFlag = false;
-            timeEnd = timer.get() + time;
-        }
-        if (timer.get() < timeEnd) {
-            shooter.collectNote(input);
-        } else {intakeFlag = true;}
-    }
+    // boolean shootFlag = true;
+    // public void shoot(double input, double time) {
+    //     double timeEnd = 0;
+    //     if (shootFlag) {
+    //         shootFlag = false;
+    //         timeEnd = timer.get() + time;
+    //     }
+    //     if (timer.get() < timeEnd) {
+    //         shooter.shootNote(input);
+    //     } else {shootFlag = true;}
+    // }
+
+    // boolean intakeFlag;
+    // public void intake(double input, double time) {
+    //     double timeEnd = 0;
+    //     if (intakeFlag) {
+    //         intakeFlag = false;
+    //         timeEnd = timer.get() + time;
+    //     }
+    //     if (timer.get() < timeEnd) {
+    //         shooter.collectNote(input);
+    //     } else {intakeFlag = true;}
+    // }
     
     public void armToPosition(double position) {
         shooter.moveArmPID(position);
@@ -166,7 +185,7 @@ public class AutoHelper {
     }
 
     public void stopShoot(){
-        shooter.shootNote(0);
+        shooter.shootNote(-0.1);
     }
 
         // public void resetDriveEncoders() {

@@ -22,13 +22,13 @@ public class Shooter {
     // private final CANSparkMax armMotorLeft = new CANSparkMax(0, MotorType.kBrushless);
     // private final CANSparkMax armMotorRight = new CANSparkMax(0, MotorType.kBrushless);
     
-    private final TalonFX shooterMotorLeft = new TalonFX(Constants.leftShootID, Constants.canivore); 
-    private final TalonFX shooterMotorRight = new TalonFX(Constants.rightShootID, Constants.canivore);
+    public final TalonFX shooterMotorLeft = new TalonFX(Constants.leftShootID, Constants.canivore); 
+    public final TalonFX shooterMotorRight = new TalonFX(Constants.rightShootID, Constants.canivore);
     
     public final TalonFX armMotorLeft = new TalonFX(Constants.leftArmID, Constants.canivore);
     public final TalonFX armMotorRight = new TalonFX(Constants.rightArmID, Constants.canivore);
 
-    private final TalonFX intake = new TalonFX(Constants.intakeID, Constants.canivore);
+    public final TalonFX intake = new TalonFX(Constants.intakeID, Constants.canivore);
 
     private final ArmFeedforward armFF = new ArmFeedforward(0, 0, 0);
     private final PIDController armPID = new PIDController(Constants.kpArm, Constants.kiArm, Constants.kdArm);
@@ -39,8 +39,11 @@ public class Shooter {
         armMotorLeft.setNeutralMode(NeutralModeValue.Brake);
         armMotorRight.setNeutralMode(NeutralModeValue.Brake);
 
+        shooterMotorLeft.setNeutralMode(NeutralModeValue.Brake);
+        shooterMotorRight.setNeutralMode(NeutralModeValue.Brake);
+
         intake.setNeutralMode(NeutralModeValue.Brake);
-        intake.setInverted(true);
+        intake.setInverted(false);
 
         armMotorLeft.setInverted(true);
         armMotorRight.setInverted(false);
@@ -79,7 +82,7 @@ public class Shooter {
         }
         shootNote(1);
         if (timer.get() > shotTime) {
-            collectNote(-0.3);
+            collectNote(0.3);
         }
         if (timer.get() > shotTime + 1) {
             noteRoutineFlag = true;
@@ -97,6 +100,9 @@ public class Shooter {
 
     public void moveArmPID(double position) {
         double power = armPID.calculate(getArmRadians(), position); // + armFF.calculate(getArmRadians() - Constants.armOffset, position - Constants.armOffset);
+        if (getArmRadians() < Constants.pickupPosition && Math.abs(position - getArmRadians()) < 0.1) {
+            power = 0;
+        }
         armMotorLeft.set(power);
         armMotorRight.set(power);
     }

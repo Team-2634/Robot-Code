@@ -11,7 +11,7 @@ import frc.robot.systems.Shooter;
 
 public class Teleop {
     XboxController xboxDrive = new XboxController(0);
-    XboxController xboxArm = new XboxController(1);
+    XboxController xboxArm = new XboxController(0);
     XboxController dev = new XboxController(5);
 
     TeleopHelper teleopHelper;
@@ -35,7 +35,7 @@ public class Teleop {
     }
     
     public void drive() {
-        teleopHelper.drive(-removeDeadzone(xboxDrive.getLeftY()), -removeDeadzone(xboxDrive.getLeftX()), -removeDeadzone(xboxDrive.getRightX()), xboxDrive.getLeftStickButton(), xboxDrive.getXButton());
+        teleopHelper.drive(-removeDeadzone(xboxDrive.getLeftY()), -removeDeadzone(xboxDrive.getLeftX()), -removeDeadzone(xboxDrive.getRightX()), xboxDrive.getLeftStickButton(), xboxDrive.getXButton() && false, xboxDrive.getXButton());
     }
 
     public void shoot() {
@@ -66,4 +66,13 @@ public class Teleop {
     public void armPID() {
         teleopHelper.setArmState(xboxArm.getLeftBumperPressed(), xboxArm.getRightBumperPressed());
     }
+
+    public void limelight(){
+        teleopHelper.limelightArmAngle(xboxArm.getXButton());
+    }
+
+    // public void targetDetected()){
+    //     teleopHelper.detectTarget();
+    // }
+
 }
