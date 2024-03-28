@@ -87,6 +87,7 @@ public class Constants {
     //arm speeds
     public final static double shootSpeed = 0.5;
     public final static double intakeSpeed = 0.5;
+    public final static double intakeSpitSpeed = -0.2;
     public final static double armSpeed = 0.75;
     public final static double climbSpeed = 1;
 

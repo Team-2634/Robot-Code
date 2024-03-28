@@ -35,30 +35,48 @@ public class Teleop {
     }
     
     public void drive() {
-        teleopHelper.drive(-removeDeadzone(xboxDrive.getLeftY()), -removeDeadzone(xboxDrive.getLeftX()), -removeDeadzone(xboxDrive.getRightX()), xboxDrive.getLeftStickButton(), xboxDrive.getXButton() && false, xboxDrive.getXButton());
+        teleopHelper.drive(
+            -removeDeadzone(xboxDrive.getLeftY()), 
+            -removeDeadzone(xboxDrive.getLeftX()), 
+            -removeDeadzone(xboxDrive.getRightX()), 
+            xboxDrive.getLeftStickButton(), 
+            xboxDrive.getXButton() && false, 
+            xboxDrive.getXButton()
+        );
     }
 
     public void shoot() {
-        teleopHelper.shoot(removeDeadzone(xboxArm.getRightTriggerAxis()));
+        teleopHelper.shoot(
+            removeDeadzone(xboxArm.getRightTriggerAxis())
+        );
     }
 
     public void intake() {
-        teleopHelper.intake(removeDeadzone(xboxArm.getLeftTriggerAxis()), xboxArm.getYButton());
+        teleopHelper.intake(
+            removeDeadzone(xboxArm.getLeftTriggerAxis()), 
+            xboxArm.getYButton()
+        );
     }
 
     public void arm() {
-        teleopHelper.arm(xboxArm.getRightBumper(), xboxArm.getLeftBumper());
+        teleopHelper.arm(
+            xboxArm.getRightBumper(), 
+            xboxArm.getLeftBumper()
+        );
     }
 
     public void climb() {
-        teleopHelper.climb(xboxDrive.getAButton(), xboxDrive.getBButton());
+        teleopHelper.climb(
+            xboxDrive.getAButton(), 
+            xboxDrive.getBButton()
+        );
     }
 
     public void panic() {
         teleopHelper.panic(xboxDrive.getRawButton(7));
         SmartDashboard.putBoolean("oops", true);
     }
-    //experemental
+    //experimental
     public void shootRoutine() {
         teleopHelper.shootRoutine(xboxDrive.getRightTriggerAxis() > 0.5);
     }

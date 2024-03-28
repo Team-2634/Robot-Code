@@ -89,22 +89,32 @@ public class Shooter {
         }
     }
 
+    /**
+     * Move Arm given speed (NO CODE STOP!)
+     * @param armSpeed double, From -1 to 1
+     */
     public void moveArm(double speed) {
         armMotorLeft.set(speed);
         armMotorRight.set(speed);
-    }
-
-    public double getArmRadians() {
-        return armMotorLeft.getPosition().getValue() * Constants.armGearRatio * 2 * Math.PI;
-    }
-
+    } 
+    
+    /**
+     * Move arm to angle with PID controls (NO CODE STOP!)
+     * @param position target angle in radians from start position
+     */
     public void moveArmPID(double position) {
+        double armAngleTOlerance = 0.1;
+        
         double power = armPID.calculate(getArmRadians(), position); // + armFF.calculate(getArmRadians() - Constants.armOffset, position - Constants.armOffset);
-        if (getArmRadians() < Constants.pickupPosition && Math.abs(position - getArmRadians()) < 0.1) {
+        if (getArmRadians() < Constants.pickupPosition && Math.abs(position - getArmRadians()) < armAngleTolerance) {
             power = 0;
         }
         armMotorLeft.set(power);
         armMotorRight.set(power);
+    }
+    
+    public double getArmRadians() {
+        return armMotorLeft.getPosition().getValue() * Constants.armGearRatio * 2 * Math.PI;
     }
 
     public boolean atPosition() {

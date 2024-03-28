@@ -97,10 +97,6 @@ public class AutoHelper {
         return at;
     }
 
-    public void angleArmToPosition(double angle) {
-        shooter.moveArmPID(angle);
-    }
-
     public boolean armAtPosition() {
         return shooter.atPosition();
     }
@@ -163,7 +159,18 @@ public class AutoHelper {
     //         shooter.collectNote(input);
     //     } else {intakeFlag = true;}
     // }
-    
+   
+    /**
+     * Move arm to angle with PID controls (NO CODE STOP!)
+     * @param position target angle in radians from start position
+     */
+    public void angleArmToPosition(double angle) {
+        shooter.moveArmPID(angle);
+    }
+   
+    /**
+     * @deprecated Use angleArmToPosition(angle)
+     */
     public void armToPosition(double position) {
         shooter.moveArmPID(position);
     }
