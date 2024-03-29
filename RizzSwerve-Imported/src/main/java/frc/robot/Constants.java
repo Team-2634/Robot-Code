@@ -116,14 +116,15 @@ public class Constants {
 
     // field dimensions for limelight in inches or degrees
     public final static double degToRad = Math.PI / 180;
+    public final static double radToDeg = 180 / Math.PI;
 
     public final static double floorToTarget = 56; 
     public final static double targetToSpeaker = 23;
     public final static double floorToLimelight = 16; 
     public final static double armLength = 24;
 
-    public final static double limelightAngle = 24 * degToRad; 
-    public final static double shooterToSpeakerAngle = 28 * degToRad;
+    public final static double limelightAngle = 25 * degToRad; 
+    public final static double shooterToSpeakerAngle = 60 * degToRad;
 
 
 
