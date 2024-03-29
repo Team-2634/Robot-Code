@@ -62,15 +62,39 @@ public class TeleopHelper {
     }
 
     public double calculateArmAngle(){
-        double botToSpeakerDist = (Constants.floorToTarget - Constants.floorToLimelight) / (Math.tan((Constants.limelightAngle + limelight.ty) * Constants.degToRad));
-        double limelightToSpeakerAngle = Math.atan((Constants.targetToSpeaker + Constants.floorToTarget - Constants.floorToLimelight) / botToSpeakerDist);
-        // double limelightToSpeakerLength = botToSpeakerDist / Math.cos(limelightToSpeakerAngle);
-        double limelightToSpeakerLength = Math.sqrt(Math.pow(botToSpeakerDist, 2) + Math.pow(Constants.floorToTarget + Constants.targetToSpeaker - Constants.floorToLimelight, 2));
+
+        final double floorToSpeaker = Constants.targetToSpeaker + Constants.floorToTarget;
+        final double armToTag = Constants.floorToTarget - Constants.floorToLimelight;
+
+        double limelightToTargetAngle = (Constants.limelightAngle + limelight.ty) * Constants.degToRad;
+        
+        double botToSpeakerVertical = floorToSpeaker - Constants.floorToLimelight;
+        double botToSpeakerHorizontal = armToTag / Math.tan(limelightToTargetAngle);
+
+        double limelightToSpeakerAngle = Math.atan(botToSpeakerVertical / botToSpeakerHorizontal);
+        double limelightToSpeakerLength = Math.sqrt(Math.pow(botToSpeakerHorizontal, 2) + Math.pow(botToSpeakerVertical, 2));
+
+        //Angle between limelightToSpeaker and shooterToSpeaker
         double angleThree = Math.asin((Constants.armLength * Math.sin(Constants.shooterToSpeakerAngle)) / limelightToSpeakerLength);
-        double angleFour = (180 * Constants.degToRad) - angleThree - (55 * Constants.degToRad); // Find missing angle
-        double angleArm = (180 * Constants.degToRad) - limelightToSpeakerAngle - angleFour;
-        return angleArm - (55 * Constants.degToRad);
+
+        //Angle between limelightToSpeaker and shooterToSpeaker
+        double angleFour = Math.PI - angleThree - Constants.shooterToSpeakerAngle; 
+
+        //Opposite of angleFour
+        double angleArm = Math.PI - limelightToSpeakerAngle - angleFour;
+
+        //Account for arm angle offset
+        return angleArm - Constants.shooterToSpeakerAngle;
     }
+
+    /*
+    * subwoofer Depth = 36 
+    * botToLimelight =  12
+    * 
+    * wallToLimelight = 48 inch
+    */
+    
+
 
     public void shoot(double input) {
         shooter.shootNote(input);
