@@ -111,6 +111,8 @@ public class Robot extends TimedRobot {
 
         // SmartDashboard.putNumber("total amps", pdBoard.getTotalCurrent());
         // SmartDashboard.putNumber("total volts", pdBoard.getVoltage());
+        SmartDashboard.putBoolean("resetting", navx.isCalibrating());
+        SmartDashboard.putNumber("navx yaw", navx.getYaw());
 
         SmartDashboard.putNumber("Angle Value", teleopHelper.calculateArmAngle());
     }
@@ -123,19 +125,18 @@ public class Robot extends TimedRobot {
 
         auto.counter = 0;
         // DO NOT FORGET TO SET STARTING POSITION
-        Pose2d startSpeakerFrontBlue = new Pose2d(auto.getObjectPositionX(0), auto.getObjectPositionY(0), new Rotation2d());
-        Pose2d startSpeakerFrontRed = new Pose2d(auto.getObjectPositionX(0), auto.getObjectPositionY(0), new Rotation2d(Math.PI));
+        Pose2d startSpeakerFrontBlue = new Pose2d(auto.getObjectPositionX(0), auto.getObjectPositionY(0), Rotation2d.fromDegrees(0));
+        Pose2d startSpeakerFrontRed = new Pose2d(auto.getObjectPositionX(0), auto.getObjectPositionY(0), Rotation2d.fromDegrees(180));
 
-        Pose2d startSpeakerLeftBlue = new Pose2d(auto.getObjectPositionX(0), 0, new Rotation2d(Math.toRadians(60)));
-        Pose2d startSpeakerLeftRed = new Pose2d(0, 0, new Rotation2d(Math.toRadians(-120)));
+        Pose2d startSpeakerEdgeBlue = new Pose2d(0, 0, Rotation2d.fromDegrees(60));
+        Pose2d startSpeakerEdgeRed = new Pose2d(0, 0, Rotation2d.fromDegrees(120));
+        
+        Pose2d startSpeakerFarBlue = new Pose2d(0, 0, Rotation2d.fromDegrees(-60));
+        Pose2d startSpeakerFarRed = new Pose2d(0, 0, Rotation2d.fromDegrees(-120));
 
-        Pose2d startSpeakerRightBlue = new Pose2d(0, 0, new Rotation2d(Math.toRadians(-60)));
-        Pose2d startSpeakerRightRed = new Pose2d(0, 0, new Rotation2d(Math.toRadians(120)));
+        Pose2d startOffsideBlue = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+        Pose2d startOffsideRed = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
 
-        Pose2d startOffsideBlue = new Pose2d(0, 0, new Rotation2d());
-        Pose2d startOffsideRed = new Pose2d(0, 0, new Rotation2d());
-
-        //in front of speaker
         driver.startAuto(startSpeakerFrontBlue);
     }
     

@@ -286,6 +286,7 @@ public class Driver {
 
     public void panicReset() {
         navx.reset();
+        navx.zeroYaw();
     }
 
 }

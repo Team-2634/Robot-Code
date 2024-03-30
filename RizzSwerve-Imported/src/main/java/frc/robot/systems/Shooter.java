@@ -100,7 +100,7 @@ public class Shooter {
 
     public void moveArmPID(double position) {
         double power = armPID.calculate(getArmRadians(), position); // + armFF.calculate(getArmRadians() - Constants.armOffset, position - Constants.armOffset);
-        if (getArmRadians() < Constants.pickupPosition && Math.abs(position - getArmRadians()) < 0.1) {
+        if (getArmRadians() < Constants.pickupPosition && Math.abs(position - getArmRadians()) < 0.2) {
             power = 0;
         }
         armMotorLeft.set(power);

@@ -90,17 +90,18 @@ public class Constants {
     public final static double armSpeed = 0.75;
     public final static double climbSpeed = 1;
 
-    //set positions
+    //arm set positions
     public final static double pickupPosition = -1.2;
-    public final static double closeSpeakerPosition = -0.80;
+    public final static double closeSpeakerPosition = -0.75;
     public final static double farSpeakerPosition = -0.54;
+    public final static double feedPosition = 0.0;
     public final static double ampPosition = 0.50;
 
     //controller settings 
     public final static double XdriveSensitivity = 1;
     public final static double YdriveSensitivity = 1; 
     public final static double turningSensitivity = 1;
-    public final static double maxSpeedPercent = 0.6; 
+    public final static double maxSpeedPercent = 0.7; 
     public final static double maxSpeedRotation = 1.0; 
 
     public final static double controllerDeadzone = 0.1;

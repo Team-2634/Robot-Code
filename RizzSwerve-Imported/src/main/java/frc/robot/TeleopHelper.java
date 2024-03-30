@@ -1,15 +1,22 @@
 package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.revrobotics.ColorSensorV3;
 
 import java.lang.Math;
+
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Limelight;
 import frc.robot.systems.LimelightHelpers;
+import frc.robot.systems.LimelightHelpers.LimelightTarget_Fiducial;
 import frc.robot.systems.Shooter;
 
 public class TeleopHelper {
@@ -32,9 +39,10 @@ public class TeleopHelper {
 
     public void drive(double XSpeed, double YSpeed, double TurnSpeed, boolean boost, boolean goLimelight, boolean disableFieldOrient) {
         
-        if (goLimelight) {
-            TurnSpeed = limelightRotate();
-        }
+        // if (goLimelight) {
+        //     limelight.updateLimelight();
+        //     TurnSpeed = limelightRotate();
+        // }
 
         if (boost) {
             XSpeed /= 3;
@@ -129,6 +137,9 @@ public class TeleopHelper {
                 shooter.moveArmPID(Constants.closeSpeakerPosition);
                 break;
             case 2:
+                shooter.moveArmPID(Constants.feedPosition);
+                break;
+            case 3:
                 shooter.moveArmPID(Constants.ampPosition);
                 break;
 
@@ -139,14 +150,18 @@ public class TeleopHelper {
         }
     }
 
-    public void intake(double input, boolean yButton) {
-        
-         if (yButton) {
+    ColorSensorV3 sensor = new ColorSensorV3(I2C.Port.kMXP);
+    public void intake(double input, boolean yButton, double shoot) {
+
+        if (yButton) {
             shooter.collectNote(-0.2);
             shooter.shootNote(-0.2);
+        // } else if (sensor.getRed() > 300 && shoot < 0.2) {
+        //     input = 0;
         } else {
-            shooter.collectNote(input/3);
+            shooter.collectNote(input * 0.6);
         }
+
     }
 
 
@@ -177,19 +192,20 @@ public class TeleopHelper {
         }
     }
 
-    public void limelightArmAngle(boolean xButton){
-        limelight.updateLimelight();
+    LimelightTarget_Fiducial target = new LimelightTarget_Fiducial();
+    // public void limelightArmAngle(boolean xButton){
+    //     limelight.updateLimelight();
 
-        if(xButton){
-            LimelightHelpers.setLEDMode_ForceOn("");
-            if(limelight.tv){
-                shooter.moveArmPID(calculateArmAngle());
-            }
-        } else {
-            LimelightHelpers.setLEDMode_ForceOff("");
-        }
+    //     if(xButton && (target.fiducialID == 4 && DriverStation.getAlliance().get() == Alliance.Red) || (target.fiducialID == 7 && DriverStation.getAlliance().get() == Alliance.Blue)){
+    //         LimelightHelpers.setLEDMode_ForceOn("");
+    //         if(limelight.tv){
+    //             shooter.moveArmPID(calculateArmAngle());
+    //         }
+    //     } else {
+    //         LimelightHelpers.setLEDMode_ForceOff("");
+    //     }
 
-    }
+    // }
 
     // public boolean detectTarget(boolean xButton){
     //     return limelight.tv;

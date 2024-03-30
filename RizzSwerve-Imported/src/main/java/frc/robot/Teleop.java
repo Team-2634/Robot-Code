@@ -12,7 +12,7 @@ import frc.robot.systems.Shooter;
 public class Teleop {
     XboxController xboxDrive = new XboxController(0);
     XboxController xboxArm = new XboxController(0);
-    XboxController dev = new XboxController(5);
+    XboxController dev = new XboxController(0);
 
     TeleopHelper teleopHelper;
 
@@ -35,7 +35,7 @@ public class Teleop {
     }
     
     public void drive() {
-        teleopHelper.drive(-removeDeadzone(xboxDrive.getLeftY()), -removeDeadzone(xboxDrive.getLeftX()), -removeDeadzone(xboxDrive.getRightX()), xboxDrive.getLeftStickButton(), xboxDrive.getXButton() && false, xboxDrive.getXButton());
+        teleopHelper.drive(-removeDeadzone(xboxDrive.getLeftY()), -removeDeadzone(xboxDrive.getLeftX()), -removeDeadzone(xboxDrive.getRightX()), xboxDrive.getXButton() && false, xboxDrive.getXButton(), xboxDrive.getXButton());
     }
 
     public void shoot() {
@@ -43,7 +43,7 @@ public class Teleop {
     }
 
     public void intake() {
-        teleopHelper.intake(removeDeadzone(xboxArm.getLeftTriggerAxis()), xboxArm.getYButton());
+        teleopHelper.intake(removeDeadzone(xboxArm.getLeftTriggerAxis()), xboxArm.getYButton(), xboxArm.getRightTriggerAxis());
     }
 
     public void arm() {
@@ -55,8 +55,10 @@ public class Teleop {
     }
 
     public void panic() {
-        teleopHelper.panic(xboxDrive.getRawButton(7));
-        SmartDashboard.putBoolean("oops", true);
+        // teleopHelper.panic(xboxDrive.getRawButton(7));
+        // teleopHelper.panic(xboxDrive.getRawButton(8));
+        teleopHelper.panic(xboxDrive.getXButton());
+        // SmartDashboard.putBoolean("oops", true); currently doing nothing
     }
     //experemental
     public void shootRoutine() {
@@ -68,7 +70,7 @@ public class Teleop {
     }
 
     public void limelight(){
-        teleopHelper.limelightArmAngle(xboxArm.getXButton());
+        // teleopHelper.limelightArmAngle(dev.getXButton());
     }
 
     // public void targetDetected()){
