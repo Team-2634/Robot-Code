@@ -124,7 +124,7 @@ public class Constants {
     public final static double floorToLimelight = 16; 
     public final static double armLength = 24;
 
-    public final static double limelightAngle = 20 * degToRad; 
+    public final static double limelightAngle = 20; // DO NOT TURN THIS INTO RADIANS, IT IS IN A DEGREE CALCULATION THAT CONVERTS INTO RADIANS AFTER 
     public final static double shooterToSpeakerAngle = 60 * degToRad;
 
 
