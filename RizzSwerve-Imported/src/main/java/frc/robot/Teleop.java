@@ -11,8 +11,8 @@ import frc.robot.systems.Shooter;
 
 public class Teleop {
     XboxController xboxDrive = new XboxController(0);
-    XboxController xboxArm = new XboxController(0);
-    XboxController dev = new XboxController(0);
+    XboxController xboxArm = new XboxController(1);
+    XboxController dev = new XboxController(1);
 
     TeleopHelper teleopHelper;
 
@@ -66,11 +66,11 @@ public class Teleop {
     }
 
     public void armPID() {
-        teleopHelper.setArmState(xboxArm.getLeftBumperPressed(), xboxArm.getRightBumperPressed());
+        teleopHelper.setArmState(xboxArm.getLeftBumperPressed(), xboxArm.getRightBumperPressed(), xboxArm.getLeftStickButtonPressed());
     }
 
     public void limelight(){
-        // teleopHelper.limelightArmAngle(dev.getXButton());
+        teleopHelper.limelightArmAngle(dev.getXButton());
     }
 
     // public void targetDetected()){

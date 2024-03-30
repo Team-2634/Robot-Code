@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Limelight;
+import frc.robot.systems.LimelightHelpers.LimelightTarget_Fiducial;
 import frc.robot.systems.Shooter;
 // import frc.robot.systems.Webcam;
 import frc.robot.Constants;
@@ -39,6 +40,10 @@ public class Robot extends TimedRobot {
     TeleopHelper teleopHelper = new TeleopHelper(driver, shooter, climber, navx, limelight);
  
     PowerDistribution pdBoard = new PowerDistribution();
+
+    // Additions for SmartDashboard
+    LimelightTarget_Fiducial target = new LimelightTarget_Fiducial();
+    double aprilTag = target.fiducialID;
 
     @Override
     public void robotInit() {
@@ -114,9 +119,18 @@ public class Robot extends TimedRobot {
         SmartDashboard.putBoolean("resetting", navx.isCalibrating());
         SmartDashboard.putNumber("navx yaw", navx.getYaw());
 
-        SmartDashboard.putNumber("Angle Value", teleopHelper.calculateArmAngle());
+        SmartDashboard.putNumber("limelight ty", limelight.ty);
+        SmartDashboard.putNumber("apriltag id", aprilTag);
+
+        // SmartDashboard.putNumber("Angle Value", teleopHelper.calculateArmAngle());
+        // SmartDashboard.putNumber("Angle Value", teleopHelper.calculateArmAngle());
+        // SmartDashboard.putNumber("Angle Value", teleopHelper.calculateArmAngle());
+        // SmartDashboard.putNumber("Angle Value", teleopHelper.calculateArmAngle());
+        // SmartDashboard.putNumber("Angle Value", teleopHelper.calculateArmAngle());
+
     }
     
+
     @Override
     public void autonomousInit() {
         auto.restartTimer();
@@ -125,19 +139,16 @@ public class Robot extends TimedRobot {
 
         auto.counter = 0;
         // DO NOT FORGET TO SET STARTING POSITION
-        Pose2d startSpeakerFrontBlue = new Pose2d(auto.getObjectPositionX(0), auto.getObjectPositionY(0), Rotation2d.fromDegrees(0));
-        Pose2d startSpeakerFrontRed = new Pose2d(auto.getObjectPositionX(0), auto.getObjectPositionY(0), Rotation2d.fromDegrees(180));
+        Pose2d startSpeakerFront = new Pose2d(auto.getObjectPositionX(0), auto.getObjectPositionY(0), Rotation2d.fromDegrees(auto.fixAngle(0)));
 
-        Pose2d startSpeakerEdgeBlue = new Pose2d(0, 0, Rotation2d.fromDegrees(60));
-        Pose2d startSpeakerEdgeRed = new Pose2d(0, 0, Rotation2d.fromDegrees(120));
+        Pose2d startSpeakerEdge = auto.getWaypoint(0);
         
-        Pose2d startSpeakerFarBlue = new Pose2d(0, 0, Rotation2d.fromDegrees(-60));
-        Pose2d startSpeakerFarRed = new Pose2d(0, 0, Rotation2d.fromDegrees(-120));
+        Pose2d startSpeakerFar = auto.getWaypoint(2);
 
-        Pose2d startOffsideBlue = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
-        Pose2d startOffsideRed = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+        // Pose2d startOffsideBlue = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+        // Pose2d startOffsideRed = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
 
-        driver.startAuto(startSpeakerFrontBlue);
+        driver.startAuto(startSpeakerFront);
     }
     
     @Override
@@ -146,6 +157,7 @@ public class Robot extends TimedRobot {
         // auto.autoProgramTest();
         // auto.autoAmpTwoNote();
         auto.autoSpeakerTwoNote();
+        auto.autoAAAA();
     }
     
     @Override

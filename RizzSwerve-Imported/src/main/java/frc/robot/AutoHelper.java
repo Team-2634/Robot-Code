@@ -84,7 +84,7 @@ public class AutoHelper {
         SmartDashboard.putNumber("rotSpeed", rotSpeed);
 
         double[] fieldOriented = driver.fieldOrient(xSpeed, ySpeed);
-        driver.swerveDrive(fieldOriented[0], fieldOriented[1], rotSpeed);
+        driver.swerveDrive(Constants.clamp(fieldOriented[0], -Constants.maxAutoVelocity, Constants.maxAutoVelocity), Constants.clamp(fieldOriented[1], -Constants.maxAutoVelocity, Constants.maxAutoVelocity), Constants.clamp(rotSpeed, -Constants.maxAutoVelocity, Constants.maxAutoVelocity));
         
     }
 
@@ -187,6 +187,10 @@ public class AutoHelper {
 
     public void stopShoot(){
         shooter.shootNote(-0.1);
+    }
+
+    public void reset(){
+        driver.panicReset();
     }
 
         // public void resetDriveEncoders() {

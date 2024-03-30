@@ -75,7 +75,8 @@ public class TeleopHelper {
         final double armToTag = Constants.floorToTarget - Constants.floorToLimelight;
 
         double limelightToTargetAngle = (Constants.limelightAngle + limelight.ty) * Constants.degToRad;
-        
+        SmartDashboard.putNumber("limelightToTargetAngle", Constants.limelightAngle + limelight.ty);
+
         double botToSpeakerVertical = floorToSpeaker - Constants.floorToLimelight;
         double botToSpeakerHorizontal = armToTag / Math.tan(limelightToTargetAngle);
 
@@ -105,6 +106,9 @@ public class TeleopHelper {
 
 
     public void shoot(double input) {
+        if (currentState == 2) {
+            input /= 2;
+        }
         shooter.shootNote(input);
         // if (input) {
         //     shooter.shootNote(Constants.shootSpeed);
@@ -120,7 +124,8 @@ public class TeleopHelper {
     }
 
     int currentState = 0;
-    public void setArmState(boolean stateUp, boolean stateDown) {
+    boolean defenseFlag= false;
+    public void setArmState(boolean stateUp, boolean stateDown, boolean defense) {
         if (stateUp && currentState < 2) {
             currentState++;
         }
@@ -129,7 +134,14 @@ public class TeleopHelper {
             currentState--;
         }
 
-        switch (currentState) {
+        if (defense) {
+            defenseFlag = !defenseFlag;
+        }
+
+        if (defenseFlag) {
+            shooter.moveArmPID(Constants.feedPosition);
+        } else {
+            switch (currentState) {
             case 0:
                 shooter.moveArmPID(Constants.pickupPosition);
                 break;
@@ -137,9 +149,6 @@ public class TeleopHelper {
                 shooter.moveArmPID(Constants.closeSpeakerPosition);
                 break;
             case 2:
-                shooter.moveArmPID(Constants.feedPosition);
-                break;
-            case 3:
                 shooter.moveArmPID(Constants.ampPosition);
                 break;
 
@@ -147,7 +156,9 @@ public class TeleopHelper {
                 currentState = 0;
                 break;
         
+            }
         }
+        
     }
 
     ColorSensorV3 sensor = new ColorSensorV3(I2C.Port.kMXP);
@@ -193,19 +204,20 @@ public class TeleopHelper {
     }
 
     LimelightTarget_Fiducial target = new LimelightTarget_Fiducial();
-    // public void limelightArmAngle(boolean xButton){
-    //     limelight.updateLimelight();
 
-    //     if(xButton && (target.fiducialID == 4 && DriverStation.getAlliance().get() == Alliance.Red) || (target.fiducialID == 7 && DriverStation.getAlliance().get() == Alliance.Blue)){
-    //         LimelightHelpers.setLEDMode_ForceOn("");
-    //         if(limelight.tv){
-    //             shooter.moveArmPID(calculateArmAngle());
-    //         }
-    //     } else {
-    //         LimelightHelpers.setLEDMode_ForceOff("");
-    //     }
+    public void limelightArmAngle(boolean xButton){
+        limelight.updateLimelight();
 
-    // }
+        if(xButton){ //&& (target.fiducialID == 4 && DriverStation.getAlliance().get() == Alliance.Red) || (target.fiducialID == 7 && DriverStation.getAlliance().get() == Alliance.Blue)){
+            LimelightHelpers.setLEDMode_ForceOn("");
+            if(limelight.tv){
+                shooter.moveArmPID(calculateArmAngle());
+            }
+        } else {
+            LimelightHelpers.setLEDMode_ForceOff("");
+        }
+
+     }
 
     // public boolean detectTarget(boolean xButton){
     //     return limelight.tv;

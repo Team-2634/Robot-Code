@@ -64,7 +64,7 @@ public class Constants {
     
     //auto
     public final static double maxAutoVelocity = 0.5;
-    public final static double maxAutoAccel = 1;
+    // public final static double maxAutoAccel = 1;
 
     //robot properties
     public final static double frontLeftAbsEncoderOffset = 0.093;//0.060; //
@@ -93,7 +93,7 @@ public class Constants {
     //arm set positions
     public final static double pickupPosition = -1.2;
     public final static double closeSpeakerPosition = -0.75;
-    public final static double farSpeakerPosition = -0.54;
+    public final static double farSpeakerPosition = -0.50;
     public final static double feedPosition = 0.0;
     public final static double ampPosition = 0.50;
 
@@ -124,7 +124,7 @@ public class Constants {
     public final static double floorToLimelight = 16; 
     public final static double armLength = 24;
 
-    public final static double limelightAngle = 25 * degToRad; 
+    public final static double limelightAngle = 20 * degToRad; 
     public final static double shooterToSpeakerAngle = 60 * degToRad;
 
 
