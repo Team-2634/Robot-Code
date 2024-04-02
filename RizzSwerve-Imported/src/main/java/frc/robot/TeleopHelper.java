@@ -93,7 +93,7 @@ public class TeleopHelper {
         double angleArm = Math.PI - limelightToSpeakerAngle - angleFour;
 
         //Account for arm angle offset
-        return angleArm - Constants.shooterToSpeakerAngle;
+        return angleArm - Constants.shooterToSpeakerAngle -0.07;
     }
 
     /*

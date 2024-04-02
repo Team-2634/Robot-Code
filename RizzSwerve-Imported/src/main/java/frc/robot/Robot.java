@@ -122,11 +122,8 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("limelight ty", limelight.ty);
         SmartDashboard.putNumber("apriltag id", aprilTag);
 
-        // SmartDashboard.putNumber("Angle Value", teleopHelper.calculateArmAngle());
-        // SmartDashboard.putNumber("Angle Value", teleopHelper.calculateArmAngle());
-        // SmartDashboard.putNumber("Angle Value", teleopHelper.calculateArmAngle());
-        // SmartDashboard.putNumber("Angle Value", teleopHelper.calculateArmAngle());
-        // SmartDashboard.putNumber("Angle Value", teleopHelper.calculateArmAngle());
+        SmartDashboard.putNumber("Angle Value", teleopHelper.calculateArmAngle());
+        
 
     }
     

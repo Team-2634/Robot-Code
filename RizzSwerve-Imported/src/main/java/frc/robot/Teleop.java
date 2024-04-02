@@ -11,8 +11,8 @@ import frc.robot.systems.Shooter;
 
 public class Teleop {
     XboxController xboxDrive = new XboxController(0);
-    XboxController xboxArm = new XboxController(1);
-    XboxController dev = new XboxController(1);
+    XboxController xboxArm = new XboxController(0);
+    XboxController dev = new XboxController(0);
 
     TeleopHelper teleopHelper;
 
@@ -57,7 +57,7 @@ public class Teleop {
     public void panic() {
         // teleopHelper.panic(xboxDrive.getRawButton(7));
         // teleopHelper.panic(xboxDrive.getRawButton(8));
-        teleopHelper.panic(xboxDrive.getXButton());
+        // teleopHelper.panic(xboxDrive.getXButton());
         // SmartDashboard.putBoolean("oops", true); currently doing nothing
     }
     //experemental
