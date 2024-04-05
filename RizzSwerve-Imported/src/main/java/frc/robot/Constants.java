@@ -46,12 +46,12 @@ public class Constants {
     public final static double kiArm = 0;
     public final static double kdArm = 0;    
 
-    public final static double kpBotTranslation = 0.3;
+    public final static double kpBotTranslation = 0.5;
     public final static double kiBotTranslation = 0.05;
     public final static double kdBotTranslation = 0;
 
     public final static double kpBotRotate = 0.5;
-    public final static double kiBotRotate = 0.02;
+    public final static double kiBotRotate = 0.05;
     public final static double kdBotRotate = 0;
 
     public final static double kpLimelightAlign = 0.1;
@@ -85,6 +85,7 @@ public class Constants {
     public final static double maxArmRotationRads = 0.50;
 
     //arm speeds
+    public final static double feedSpeed = 0.5;
     public final static double shootSpeed = 0.5;
     public final static double intakeSpeed = 0.5;
     public final static double armSpeed = 0.75;
@@ -94,14 +95,15 @@ public class Constants {
     public final static double pickupPosition = -1.2;
     public final static double closeSpeakerPosition = -0.75;
     public final static double farSpeakerPosition = -0.50;
-    public final static double feedPosition = 0.0;
+    public final static double defendPosition = 0.0;
     public final static double ampPosition = 0.50;
+    public final static double feedPosition = -0.5;
 
     //controller settings 
     public final static double XdriveSensitivity = 1;
     public final static double YdriveSensitivity = 1; 
     public final static double turningSensitivity = 1;
-    public final static double maxSpeedPercent = 0.7; 
+    public final static double maxSpeedPercent = 0.8; 
     public final static double maxSpeedRotation = 1.0; 
 
     public final static double controllerDeadzone = 0.1;
@@ -124,7 +126,7 @@ public class Constants {
     public final static double floorToLimelight = 16; 
     public final static double armLength = 24;
 
-    public final static double limelightAngle = 20; // DO NOT TURN THIS INTO RADIANS, IT IS IN A DEGREE CALCULATION THAT CONVERTS INTO RADIANS AFTER 
+    public final static double limelightAngle = 23; // DO NOT TURN THIS INTO RADIANS, IT IS IN A DEGREE CALCULATION THAT CONVERTS INTO RADIANS AFTER 
     public final static double shooterToSpeakerAngle = 60 * degToRad;
 
 

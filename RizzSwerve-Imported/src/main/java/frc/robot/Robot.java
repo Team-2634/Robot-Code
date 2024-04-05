@@ -11,11 +11,16 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Limelight;
+import frc.robot.systems.LimelightHelpers;
 import frc.robot.systems.LimelightHelpers.LimelightTarget_Fiducial;
+import frc.robot.systems.LimelightHelpers.LimelightTarget_Classifier;
+import frc.robot.systems.LimelightHelpers.LimelightTarget_Detector;
+
 import frc.robot.systems.Shooter;
 // import frc.robot.systems.Webcam;
 import frc.robot.Constants;
@@ -30,7 +35,7 @@ public class Robot extends TimedRobot {
     AHRS navx = new AHRS();
     // Webcam webcam = new Webcam();
     Driver driver = new Driver(limelight);
-    Shooter shooter = new Shooter();
+    Shooter shooter = new Shooter(limelight);
     Climber climber = new Climber();
     Timer matchTimer = new Timer();
 
@@ -41,9 +46,19 @@ public class Robot extends TimedRobot {
  
     PowerDistribution pdBoard = new PowerDistribution();
 
+    SendableChooser<String> chooser = new SendableChooser<>();
+    String chosenAuto;
+
     // Additions for SmartDashboard
-    LimelightTarget_Fiducial target = new LimelightTarget_Fiducial();
-    double aprilTag = target.fiducialID;
+    LimelightHelpers limelightHelpers = new LimelightHelpers();
+    LimelightTarget_Fiducial targetFid = new LimelightTarget_Fiducial();
+    LimelightTarget_Classifier targetClass = new LimelightTarget_Classifier();
+    LimelightTarget_Detector targetDetect = new LimelightTarget_Detector();
+
+    double aprilTagFiducial = targetFid.fiducialID;
+    double aprilTagClassifier = targetClass.classID;
+    double aprilTagDetect = targetDetect.classID;
+
 
     @Override
     public void robotInit() {
@@ -56,6 +71,11 @@ public class Robot extends TimedRobot {
         climber.initialize();
         CameraServer.startAutomaticCapture();
         auto.autoHelper.timer.start();
+        
+        chooser.setDefaultOption("autoSpeakerFourNote", "autoSpeakerFourNote");
+        chooser.addOption("autoBlueCloseRedFar", "autoBlueCloseRedFar");
+        chooser.addOption("autoBlueFarRedClose", "autoBlueFarRedClose");
+        SmartDashboard.putData("chosen auto", chooser);
     }
 
     ColorSensorV3 sensor = new ColorSensorV3(I2C.Port.kMXP);
@@ -63,6 +83,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         driver.updatePose();
+        limelight.updateLimelight();
         // SmartDashboard.putNumber("positionFL", driver.readAbsEncoder(0));
         // SmartDashboard.putNumber("positionFR", driver.readAbsEncoder(1));
         // SmartDashboard.putNumber("positionBL", driver.readAbsEncoder(2));
@@ -120,7 +141,12 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("navx yaw", navx.getYaw());
 
         SmartDashboard.putNumber("limelight ty", limelight.ty);
-        SmartDashboard.putNumber("apriltag id", aprilTag);
+        // SmartDashboard.putNumber("apriltag id fiducial", aprilTagFiducial);
+        // SmartDashboard.putNumber("apriltag id classifier", aprilTagClassifier);
+        // SmartDashboard.putNumber("apriltag id detector", aprilTagDetect);
+        SmartDashboard.putNumber("apriltag id", limelightHelpers.getFiducialID(""));
+
+
 
         SmartDashboard.putNumber("Angle Value", teleopHelper.calculateArmAngle());
         
@@ -133,6 +159,8 @@ public class Robot extends TimedRobot {
         auto.restartTimer();
         auto.counter = 0;
         driver.initialize();
+
+        chosenAuto = chooser.getSelected();
 
         auto.counter = 0;
         // DO NOT FORGET TO SET STARTING POSITION
@@ -150,11 +178,27 @@ public class Robot extends TimedRobot {
     
     @Override
     public void autonomousPeriodic() {
+        switch (chosenAuto) {
+            case "autoSpeakerFourNote":
+                auto.autoSpeakerFourNote();
+                break;
+        
+            case "autoBlueCloseRedFar":
+                auto.autoBlueCloseRedFar();;
+                break;
 
+            case "autoBlueFarRedClose":
+                auto.autoBlueFarRedClose();
+                break;
+        
+            default:
+                auto.autoSpeakerFourNote();
+                break;
+        }
         // auto.autoProgramTest();
         // auto.autoAmpTwoNote();
-        auto.autoSpeakerTwoNote();
-        auto.autoAAAA();
+        // auto.autoSpeakerTwoNote();
+        // auto.autoAAAA();
     }
     
     @Override
@@ -173,7 +217,7 @@ public class Robot extends TimedRobot {
 
         //EXPEREMENTAL STUFF THAT WILL BREAK EVERYTHING
         teleop.armPID();
-        teleop.limelight();
+        // teleop.limelight();
         // teleop.shootRoutine();
     }
 }

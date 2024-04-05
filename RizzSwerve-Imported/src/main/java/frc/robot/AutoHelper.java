@@ -10,12 +10,15 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Limelight;
+import frc.robot.systems.LimelightHelpers;
 import frc.robot.systems.Shooter;
 
 public class AutoHelper {
@@ -41,6 +44,8 @@ public class AutoHelper {
     // ProfiledPIDController autoXPID = new ProfiledPIDController(Constants.kpBotTranslation, Constants.kiBotTranslation, Constants.kdBotTranslation, new TrapezoidProfile.Constraints(Constants.maxAutoVelocity, Constants.maxAutoAccel));
     // ProfiledPIDController autoYPID = new ProfiledPIDController(Constants.kpBotTranslation, Constants.kiBotTranslation, Constants.kdBotTranslation, new TrapezoidProfile.Constraints(Constants.maxAutoVelocity, Constants.maxAutoAccel));
     PIDController autoTurnPID = new PIDController(Constants.kpBotRotate, Constants.kiBotRotate, Constants.kdBotRotate);
+
+    PIDController limelightPID = new PIDController(Constants.kpLimelightAlign, Constants.kiLimelightAlign, Constants.kdLimelightAlign);
 
     ColorSensorV3 noteSensor = new ColorSensorV3(I2C.Port.kMXP);
 
@@ -76,20 +81,25 @@ public class AutoHelper {
         SmartDashboard.putNumber("outputX", Units.metersToInches(endPose.getX()));
         SmartDashboard.putNumber("outputY", Units.metersToInches(endPose.getY()));
         SmartDashboard.putNumber("outputRot", endPose.getRotation().getRadians());
+
         double xSpeed = autoXPID.calculate(startPose.getX(), endPose.getX());
         double ySpeed = autoYPID.calculate(startPose.getY(), endPose.getY()); 
         double rotSpeed = autoTurnPID.calculate(MathUtil.angleModulus(startPose.getRotation().getRadians()), MathUtil.angleModulus(endPose.getRotation().getRadians()));
+        
         SmartDashboard.putNumber("xSpeed", xSpeed);
         SmartDashboard.putNumber("ySpeed", ySpeed);
         SmartDashboard.putNumber("rotSpeed", rotSpeed);
 
         double[] fieldOriented = driver.fieldOrient(xSpeed, ySpeed);
         driver.swerveDrive(Constants.clamp(fieldOriented[0], -Constants.maxAutoVelocity, Constants.maxAutoVelocity), Constants.clamp(fieldOriented[1], -Constants.maxAutoVelocity, Constants.maxAutoVelocity), Constants.clamp(rotSpeed, -Constants.maxAutoVelocity, Constants.maxAutoVelocity));
-        
     }
 
     public boolean atTargetPosition() {
         boolean at = (autoXPID.atSetpoint() && autoYPID.atSetpoint() && autoTurnPID.atSetpoint()) ? true : false;
+        SmartDashboard.putBoolean("x good", autoXPID.atSetpoint());
+        SmartDashboard.putBoolean("y good", autoYPID.atSetpoint());
+        SmartDashboard.putBoolean("rot good", autoTurnPID.atSetpoint());
+        
         if (at) {
             autoXPID.reset();//driver.getPose().getX());
             autoYPID.reset();//driver.getPose().getY());
@@ -137,21 +147,72 @@ public class AutoHelper {
         }
     }
 
-    public void prepNote() {
-        shooter.collectNote(-0.1);
+    double prepTime;
+    boolean prepNoteFlag = true;
+    public void prepNote(double time) {
+        if (prepNoteFlag) {
+            prepNoteFlag = false;
+            prepTime = timer.get() + time;
+        }
+        if (timer.get() < prepTime) {
+            shooter.shootNote(-0.1);
+            shooter.collectNote(-0.1);
+        } else {
+            shooter.collectNote(0);
+        }
     }
 
-    // boolean shootFlag = true;
-    // public void shoot(double input, double time) {
-    //     double timeEnd = 0;
-    //     if (shootFlag) {
-    //         shootFlag = false;
-    //         timeEnd = timer.get() + time;
-    //     }
-    //     if (timer.get() < timeEnd) {
-    //         shooter.shootNote(input);
-    //     } else {shootFlag = true;}
-    // }
+    double shotTime;
+    public boolean noteRoutineFlag = true;
+
+    public void shootNoteRoutine() {
+        if (noteRoutineFlag) {
+            noteRoutineFlag = false;
+            shotTime = timer.get() + 0.5;
+        }
+        shooter.shootNote(1);
+        if (timer.get() > shotTime) {
+            shooter.collectNote(0.3);
+        }
+        if (timer.get() > shotTime + 0.5) {
+            noteRoutineFlag = true;
+        }
+    }
+
+    public void revShooter() {
+        shooter.shootNote(1);
+    }
+
+    public void revIntake() {
+        shooter.collectNote(0.5);
+    }
+
+    public double getLimelightAngle() {
+        return shooter.calculateArmAngle();
+    }
+
+    void alignToTag() {
+        driver.swerveDrive(0, 0, limelightPID.calculate(limelight.tx, 0));
+    }
+
+    public void limelightMove(boolean reverse) {
+        angleArmToPosition(getLimelightAngle());
+        if (LimelightHelpers.getFiducialID("") == 4 || LimelightHelpers.getFiducialID("") == 7) {
+            alignToTag();
+        } else if (DriverStation.getAlliance().get() == Alliance.Blue) {
+            if (reverse) {
+                driver.swerveDrive(0, 0, 0.5);
+            } else {
+                driver.swerveDrive(0, 0, -0.5);
+            }
+        } else {
+            if (reverse) {
+                driver.swerveDrive(0, 0, -0.5);
+            } else {
+                driver.swerveDrive(0, 0, 0.5);
+            }
+        } 
+    }
 
     // boolean intakeFlag;
     // public void intake(double input, double time) {
@@ -165,10 +226,6 @@ public class AutoHelper {
     //     } else {intakeFlag = true;}
     // }
     
-    public void armToPosition(double position) {
-        shooter.moveArmPID(position);
-    }
-
     public Pose2d getPose() {
         return driver.getPose();
     }
@@ -192,6 +249,9 @@ public class AutoHelper {
     public void reset(){
         driver.panicReset();
     }
+    
+
+    
 
         // public void resetDriveEncoders() {
     //     driver.frontLeftDrive.setPosition(0);

@@ -33,6 +33,12 @@ public class Shooter {
     private final ArmFeedforward armFF = new ArmFeedforward(0, 0, 0);
     private final PIDController armPID = new PIDController(Constants.kpArm, Constants.kiArm, Constants.kdArm);
     
+    public Limelight limelight;
+
+    public Shooter(Limelight limelight) {
+        this.limelight = limelight;
+    }
+
     public void initialize() {
         armPID.setTolerance(Constants.armPIDTolerance);
 
@@ -71,23 +77,23 @@ public class Shooter {
         shooterMotorRight.set(speed);
     }
 
-    double shotTime;
+    // double shotTime;
     Timer timer = new Timer();
-    public boolean noteRoutineFlag = true;
+    // public boolean noteRoutineFlag = true;
 
-    public void shootNoteRoutine() {
-        if (noteRoutineFlag) {
-            noteRoutineFlag = false;
-            shotTime = timer.get() + 1;
-        }
-        shootNote(1);
-        if (timer.get() > shotTime) {
-            collectNote(0.3);
-        }
-        if (timer.get() > shotTime + 1) {
-            noteRoutineFlag = true;
-        }
-    }
+    // public void shootNoteRoutine() {
+    //     if (noteRoutineFlag) {
+    //         noteRoutineFlag = false;
+    //         shotTime = timer.get() + 1;
+    //     }
+    //     shootNote(1);
+    //     if (timer.get() > shotTime) {
+    //         collectNote(0.3);
+    //     }
+    //     if (timer.get() > shotTime + 1) {
+    //         noteRoutineFlag = true;
+    //     }
+    // }
 
     public void moveArm(double speed) {
         armMotorLeft.set(speed);
@@ -122,10 +128,33 @@ public class Shooter {
             return false;
         } else return true;
     }
-    // ColorSensorV3 noteSensor = new ColorSensorV3();
-    // public boolean colourSensorDetected() {
+    
+    public double calculateArmAngle(){
 
-    // }
+        final double floorToSpeaker = Constants.targetToSpeaker + Constants.floorToTarget;
+        final double armToTag = Constants.floorToTarget - Constants.floorToLimelight;
+
+        double limelightToTargetAngle = (Constants.limelightAngle + limelight.ty) * Constants.degToRad;
+        SmartDashboard.putNumber("limelightToTargetAngle", Constants.limelightAngle + limelight.ty);
+
+        double botToSpeakerVertical = floorToSpeaker - Constants.floorToLimelight;
+        double botToSpeakerHorizontal = armToTag / Math.tan(limelightToTargetAngle);
+
+        double limelightToSpeakerAngle = Math.atan(botToSpeakerVertical / botToSpeakerHorizontal);
+        double limelightToSpeakerLength = Math.sqrt(Math.pow(botToSpeakerHorizontal, 2) + Math.pow(botToSpeakerVertical, 2));
+
+        //Angle between limelightToSpeaker and shooterToSpeaker
+        double angleThree = Math.asin((Constants.armLength * Math.sin(Constants.shooterToSpeakerAngle)) / limelightToSpeakerLength);
+
+        //Angle between limelightToSpeaker and shooterToSpeaker
+        double angleFour = Math.PI - angleThree - Constants.shooterToSpeakerAngle; 
+
+        //Opposite of angleFour
+        double angleArm = Math.PI - limelightToSpeakerAngle - angleFour;
+
+        //Account for arm angle offset
+        return angleArm - Constants.shooterToSpeakerAngle;
+    }
     
 }
 // ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⣤⣤⣤⣴⢶⣴⡶⣶⣶⣴⣤⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀

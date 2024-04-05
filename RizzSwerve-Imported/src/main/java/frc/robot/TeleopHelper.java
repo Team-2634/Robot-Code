@@ -39,23 +39,40 @@ public class TeleopHelper {
 
     public void drive(double XSpeed, double YSpeed, double TurnSpeed, boolean boost, boolean goLimelight, boolean disableFieldOrient) {
         
-        // if (goLimelight) {
-        //     limelight.updateLimelight();
-        //     TurnSpeed = limelightRotate();
-        // }
+        if (goLimelight) {
+            limelight.updateLimelight();
+            LimelightHelpers.setLEDMode_ForceOn("");
+            if(limelight.tv){
+                if(LimelightHelpers.getFiducialID("") == 4 || LimelightHelpers.getFiducialID("") == 7 || LimelightHelpers.getFiducialID("") == 16){
+                    // arm aim
+                    shooter.moveArmPID(calculateArmAngle());
 
-        if (boost) {
-            XSpeed /= 3;
-            YSpeed /= 3;
-            TurnSpeed /= 3;
+                    // bot align speaker with rotation
+                    if(limelight.tx > 0.5){
+                        TurnSpeed = -0.35;
+                    } else if (limelight.tx < 0.5){
+                        TurnSpeed = 0.35;
+                    } else {
+                        TurnSpeed = 0;
+                    }                
+                } 
+            } else {
+                LimelightHelpers.setLEDMode_ForceOff("");
+            }
         }
+
+        // if (boost) {
+        //     XSpeed /= 3;
+        //     YSpeed /= 3;
+        //     TurnSpeed /= 3;
+        // }
 
         if (!disableFieldOrient) {
             double[] speedsFieldOriented = driver.fieldOrient(XSpeed, YSpeed);
             XSpeed = speedsFieldOriented[0];
             YSpeed = speedsFieldOriented[1];
-        
         }
+
         XSpeed *= Constants.XdriveSensitivity;
         YSpeed *= Constants.YdriveSensitivity;
         TurnSpeed *= Constants.turningSensitivity;
@@ -63,10 +80,33 @@ public class TeleopHelper {
         driver.swerveDrive(XSpeed, YSpeed, TurnSpeed);
     }
 
-    PIDController rotatePID = new PIDController(Constants.kpBotRotate, Constants.kiBotRotate, Constants.kdBotRotate);
+    PIDController rotatePID = new PIDController(Constants.kpLimelightAlign, Constants.kiLimelightAlign, Constants.kdLimelightAlign);
     
     public double limelightRotate() {
         return rotatePID.calculate(limelight.tx, 0);
+    }
+
+    Timer timer = new Timer();
+    boolean feedFlag = false;
+    double feedTime = 0.0;
+    public void feedRoutine(boolean press) {
+        if (press && !feedFlag) {
+            feedFlag = true;
+            feedTime = timer.get() + 1;
+        }
+
+        if (feedFlag) {
+            shooter.moveArmPID(Constants.feedPosition);
+            shooter.shootNote(Constants.feedSpeed);
+
+            if (timer.get() > feedTime) {
+                shooter.collectNote(Constants.feedSpeed);
+            }
+            if (timer.get() > feedTime + 0.5) {
+                feedFlag = false;
+            }
+        }
+
     }
 
     public double calculateArmAngle(){
@@ -109,6 +149,11 @@ public class TeleopHelper {
         if (currentState == 2) {
             input /= 2;
         }
+
+        if (feedFlag) {
+            return;
+        }
+
         shooter.shootNote(input);
         // if (input) {
         //     shooter.shootNote(Constants.shootSpeed);
@@ -117,15 +162,15 @@ public class TeleopHelper {
         // }
     } 
 
-    public void shootRoutine(boolean hold) {
-        if (hold) {
-            shooter.shootNoteRoutine();
-        }
-    }
+    // public void shootRoutine(boolean hold) {
+    //     if (hold) {
+    //         shooter.shootNoteRoutine();
+    //     }
+    // }
 
     int currentState = 0;
     boolean defenseFlag= false;
-    public void setArmState(boolean stateUp, boolean stateDown, boolean defense) {
+    public void setArmState(boolean stateUp, boolean stateDown, boolean defense, boolean limelight) {
         if (stateUp && currentState < 2) {
             currentState++;
         }
@@ -138,8 +183,15 @@ public class TeleopHelper {
             defenseFlag = !defenseFlag;
         }
 
+        if (feedFlag) {
+            return;
+        }
+
         if (defenseFlag) {
-            shooter.moveArmPID(Constants.feedPosition);
+            shooter.moveArmPID(Constants.defendPosition);
+        } else if (limelight) {
+            return;
+            //shooter.moveArmPID(calculateArmAngle());
         } else {
             switch (currentState) {
             case 0:
@@ -163,6 +215,10 @@ public class TeleopHelper {
 
     ColorSensorV3 sensor = new ColorSensorV3(I2C.Port.kMXP);
     public void intake(double input, boolean yButton, double shoot) {
+
+        if (feedFlag) {
+            return;
+        }
 
         if (yButton) {
             shooter.collectNote(-0.2);
@@ -205,19 +261,19 @@ public class TeleopHelper {
 
     LimelightTarget_Fiducial target = new LimelightTarget_Fiducial();
 
-    public void limelightArmAngle(boolean xButton){
-        limelight.updateLimelight();
+    // public void limelightArmAngle(boolean xButton){
+    //     limelight.updateLimelight();
 
-        if(xButton){ //&& (target.fiducialID == 4 && DriverStation.getAlliance().get() == Alliance.Red) || (target.fiducialID == 7 && DriverStation.getAlliance().get() == Alliance.Blue)){
-            LimelightHelpers.setLEDMode_ForceOn("");
-            if(limelight.tv){
-                shooter.moveArmPID(calculateArmAngle());
-            }
-        } else {
-            LimelightHelpers.setLEDMode_ForceOff("");
-        }
+    //     if(xButton){ //&& (target.fiducialID == 4 && DriverStation.getAlliance().get() == Alliance.Red) || (target.fiducialID == 7 && DriverStation.getAlliance().get() == Alliance.Blue)){
+    //         LimelightHelpers.setLEDMode_ForceOn("");
+    //         if(limelight.tv){
+    //             shooter.moveArmPID(calculateArmAngle());
+    //         }
+    //     } else {
+    //         LimelightHelpers.setLEDMode_ForceOff("");
+    //     }
 
-     }
+    // }
 
     // public boolean detectTarget(boolean xButton){
     //     return limelight.tv;

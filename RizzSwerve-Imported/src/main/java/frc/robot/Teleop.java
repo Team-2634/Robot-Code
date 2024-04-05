@@ -11,8 +11,8 @@ import frc.robot.systems.Shooter;
 
 public class Teleop {
     XboxController xboxDrive = new XboxController(0);
-    XboxController xboxArm = new XboxController(0);
-    XboxController dev = new XboxController(0);
+    XboxController xboxArm = new XboxController(1);
+    XboxController dev = new XboxController(1);
 
     TeleopHelper teleopHelper;
 
@@ -35,7 +35,14 @@ public class Teleop {
     }
     
     public void drive() {
-        teleopHelper.drive(-removeDeadzone(xboxDrive.getLeftY()), -removeDeadzone(xboxDrive.getLeftX()), -removeDeadzone(xboxDrive.getRightX()), xboxDrive.getXButton() && false, xboxDrive.getXButton(), xboxDrive.getXButton());
+        teleopHelper.drive(
+            -removeDeadzone(xboxDrive.getLeftY()), 
+            -removeDeadzone(xboxDrive.getLeftX()), 
+            -removeDeadzone(xboxDrive.getRightX()), 
+            !(xboxArm.getLeftTriggerAxis() > 0.2 || xboxArm.getRightTriggerAxis() > 0.2 || xboxArm.getYButton()), 
+            xboxArm.getXButton(), 
+            xboxDrive.getXButton()
+        );
     }
 
     public void shoot() {
@@ -57,21 +64,25 @@ public class Teleop {
     public void panic() {
         // teleopHelper.panic(xboxDrive.getRawButton(7));
         // teleopHelper.panic(xboxDrive.getRawButton(8));
-        // teleopHelper.panic(xboxDrive.getXButton());
+        teleopHelper.panic(xboxDrive.getXButton());
         // SmartDashboard.putBoolean("oops", true); currently doing nothing
     }
     //experemental
-    public void shootRoutine() {
-        teleopHelper.shootRoutine(xboxDrive.getRightTriggerAxis() > 0.5);
-    }
+    // public void shootRoutine() {
+    //     teleopHelper.shootRoutine(xboxDrive.getRightTriggerAxis() > 0.5);
+    // }
 
     public void armPID() {
-        teleopHelper.setArmState(xboxArm.getLeftBumperPressed(), xboxArm.getRightBumperPressed(), xboxArm.getLeftStickButtonPressed());
+        teleopHelper.setArmState(
+            xboxArm.getLeftBumperPressed(), 
+            xboxArm.getRightBumperPressed(), 
+            xboxArm.getLeftStickButtonPressed(), 
+            xboxArm.getXButton());
     }
 
-    public void limelight(){
-        teleopHelper.limelightArmAngle(dev.getXButton());
-    }
+    // public void limelight(){
+    //     teleopHelper.limelightArmAngle(dev.getXButton());
+    // }
 
     // public void targetDetected()){
     //     teleopHelper.detectTarget();
