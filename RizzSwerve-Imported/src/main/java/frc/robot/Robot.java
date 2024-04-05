@@ -4,15 +4,11 @@ import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.cameraserver.CameraServer;
-<<<<<<< HEAD
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-=======
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.PowerDistribution;
->>>>>>> develop
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -26,12 +22,8 @@ import frc.robot.systems.LimelightHelpers.LimelightTarget_Classifier;
 import frc.robot.systems.LimelightHelpers.LimelightTarget_Detector;
 
 import frc.robot.systems.Shooter;
-<<<<<<< HEAD
-import frc.robot.systems.AutoPathing;
-=======
 // import frc.robot.systems.Webcam;
 import frc.robot.Constants;
->>>>>>> develop
 
 import frc.robot.TeleopHelper;
 
@@ -46,8 +38,6 @@ public class Robot extends TimedRobot {
     Shooter shooter = new Shooter(limelight);
     Climber climber = new Climber();
     Timer matchTimer = new Timer();
-
-    AutoPathing pather = new AutoPathing(driver.kinematics, navx, driver.getModulePositionArray(), driver.setModuleStatesArray_Consumer(0,0,0));
 
     Auto auto = new Auto(driver, shooter, climber, navx, matchTimer, limelight);
     Teleop teleop = new Teleop(driver, shooter, climber, navx, limelight);
@@ -207,14 +197,8 @@ public class Robot extends TimedRobot {
         }
         // auto.autoProgramTest();
         // auto.autoAmpTwoNote();
-<<<<<<< HEAD
-        auto.autoSpeakerTwoNote();
-
-
-=======
         // auto.autoSpeakerTwoNote();
         // auto.autoAAAA();
->>>>>>> develop
     }
     
     @Override
