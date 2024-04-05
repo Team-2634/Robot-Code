@@ -1,17 +1,39 @@
 package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.cameraserver.CameraServer;
+<<<<<<< HEAD
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+=======
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.PowerDistribution;
+>>>>>>> develop
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Limelight;
+import frc.robot.systems.LimelightHelpers;
+import frc.robot.systems.LimelightHelpers.LimelightTarget_Fiducial;
+import frc.robot.systems.LimelightHelpers.LimelightTarget_Classifier;
+import frc.robot.systems.LimelightHelpers.LimelightTarget_Detector;
+
 import frc.robot.systems.Shooter;
+<<<<<<< HEAD
 import frc.robot.systems.AutoPathing;
+=======
+// import frc.robot.systems.Webcam;
+import frc.robot.Constants;
+>>>>>>> develop
+
+import frc.robot.TeleopHelper;
 
 
 
@@ -19,8 +41,9 @@ public class Robot extends TimedRobot {
 
     Limelight limelight = new Limelight();
     AHRS navx = new AHRS();
+    // Webcam webcam = new Webcam();
     Driver driver = new Driver(limelight);
-    Shooter shooter = new Shooter();
+    Shooter shooter = new Shooter(limelight);
     Climber climber = new Climber();
     Timer matchTimer = new Timer();
 
@@ -28,7 +51,24 @@ public class Robot extends TimedRobot {
 
     Auto auto = new Auto(driver, shooter, climber, navx, matchTimer, limelight);
     Teleop teleop = new Teleop(driver, shooter, climber, navx, limelight);
+
+    TeleopHelper teleopHelper = new TeleopHelper(driver, shooter, climber, navx, limelight);
  
+    PowerDistribution pdBoard = new PowerDistribution();
+
+    SendableChooser<String> chooser = new SendableChooser<>();
+    String chosenAuto;
+
+    // Additions for SmartDashboard
+    LimelightHelpers limelightHelpers = new LimelightHelpers();
+    LimelightTarget_Fiducial targetFid = new LimelightTarget_Fiducial();
+    LimelightTarget_Classifier targetClass = new LimelightTarget_Classifier();
+    LimelightTarget_Detector targetDetect = new LimelightTarget_Detector();
+
+    double aprilTagFiducial = targetFid.fiducialID;
+    double aprilTagClassifier = targetClass.classID;
+    double aprilTagDetect = targetDetect.classID;
+
 
     @Override
     public void robotInit() {
@@ -41,15 +81,23 @@ public class Robot extends TimedRobot {
         climber.initialize();
         CameraServer.startAutomaticCapture();
         auto.autoHelper.timer.start();
+        
+        chooser.setDefaultOption("autoSpeakerFourNote", "autoSpeakerFourNote");
+        chooser.addOption("autoBlueCloseRedFar", "autoBlueCloseRedFar");
+        chooser.addOption("autoBlueFarRedClose", "autoBlueFarRedClose");
+        SmartDashboard.putData("chosen auto", chooser);
     }
+
+    ColorSensorV3 sensor = new ColorSensorV3(I2C.Port.kMXP);
     
     @Override
     public void robotPeriodic() {
         driver.updatePose();
-        SmartDashboard.putNumber("positionFL", driver.readAbsEncoder(0));
-        SmartDashboard.putNumber("positionFR", driver.readAbsEncoder(1));
-        SmartDashboard.putNumber("positionBL", driver.readAbsEncoder(2));
-        SmartDashboard.putNumber("positionBR", driver.readAbsEncoder(3));
+        limelight.updateLimelight();
+        // SmartDashboard.putNumber("positionFL", driver.readAbsEncoder(0));
+        // SmartDashboard.putNumber("positionFR", driver.readAbsEncoder(1));
+        // SmartDashboard.putNumber("positionBL", driver.readAbsEncoder(2));
+        // SmartDashboard.putNumber("positionBR", driver.readAbsEncoder(3));
 
         //SmartDashboard.putNumber("positionFL rads", driver.readAbsEncoderRad(0));
         //SmartDashboard.putNumber("positionFR rads", driver.readAbsEncoderRad(1));
@@ -60,30 +108,113 @@ public class Robot extends TimedRobot {
 
         SmartDashboard.putNumber("arm position", shooter.getArmRadians());
         SmartDashboard.putNumber("climb position", climber.getClimbPosition());
-        SmartDashboard.putNumber("RArm", shooter.armMotorLeft.getPosition().getValue());
-        SmartDashboard.putNumber("LArm", shooter.armMotorRight.getPosition().getValue());
-    
+        
+        // double totalAmperage = 
+        //     driver.driveMotorArray[0].getSupplyCurrent().getValue() + 
+        //     driver.driveMotorArray[1].getSupplyCurrent().getValue() + 
+        //     driver.driveMotorArray[2].getSupplyCurrent().getValue() + 
+        //     driver.driveMotorArray[3].getSupplyCurrent().getValue() + 
+        //     driver.steerMotorArray[0].getSupplyCurrent().getValue() + 
+        //     driver.steerMotorArray[1].getSupplyCurrent().getValue() + 
+        //     driver.steerMotorArray[2].getSupplyCurrent().getValue() + 
+        //     driver.steerMotorArray[3].getSupplyCurrent().getValue() + 
+        //     shooter.armMotorLeft.getSupplyCurrent().getValue() +
+        //     shooter.armMotorRight.getSupplyCurrent().getValue() +
+        //     shooter.shooterMotorLeft.getSupplyCurrent().getValue() +
+        //     shooter.shooterMotorRight.getSupplyCurrent().getValue() +
+        //     shooter.intake.getSupplyCurrent().getValue() +
+        //     climber.leftClimb.getSupplyCurrent().getValue() +
+        //     climber.rightClimb.getSupplyCurrent().getValue();
+        // SmartDashboard.putNumber("motorRot0", driver.frontLeftDrive.getPosition().getValue());
+        // SmartDashboard.putNumber("motorRot1", driver.frontRightDrive.getPosition().getValue());
+        // SmartDashboard.putNumber("motorRot2", driver.backLeftDrive.getPosition().getValue());
+        // SmartDashboard.putNumber("motorRot3", driver.backRightDrive.getPosition().getValue());
 
-        SmartDashboard.putBoolean("null", auto.autoHelper.atTargetPosition());
+        SmartDashboard.putNumber("inputX", driver.getPose().getX());
+        SmartDashboard.putNumber("inputY", driver.getPose().getY());
+        SmartDashboard.putNumber("inputRot", driver.getPose().getRotation().getRadians());
+        // SmartDashboard.putBoolean("x good", auto.autoHelper.autoXPID.atSetpoint());
+        // SmartDashboard.putBoolean("y good", auto.autoHelper.autoYPID.atSetpoint());
+        // SmartDashboard.putBoolean("Rot good", auto.autoHelper.autoTurnPID.atSetpoint());
+        // SmartDashboard.putNumber("navx", navx.getAngle());
+        // SmartDashboard.putNumber("navx2d", navx.getRotation2d().getDegrees());
     
+        SmartDashboard.putBoolean("NOTE", sensor.getRed() > 300);
+        SmartDashboard.putNumber("red", sensor.getRed());
+        SmartDashboard.putNumber("green", sensor.getGreen());
+        SmartDashboard.putNumber("blue", sensor.getBlue());
+        SmartDashboard.putNumber("prox", sensor.getProximity());
+
+        // SmartDashboard.putNumber("total amps", pdBoard.getTotalCurrent());
+        // SmartDashboard.putNumber("total volts", pdBoard.getVoltage());
+        SmartDashboard.putBoolean("resetting", navx.isCalibrating());
+        SmartDashboard.putNumber("navx yaw", navx.getYaw());
+
+        SmartDashboard.putNumber("limelight ty", limelight.ty);
+        // SmartDashboard.putNumber("apriltag id fiducial", aprilTagFiducial);
+        // SmartDashboard.putNumber("apriltag id classifier", aprilTagClassifier);
+        // SmartDashboard.putNumber("apriltag id detector", aprilTagDetect);
+        SmartDashboard.putNumber("apriltag id", limelightHelpers.getFiducialID(""));
+
+
+
+        SmartDashboard.putNumber("Angle Value", teleopHelper.calculateArmAngle());
+        
+
     }
     
+
     @Override
     public void autonomousInit() {
         auto.restartTimer();
+        auto.counter = 0;
         driver.initialize();
+
+        chosenAuto = chooser.getSelected();
+
+        auto.counter = 0;
+        // DO NOT FORGET TO SET STARTING POSITION
+        Pose2d startSpeakerFront = new Pose2d(auto.getObjectPositionX(0), auto.getObjectPositionY(0), Rotation2d.fromDegrees(auto.fixAngle(0)));
+
+        Pose2d startSpeakerEdge = auto.getWaypoint(0);
+        
+        Pose2d startSpeakerFar = auto.getWaypoint(2);
+
+        // Pose2d startOffsideBlue = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+        // Pose2d startOffsideRed = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+
+        driver.startAuto(startSpeakerFront);
     }
     
     @Override
     public void autonomousPeriodic() {
+        switch (chosenAuto) {
+            case "autoSpeakerFourNote":
+                auto.autoSpeakerFourNote();
+                break;
+        
+            case "autoBlueCloseRedFar":
+                auto.autoBlueCloseRedFar();;
+                break;
 
-        auto.isRed = true;
-
+            case "autoBlueFarRedClose":
+                auto.autoBlueFarRedClose();
+                break;
+        
+            default:
+                auto.autoSpeakerFourNote();
+                break;
+        }
         // auto.autoProgramTest();
         // auto.autoAmpTwoNote();
+<<<<<<< HEAD
         auto.autoSpeakerTwoNote();
 
 
+=======
+        // auto.autoSpeakerTwoNote();
+        // auto.autoAAAA();
+>>>>>>> develop
     }
     
     @Override
@@ -94,17 +225,15 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         teleop.drive();
-        teleop.intake();
         teleop.shoot();
+        teleop.intake();
         teleop.climb();
         // teleop.arm();
         teleop.panic();
 
         //EXPEREMENTAL STUFF THAT WILL BREAK EVERYTHING
-        // teleop.drive();
         teleop.armPID();
-        // teleop.intake();
-        // teleop.climb();
+        // teleop.limelight();
         // teleop.shootRoutine();
     }
 }

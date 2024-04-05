@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 public class Climber {
-    TalonFX leftClimb = new TalonFX(Constants.leftClimbID);
-    TalonFX rightClimb = new TalonFX(Constants.rightClimbID);
+    public TalonFX leftClimb = new TalonFX(Constants.leftClimbID);
+    public TalonFX rightClimb = new TalonFX(Constants.rightClimbID);
 
     public void initialize() {
         leftClimb.setNeutralMode(NeutralModeValue.Brake);
