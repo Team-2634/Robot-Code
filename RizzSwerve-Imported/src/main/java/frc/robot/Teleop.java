@@ -46,19 +46,31 @@ public class Teleop {
     }
 
     public void shoot() {
-        teleopHelper.shoot(removeDeadzone(xboxArm.getRightTriggerAxis()));
+        teleopHelper.shoot(
+            removeDeadzone(xboxArm.getRightTriggerAxis())
+        );
     }
 
     public void intake() {
-        teleopHelper.intake(removeDeadzone(xboxArm.getLeftTriggerAxis()), xboxArm.getYButton(), xboxArm.getRightTriggerAxis());
+        teleopHelper.intake(
+            removeDeadzone(xboxArm.getLeftTriggerAxis()), 
+            xboxArm.getYButton(),
+            xboxArm.getRightTriggerAxis()
+        );
     }
 
     public void arm() {
-        teleopHelper.arm(xboxArm.getRightBumper(), xboxArm.getLeftBumper());
+        teleopHelper.arm(
+            xboxArm.getRightBumper(), 
+            xboxArm.getLeftBumper()
+        );
     }
 
     public void climb() {
-        teleopHelper.climb(xboxDrive.getAButton(), xboxDrive.getBButton());
+        teleopHelper.climb(
+            xboxDrive.getAButton(), 
+            xboxDrive.getBButton()
+        );
     }
 
     public void panic() {
@@ -67,7 +79,8 @@ public class Teleop {
         teleopHelper.panic(xboxDrive.getXButton());
         // SmartDashboard.putBoolean("oops", true); currently doing nothing
     }
-    //experemental
+
+    //experimental
     // public void shootRoutine() {
     //     teleopHelper.shootRoutine(xboxDrive.getRightTriggerAxis() > 0.5);
     // }

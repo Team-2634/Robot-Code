@@ -37,6 +37,15 @@ public class TeleopHelper {
 
     final XboxController xbox = new XboxController(0);
 
+    /**
+     * Drives given speed with options
+     * @param XSpeed double, From -1 to 1 
+     * @param YSpeed double, From -1 to 1
+     * @param TurnSpeed double, From -1 to 1
+     * @param boost Boolean, SPEEED BOOST!
+     * @param goLimelight Boolean, toggle Limelight turning override 
+     * @param disableFieldOrient Boolean, toggle field oriented controls
+     */
     public void drive(double XSpeed, double YSpeed, double TurnSpeed, boolean boost, boolean goLimelight, boolean disableFieldOrient) {
         
         if (goLimelight) {
@@ -143,8 +152,10 @@ public class TeleopHelper {
     * wallToLimelight = 48 inch
     */
     
-
-
+    /**
+    * Set shooter
+    * @param Speed double, From -1 to 1 
+    */
     public void shoot(double input) {
         if (currentState == 2) {
             input /= 2;
@@ -214,6 +225,12 @@ public class TeleopHelper {
     }
 
     ColorSensorV3 sensor = new ColorSensorV3(I2C.Port.kMXP);
+           
+      /**
+     * Set intake
+     * @param intakeSpeed double, From 0 to 1 
+     * @param spit boolean, Slow reverse intake motors
+     */
     public void intake(double input, boolean yButton, double shoot) {
 
         if (feedFlag) {
@@ -221,8 +238,8 @@ public class TeleopHelper {
         }
 
         if (yButton) {
-            shooter.collectNote(-0.2);
-            shooter.shootNote(-0.2);
+            shooter.collectNote(Constants.intakeSpitSpeed);
+            shooter.shootNote(Constants.intakeSpitSpeed);
         // } else if (sensor.getRed() > 300 && shoot < 0.2) {
         //     input = 0;
         } else {
@@ -231,7 +248,11 @@ public class TeleopHelper {
 
     }
 
-
+    /**
+     * Manual angle arm and hard stops
+     * @param up boolean, Move arm up at armSpeed
+     * @param down boolean, Move arm down at armSpeed
+     */
     public void arm(boolean up, boolean down) {
         if (up && !shooter.isHardStoppedHigh()) {
             shooter.moveArm(Constants.armSpeed);
@@ -242,6 +263,11 @@ public class TeleopHelper {
         }
     }
 
+    /**
+     * Manual climber control and hard stops
+     * @param up boolean, Move climber up at climbSpeed
+     * @param down boolean, Move climber down at climbSpeed
+     */
     public void climb(boolean aButton, boolean bButton) {
         if (aButton && !climber.isHardStoppedHigh()) {
             climber.climb(Constants.climbSpeed);
@@ -252,6 +278,9 @@ public class TeleopHelper {
         }
     }
 
+    /**
+     * AAAAAA
+     */
     public void panic(boolean AAAA) {
         if (AAAA) {
             SmartDashboard.putBoolean("PANIC", AAAA);

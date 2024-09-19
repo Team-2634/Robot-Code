@@ -30,14 +30,16 @@ import frc.robot.TeleopHelper;
 
 
 public class Robot extends TimedRobot {
-
+    Timer matchTimer = new Timer();
+    
     Limelight limelight = new Limelight();
     AHRS navx = new AHRS();
+    ColorSensorV3 sensor = new ColorSensorV3(I2C.Port.kMXP);
     // Webcam webcam = new Webcam();
+
     Driver driver = new Driver(limelight);
     Shooter shooter = new Shooter(limelight);
     Climber climber = new Climber();
-    Timer matchTimer = new Timer();
 
     Auto auto = new Auto(driver, shooter, climber, navx, matchTimer, limelight);
     Teleop teleop = new Teleop(driver, shooter, climber, navx, limelight);
@@ -65,10 +67,13 @@ public class Robot extends TimedRobot {
 
         matchTimer.reset();
         matchTimer.start();
+
         navx.reset();
+
         driver.initialize();
         shooter.initialize();   
         climber.initialize();
+
         CameraServer.startAutomaticCapture();
         auto.autoHelper.timer.start();
         
@@ -78,8 +83,6 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("chosen auto", chooser);
     }
 
-    ColorSensorV3 sensor = new ColorSensorV3(I2C.Port.kMXP);
-    
     @Override
     public void robotPeriodic() {
         driver.updatePose();
