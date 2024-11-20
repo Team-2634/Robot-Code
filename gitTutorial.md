@@ -11,7 +11,7 @@
 - [Git-flow Hierarchy Lite](#flow)
 - [Branch Naming and Branch purpose](#branch)
 - [Sourctree Buttons and CommandLine commands](#commands)
-- [Workflow - How to do things](#workflow)
+- [Workflow - How to do things and quick reference](#workflow)
 
 ---
 ## <a name="gui">Git GUI (Graphical User Interface)</a>
