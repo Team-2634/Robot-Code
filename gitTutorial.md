@@ -1,18 +1,27 @@
 # **GIT TUTORIAL AND HOW TO**
 
 [//]: <> (Press ctrl+shift+v to view this using markdown!)
+[//]: <> (Learn how to create docs like this at https://www.markdowntutorial.com/)
 [//]: <> (Jump to the Workflow section to skip the beginner stuff)
 
 ---
 
-## Git GUI (Graphical User Interface)
+- [Git GUI (Graphical User Interface)](#gui)
+- [Terminology - What does this term mean?](#terminology)
+- [Git-flow Hierarchy Lite](#flow)
+- [Branch Naming and Branch purpose](#branch)
+- [Sourctree Buttons and CommandLine commands](#commands)
+- [Workflow - How to do things](#workflow)
+
+---
+## <a name="gui">Git GUI (Graphical User Interface)</a>
 
 - I recommend using [SourceTree](https://www.sourcetreeapp.com/) as your local Git manager/GUI.  It is just as powerful and can connect to github or any other repo host but I find it much simpler than other options.
 - You shouldn't need to sign in(?), but will need to set your access credentials to be allowed to pull the code. This should be the similar to other Git GUI's
-- To add a new repository (code base), Clone it to your local machine from a URL obtained from the Github (not the page url, there is a button to generate it)
-- You can then open vscode to the folder you selected above and can modify your code as normal.
+- To add a new repository (project), Clone it to your local machine from a URL obtained from the Github (not the page url, there is a button to generate it)
+- Then you can open vscode to the folder selected above and can modify your code as normal.  Do not put anything else in this folder that you do not want git to track.
 
-- Alternativly you can use github gui or terminal/commandline
+- Alternativly you can use github desktop or terminal/commandline
 
 ![Sourcetree](https://blog.sourcetreeapp.com/files/2017/01/win_2_header.png)
 
@@ -22,6 +31,7 @@
 
 - **checkout**: change branches (double click on a branch in the list)
   - You can checkout remote branches in as well to look at code from online.
+  - Also known as **switch** in new versions
   - Note: If there is a conflict see below
 
 - **stage**: select which changed files you want to upload.
@@ -30,14 +40,14 @@
   - Note: See below for resolutions
 
 - **Pull Request**: A request to merge code from 1 branch to another
-  - Note: You can do this with the merge button, but this is much safer and easier to understand the consequences
+  - Note: You can do this with the merge button, but this is much safer and easier to understand the results
 
 - **Git-Flow**: The branching hierarchy that's used to ensure:
     1. Theres always a stable version of the code that can be used.
     2. Any new code developed starts from functional code (no need to debug others issues before your own)
     3. Any new code developed can still have the latest untested features.
 
-## Git-flow Hierarchy Lite
+## <a name="flow">## Git-flow Hierarchy Lite</a>
 
 - branch off *develop* to get a *feature*
 - merge *feature* into *develop* when ready
@@ -45,7 +55,7 @@
 
 ![Git-Flow Diagram](https://www.bitbull.it/blog/git-flow-come-funziona/gitflow-1.png)
 
-### Branch Naming and purpose
+## <a name="branch">### Branch Naming and purpose</a>
 
 - **remote branch**: the cloud server where your branches are stored
 - **local branch** : a branch on your machine
@@ -59,10 +69,10 @@
   - Note: You can merge code in whatever state you want here.
 - **hotfix branch, etc:** You can use these as you want, your project isn't complex enough to need proper git-flow.  I just added them so you know they exist
 
-### Sourctree Buttons and command line alternatives
+## <a name="commands">### Sourctree Buttons and command line alternatives</a>
 
 - **Checkout**: Change branches
-  - `git checkout "<branchName>"`
+  - `git checkout "<branchName>"` or `git switch "<branchName>"`
   - #Potential conflict if you have local changes
 
 - **Commit**: save changed files for uploading
@@ -77,7 +87,7 @@
 - **Branch**: Split off from current branch to a new one
   - `git checkout -b "<newBranchName>"`
   - Note: you should never be working directly on either *master* or *develop*, always a local *feature* branch
-  - Warning: DO NOT USE THE BUTTON FOR THIS - it can break the automatic git-flow relationships if done wrong
+  - Warning: AVOID USING THE BUTTON FOR THIS - it can break the automatic git-flow relationships if done wrong, use Git-flow instead when available
 - **Merge**: Merge current branch into other one
   - `git commit -m <message>`
   - Note: Never use this locally and even then only use this for conflict fixes
@@ -101,7 +111,7 @@
 
 ---
 
-## Workflow - How to do what I want
+## <a name="workflow">## Workflow - How to do what I want</a>
 
 ### Local Branch Setup
 
@@ -116,7 +126,7 @@
 1. stage all changes you want to keep
 2. commit and push
    - Note: this way you can access *feature/coolNewThing* from other computers, but it's not merged with everyone else's code as yours isn't ready and *develop* must allways be functional.
-   - Remember: In case of fire: 1. `git commit`, 2. `git push`, 3. Exit Building
+   - Remember: In case of fire: 1. `git commit`, 2. `git push`, 3. `Exit Building`
 
 ### If someone else made changes to develop that you want in your branch
 
