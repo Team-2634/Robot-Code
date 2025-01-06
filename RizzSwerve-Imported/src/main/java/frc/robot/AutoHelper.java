@@ -226,7 +226,7 @@ public class AutoHelper {
      * Move arm to angle with PID controls (NO CODE STOP!)
      * @param position target angle in radians from start position
      */
-    public void armToPosition(double angle) {
+    public void angleArmToPosition(double angle) {
         shooter.moveArmPID(angle);
     }
    
