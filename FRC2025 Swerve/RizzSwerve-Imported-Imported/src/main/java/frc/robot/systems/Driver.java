@@ -90,10 +90,10 @@ public class Driver {
 
     public double readDriveEncoder(int encoder) {
         double[] driveEncoderArray = {
-            frontLeftDrive.getPosition().getValue(), 
-            frontRightDrive.getPosition().getValue(), 
-            backLeftDrive.getPosition().getValue(), 
-            backRightDrive.getPosition().getValue()
+            frontLeftDrive.getPosition().getValueAsDouble(), 
+            frontRightDrive.getPosition().getValueAsDouble(), 
+            backLeftDrive.getPosition().getValueAsDouble(), 
+            backRightDrive.getPosition().getValueAsDouble()
         };
         return driveEncoderArray[encoder];
     }
@@ -129,11 +129,11 @@ public class Driver {
         double drivePower = optimizedState.speedMetersPerSecond / Constants.maxSpeedMpS;
         
         double turnPower = pidArray[module].calculate(
-            steerMotorArray[module].getPosition().getValue() * ticksToRadsTurning, 
+            steerMotorArray[module].getPosition().getValueAsDouble() * ticksToRadsTurning, 
             optimizedState.angle.getRadians()
         );
         SmartDashboard.putNumber("module" + module + " rawsensordata", steerMotorArray[module].getPosition().getValue());
-        SmartDashboard.putNumber("module" + module + " recordedturnposition", steerMotorArray[module].getPosition().getValue() * ticksToRadsTurning);
+        SmartDashboard.putNumber("module" + module + " recordedturnposition", steerMotorArray[module].getPosition().getValueAsDouble() * ticksToRadsTurning);
 
         SmartDashboard.putNumber("module" + module + " drive power", drivePower);
         SmartDashboard.putNumber("module" + module + " turn power", turnPower);
