@@ -1,12 +1,14 @@
 package frc.robot;
 
-import com.kauailabs.navx.frc.AHRS;
+//import com.kauailabs.navx.frc.AHRS;
+import com.studica.frc.AHRS;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Shooter;
+import edu.wpi.first.wpilibj.SPI;
 
 public class Robot extends TimedRobot {
 
@@ -14,7 +16,10 @@ public class Robot extends TimedRobot {
     Shooter shooter = new Shooter();
     Climber climber = new Climber();
     Timer matchTimer = new Timer();
-    AHRS navx = new AHRS();
+    
+    AHRS navx = new AHRS(); //WHY IS THIS RED
+    //AHRS navx = new AHRS(SPI.Port.kMXP); im gonna see if this works later
+
 
     Auto auto = new Auto(driver, shooter, climber, navx, matchTimer);
     Teleop teleop = new Teleop(driver, shooter, climber, navx);

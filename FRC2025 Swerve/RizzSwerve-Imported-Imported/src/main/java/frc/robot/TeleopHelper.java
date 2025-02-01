@@ -1,6 +1,7 @@
 package frc.robot;
 
-import com.kauailabs.navx.frc.AHRS;
+//import com.kauailabs.navx.frc.AHRS;
+import com.studica.frc.AHRS; //changed
 
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.systems.Climber;
