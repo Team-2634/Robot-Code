@@ -1,6 +1,5 @@
 package frc.robot.systems;
 
-
 import com.studica.frc.AHRS;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -132,7 +131,7 @@ public class Driver {
             steerMotorArray[module].getPosition().getValueAsDouble() * ticksToRadsTurning, 
             optimizedState.angle.getRadians()
         );
-        SmartDashboard.putNumber("module" + module + " rawsensordata", steerMotorArray[module].getPosition().getValue());
+        SmartDashboard.putNumber("module" + module + " rawsensordata", steerMotorArray[module].getPosition().getValueAsDouble());
         SmartDashboard.putNumber("module" + module + " recordedturnposition", steerMotorArray[module].getPosition().getValueAsDouble() * ticksToRadsTurning);
 
         SmartDashboard.putNumber("module" + module + " drive power", drivePower);

@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Shooter;
-import edu.wpi.first.wpilibj.SPI;
+//import edu.wpi.first.wpilibj.SPI;
 
 public class Robot extends TimedRobot {
 
@@ -17,7 +17,7 @@ public class Robot extends TimedRobot {
     Climber climber = new Climber();
     Timer matchTimer = new Timer();
     
-    AHRS navx = new AHRS(); //WHY IS THIS RED
+    AHRS navx = new AHRS(AHRS.NavXComType.kMXP_SPI); //WHY IS THIS RED
     //AHRS navx = new AHRS(SPI.Port.kMXP); im gonna see if this works later
 
 
