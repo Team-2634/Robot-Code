@@ -17,8 +17,7 @@ public class Robot extends TimedRobot {
     Climber climber = new Climber();
     Timer matchTimer = new Timer();
     
-    AHRS navx = new AHRS(AHRS.NavXComType.kMXP_SPI); //WHY IS THIS RED
-    //AHRS navx = new AHRS(SPI.Port.kMXP); im gonna see if this works later
+    AHRS navx = new AHRS(AHRS.NavXComType.kMXP_SPI); 
 
 
     Auto auto = new Auto(driver, shooter, climber, navx, matchTimer);
@@ -45,7 +44,7 @@ public class Robot extends TimedRobot {
     
     @Override
     public void autonomousPeriodic() {
-        auto.autoTopAndBottom();
+        auto.moveForwardTest();
     }
     
     @Override

@@ -24,7 +24,18 @@ public class Auto {
         timer.start();    
     }
     
-    
+
+    public void moveForwardTest() {
+        if (autoHelper.timerInterval_Auto(0, 1)) {
+            autoHelper.resetDriveEncoders();
+        }
+        else if (autoHelper.timerInterval_Auto(1.1, 5)) {
+            autoHelper.autoDriveByDistance(1, 0);
+        }
+    }
+
+
+    /** 
     public void autoMidBalance() {
         if (autoHelper.timerInterval_Auto(0, 2.5)){
             autoHelper.autoDriveRotate(Math.PI-0.01); // face nodes
@@ -78,12 +89,10 @@ public class Auto {
             autoHelper.driveSwerve_EncoderIf_FwdAndBwd(0);
             // armRotate.tankDrive(0, 0);      
             // armTalonExtenstion.set(0);
-        }
-    }
-    
-    
-
-
-
-
+         }
+    }       */
 }
+    
+    
+
+
