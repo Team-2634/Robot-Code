@@ -45,6 +45,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
         auto.moveForwardTest();
+        //Hi hans this is for testing
     }
     
     @Override
