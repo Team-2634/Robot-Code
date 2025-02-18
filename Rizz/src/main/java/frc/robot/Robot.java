@@ -16,6 +16,7 @@ public class Robot extends TimedRobot {
     Shooter shooter = new Shooter();
     Climber climber = new Climber();
     Timer matchTimer = new Timer();
+    LimeLight limelight = new LimeLight();
     
     AHRS navx = new AHRS(AHRS.NavXComType.kMXP_SPI); 
 
