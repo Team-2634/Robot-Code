@@ -2,17 +2,18 @@ package frc.robot;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class LimeLight {
 
-    private static NetworkTable limelight = NetworkTableInstance.getDefault().getTable("Limelight name here idk it");
+    private static NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("Limelight name here idk it");
 
     public double getDoubleEntry(String entry) {
-        return limelight.getEntry(entry).getDouble(0.0);
+        return limelightTable.getEntry(entry).getDouble(0.0);
     }
 
     public double[] getArrayEntry (String entry) {
-        return limelight.getEntry(entry).getDoubleArray(new double[6]);
+        return limelightTable.getEntry(entry).getDoubleArray(new double[6]);
     }
 
     public double getID() {
@@ -34,6 +35,5 @@ public class LimeLight {
     public double Yoffset() {
         return getDoubleEntry("ty");
     }
-
 
 }
