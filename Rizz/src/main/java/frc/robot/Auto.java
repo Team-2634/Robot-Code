@@ -2,7 +2,6 @@ package frc.robot;
 
 import com.studica.frc.AHRS;
 
-//import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.systems.Climber;
@@ -28,9 +27,19 @@ public class Auto {
     public void moveForwardTest() {
         if (autoHelper.timerInterval_Auto(0, 1)) {
             autoHelper.resetDriveEncoders();
+            autoHelper.autoResetPIDs();
         }
-        else if (autoHelper.timerInterval_Auto(1.1, 5)) {
-            autoHelper.autoDriveByDistance(1, 0);
+        else if (autoHelper.timerInterval_Auto(1.1, 3)) {
+            autoHelper.autoDriveByDistance(1, 0); //supposed to drive forward
+        }
+        else if (autoHelper.timerInterval_Auto(3.1, 4)) {
+            autoHelper.autoDriveByDistance(0, 1); //turn right?
+        }
+        else if (autoHelper.timerInterval_Auto(4.1, 9)) {
+            autoHelper.autoDriveByDistance(1, 1); //turn right, while moving straight
+        }
+        else {
+            autoHelper.autoDriveByDistance(0, 0); //stop
         }
     }
 
