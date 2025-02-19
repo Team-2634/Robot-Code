@@ -20,7 +20,6 @@ public class Constants {
     //configurable stuff
 
     //device IDs
-    public final static int frontLeftDriveID = 1;
     /*public final static int frontLeftDriveID = 1;
     public final static int frontRightDriveID = 3;
     public final static int backLeftDriveID = 5;
