@@ -5,6 +5,7 @@ import com.studica.frc.AHRS;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Shooter;
@@ -17,6 +18,8 @@ public class Robot extends TimedRobot {
     Climber climber = new Climber();
     Timer matchTimer = new Timer();
     
+    LimeLight limelight = new LimeLight();
+
     AHRS navx = new AHRS(AHRS.NavXComType.kMXP_SPI); 
 
 
@@ -35,6 +38,8 @@ public class Robot extends TimedRobot {
     
     @Override
     public void robotPeriodic() {
+        SmartDashboard.putNumber("X-offset", limelight.Xoffset());
+        SmartDashboard.putNumber("Y-offset", limelight.Yoffset());
     }
     
     @Override
@@ -45,6 +50,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
         auto.moveForwardTest();
+       auto.moveForwardTest();
         //Hi hans this is for testing
     }
     

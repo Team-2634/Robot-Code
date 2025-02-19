@@ -21,6 +21,7 @@ public class Constants {
 
     //device IDs
     public final static int frontLeftDriveID = 1;
+    /*public final static int frontLeftDriveID = 1;
     public final static int frontRightDriveID = 3;
     public final static int backLeftDriveID = 5;
     public final static int backRightDriveID = 7;
@@ -29,6 +30,20 @@ public class Constants {
     public final static int frontRightSteerID = 2;
     public final static int backLeftSteerID = 4;
     public final static int backRightSteerID = 6;
+    public final static int backRightSteerID = 6; */
+
+    //switched back so bot can run properly
+
+    public final static int frontLeftDriveID = 0;
+    public final static int frontRightDriveID = 2;
+    public final static int backLeftDriveID = 4;
+    public final static int backRightDriveID = 6;
+
+    public final static int frontLeftSteerID = 1;
+    public final static int frontRightSteerID = 3;
+    public final static int backLeftSteerID = 5;
+    public final static int backRightSteerID = 7;
+
     
     public final static int frontLeftAbsEncoderID = 3;
     public final static int frontRightAbsEncoderID = 0;
