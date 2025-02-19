@@ -46,7 +46,13 @@ public class AutoHelper {
         driver.backRightDrive.setPosition(0);
     }
 
-    
+    public void resetSteerEncoders(){
+        driver.frontLeftSteer.setPosition(0);
+        driver.frontRightSteer.setPosition(0);
+        driver.backLeftSteer.setPosition(0);
+        driver.backRightSteer.setPosition(0);
+    }
+
     public void autoDriveByDistance(double distanceX, double distanceY) {
         double[] distanceFieldOriented = Driver.fieldOrient(distanceX, distanceY, navx);
         double fieldDistanceX = distanceFieldOriented[0];

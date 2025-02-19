@@ -28,9 +28,14 @@ public class Auto {
     public void moveForwardTest() {
         if (autoHelper.timerInterval_Auto(0, 1)) {
             autoHelper.resetDriveEncoders();
+            autoHelper.resetSteerEncoders();
+            autoHelper.autoResetPIDs();
         }
         else if (autoHelper.timerInterval_Auto(1.1, 5)) {
-            autoHelper.autoDriveByDistance(1, 0);
+            autoHelper.autoDriveByDistance(0.5, 0);
+        }
+        else {
+            // autoHelper.autoDriveByDistance(0, 0);
         }
     }
 
