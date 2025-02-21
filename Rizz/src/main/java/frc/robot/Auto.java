@@ -31,11 +31,21 @@ public class Auto {
             autoHelper.resetSteerEncoders();
             autoHelper.autoResetPIDs();
         }
-        else if (autoHelper.timerInterval_Auto(1.1, 5)) {
+        
+        else if (autoHelper.timerInterval_Auto(1.1, 3)) {
+            autoHelper.autoDriveByDistance(0.5, 0); //supposed to drive forward
+        }
+        else if (autoHelper.timerInterval_Auto(3.5, 5.5)) {
+            autoHelper.autoDriveByDistance(0, 1); //turn right?
+        }
+        else if (autoHelper.timerInterval_Auto(5.6, 7.6)) {
+            autoHelper.autoDriveByDistance(0.5, 1); //turn right, while moving straight
+        }
+        else if (autoHelper.timerInterval_Auto(7.7, 10)){
             autoHelper.autoDriveByDistance(0.5, 0);
         }
         else {
-            // autoHelper.autoDriveByDistance(0, 0);
+            autoHelper.autoDriveByDistance(0, 0); //stop
         }
     }
 
