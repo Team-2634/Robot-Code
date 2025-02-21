@@ -1,3 +1,10 @@
+/**
+ * Team 2634
+ * 2/21/2025
+ * Auto Code
+ * The following auto code plays around with swerve drive
+ */
+
 package frc.robot;
 
 import com.studica.frc.AHRS;
