@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class LimeLight {
 
-    private static NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("Limelight name here idk it");
+    private static NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
 
     public double getDoubleEntry(String entry) {
         return limelightTable.getEntry(entry).getDouble(0.0);
@@ -34,6 +34,16 @@ public class LimeLight {
 
     public double Yoffset() {
         return getDoubleEntry("ty");
+    }
+
+    public double getYDistance() {
+
+        double yOffsetDegrees = Yoffset();
+        double yOffsetRadians = Math.toRadians(yOffsetDegrees);
+
+        double distance = 1/Math.tan(yOffsetRadians);
+        return distance;
+        
     }
 
 }
