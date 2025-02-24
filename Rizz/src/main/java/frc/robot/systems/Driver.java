@@ -166,19 +166,19 @@ public class Driver {
         return speeds;
     }
 
-    public void resetTurnEncoders() {
-        frontLeftSteer.setPosition(0);
-        frontRightSteer.setPosition(0);
-        backLeftSteer.setPosition(0);
-        backRightSteer.setPosition(0);
-    }
+    // public void resetTurnEncoders() {
+    //     frontLeftSteer.setPosition(0);
+    //     frontRightSteer.setPosition(0);
+    //     backLeftSteer.setPosition(0);
+    //     backRightSteer.setPosition(0);
+    // }
 
-    public void resetTurnPIDs() {
-        pidFrontLeftTurn.reset();
-        pidFrontRightTurn.reset();
-        pidBackLeftTurn.reset();
-        pidBackRightTurn.reset();
-    }
+    // public void resetTurnPIDs() {
+    //     pidFrontLeftTurn.reset();
+    //     pidFrontRightTurn.reset();
+    //     pidBackLeftTurn.reset();
+    //     pidBackRightTurn.reset();
+    // }
 
     // public void setMotorBreaks() {
     //     frontLeftDrive.setNeutralMode(NeutralModeValue.Brake);
