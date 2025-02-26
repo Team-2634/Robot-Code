@@ -31,88 +31,55 @@ public class Auto {
         timer.start();    
     }
     
+    public void autoTest(){
 
-    public void moveForwardTest() {
-        if (autoHelper.timerInterval_Auto(0, 1)) {
-            autoHelper.resetDriveEncoders();
-            autoHelper.resetSteerEncoders();
-            autoHelper.autoResetPIDs();
-        }
-        
-        else if (autoHelper.timerInterval_Auto(1.1, 3)) {
-            autoHelper.autoDriveByDistance(0.5, 0); //supposed to drive forward
-        }
-        else if (autoHelper.timerInterval_Auto(3.5, 5.5)) {
-            autoHelper.autoDriveByDistance(0, 1); //turn right?
-        }
-        else if (autoHelper.timerInterval_Auto(5.6, 7.6)) {
-            autoHelper.autoDriveByDistance(0.5, 1); //turn right, while moving straight
-        }
-        else if (autoHelper.timerInterval_Auto(7.7, 10)){
-            autoHelper.autoDriveByDistance(0.5, 0);
+        if (timer.get() < 15 ){
+
+            if (autoHelper.timerInterval_Auto(0, 1)){
+                autoHelper.resetDriveEncoders();
+                autoHelper.resetSteerEncoders();
+                autoHelper.autoResetPIDs();
+            }
+            else if (autoHelper.timerInterval_Auto(1, 5)){
+                autoHelper.driver.swerveDrive(0.25, 0, 0);
+            }
+            else if (autoHelper.timerInterval_Auto(5.1, 7)){
+                autoHelper.driver.swerveDrive(0.25, 0.25, 0);
+            }
+            else if (autoHelper.timerInterval_Auto(8, 15)){
+                autoHelper.driver.swerveDrive(0.25, 0, 0);
+            }
+
         }
         else {
-            autoHelper.autoDriveByDistance(0, 0); //stop
+            autoHelper.driver.swerveDrive(0, 0, 0); //STOP
         }
+
     }
 
+    public void autoMiddle(){
+         
+        if (timer.get() < 15 ){
 
-    /** 
-    public void autoMidBalance() {
-        if (autoHelper.timerInterval_Auto(0, 2.5)){
-            autoHelper.autoDriveRotate(Math.PI-0.01); // face nodes
-            autoHelper.resetDriveEncoders();
-        }else if (autoHelper.timerInterval_Auto(2.51, 3)){
-            autoHelper.driveSwerve_EncoderIf_FwdAndBwd(0.21); //drive forwards to thingy
-            //swerveDrive(-0.2, 0, 0);
-        }else if (autoHelper.timerInterval_Auto(3.01, 6)){
-            autoHelper.driveSwerve_EncoderIf_FwdAndBwd(0);
-            // armRotate_encoderIf_upAndDown(-1.80); //lift arm
-        }else if (autoHelper.timerInterval_Auto(6.01, 8)){
-            // armExtend_encoderIf_outAndIn(0.75); // extend arm
-        }else if (autoHelper.timerInterval_Auto(8.01, 8.5)){
-            // dSolenoidClaw.set(Value.kForward); //open claw
-        }else if (autoHelper.timerInterval_Auto(8.51, 10)){
-            // armExtend_encoderIf_outAndIn(0); //retract
-            // dSolenoidClaw.set(Value.kReverse); //close claw
-        }else if (autoHelper.timerInterval_Auto(10.01, 12)){
-            // armRotate_encoderIf_upAndDown(-0.1); //lower arm
-        }else if (autoHelper.timerInterval_Auto(12.01, 15)){
-            autoHelper.driveSwerve_EncoderIf_FwdAndBwd(-2.3); //drive backwards past line
-        }else { //STOP!!!
-            autoHelper.driveSwerve_EncoderIf_FwdAndBwd(0);
-            // armRotate.tankDrive(0, 0);      
-            // armTalonExtenstion.set(0);
+            if (autoHelper.timerInterval_Auto(0, 1)){
+                autoHelper.resetDriveEncoders();
+                autoHelper.resetSteerEncoders();
+                autoHelper.autoResetPIDs();
+            }
+            else if (autoHelper.timerInterval_Auto(1, 5)){
+                autoHelper.driver.swerveDrive(0.25, 0, 0); //moves forward
+            }
+            else if (autoHelper.timerInterval_Auto(5.1, 10)){
+                autoHelper.driver.swerveDrive(0.25, 0.25, 0);    
+            }
         }
-    }
+            
+        else {
+            autoHelper.driver.swerveDrive(0, 0, 0); //STOP
+        }
 
-        public void autoTopAndBottom() {
-        if (autoHelper.timerInterval_Auto(0, 2)){
-            autoHelper.autoDriveRotate(Math.PI-0.01); // face nodes
-        }else if (autoHelper.timerInterval_Auto(2.01, 3.50)){
-            autoHelper.driveSwerve_EncoderIf_FwdAndBwd(0.21); //drive forwards to thingy
-            autoHelper.resetDriveEncoders();
-            //swerveDrive(-0.3, 0, 0);
-        }else if (autoHelper.timerInterval_Auto(3.51, 6)){
-            autoHelper.driveSwerve_EncoderIf_FwdAndBwd(0);
-            // armRotate_encoderIf_upAndDown(-1.80); //lift arm
-        }else if (autoHelper.timerInterval_Auto(6.01, 8)){
-            // armExtend_encoderIf_outAndIn(0.75); // extend arm
-        }else if (autoHelper.timerInterval_Auto(8.01, 8.5)){
-            // dSolenoidClaw.set(Value.kForward); //open claw
-        }else if (autoHelper.timerInterval_Auto(8.51, 10)){
-            // armExtend_encoderIf_outAndIn(0); //retract
-            // dSolenoidClaw.set(Value.kReverse); //close claw
-        }else if (autoHelper.timerInterval_Auto(10.01, 12)){
-            // armRotate_encoderIf_upAndDown(-0.1); //lower arm
-        }else if (autoHelper.timerInterval_Auto(12.01, 15)){
-            autoHelper.driveSwerve_EncoderIf_FwdAndBwd(-4.3); //drive backwards past line
-        }else { //STOP!!!
-            autoHelper.driveSwerve_EncoderIf_FwdAndBwd(0);
-            // armRotate.tankDrive(0, 0);      
-            // armTalonExtenstion.set(0);
-         }
-    }       */
+    }
+        
 }
     
     

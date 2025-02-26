@@ -55,13 +55,33 @@ public class Driver {
     public final double ticksToRadsTurning = Constants.kTurningMotorGearRatio * 2 * Math.PI;
 
     private void initializeModule(int module) {
+        // driveMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
+        // driveMotorArray[module].setInverted(true);
+        // steerMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
+        // steerMotorArray[module].setInverted(true);
+        // steerMotorArray[module].setPosition(0);
+        // pidArray[module].reset();
+        // pidArray[module].enableContinuousInput(-Math.PI, Math.PI);
+
         driveMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
         driveMotorArray[module].setInverted(true);
         steerMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
-        steerMotorArray[module].setInverted(true);
-        steerMotorArray[module].setPosition(0);
-        pidArray[module].reset();
-        pidArray[module].enableContinuousInput(-Math.PI, Math.PI);
+        driveMotorArray[module].setInverted(true);
+
+        double absEncoderPosition = 0.0;
+
+        switch(module){
+            case 0: absEncoderPosition = frontLeftAbsEncoder.getAbsolutePosition().getValueAsDouble(); break;
+            case 1: absEncoderPosition = frontRightAbsEncoder.getAbsolutePosition().getValueAsDouble(); break;
+            case 2: absEncoderPosition = backLeftAbsEncoder.getAbsolutePosition().getValueAsDouble(); break;
+            case 3: absEncoderPosition = backRightAbsEncoder.getAbsolutePosition().getValueAsDouble(); break;
+         }
+
+         double initialAngle = absEncoderPosition * 2 * Math.PI; //currently testing
+         steerMotorArray[module].setPosition(initialAngle / ticksToRadsTurning); //currently testing
+
+         pidArray[module].reset();
+         pidArray[module].enableContinuousInput(-Math.PI, Math.PI);
 
     }
 
@@ -75,7 +95,7 @@ public class Driver {
 
 
     public double readTurnEncoder(int encoder) {
-        Angle dave = frontLeftSteer.getPosition().getValue();
+        //Angle dave = frontLeftSteer.getPosition().getValue();
         double[] turningEncoderArray = {
             frontLeftSteer.getPosition().getValueAsDouble(),// changed to return double instead of angle - angleis new thing???
             frontRightSteer.getPosition().getValueAsDouble(),
@@ -165,6 +185,8 @@ public class Driver {
         double[] speeds = {XSpeedField, YSpeedField};
         return speeds;
     }
+
+  
 
     // public void resetTurnEncoders() {
     //     frontLeftSteer.setPosition(0);

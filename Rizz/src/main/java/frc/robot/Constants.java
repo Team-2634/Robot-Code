@@ -1,7 +1,5 @@
 package frc.robot;
 
-
-
 public class Constants {
     //unchanging final stuff
     public final static double talonEncoder_TicksPerRev = 2048;

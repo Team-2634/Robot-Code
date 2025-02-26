@@ -5,6 +5,7 @@ import com.studica.frc.AHRS;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
@@ -22,9 +23,20 @@ public class Robot extends TimedRobot {
 
     AHRS navx = new AHRS(AHRS.NavXComType.kMXP_SPI); 
 
-
     Auto auto = new Auto(driver, shooter, climber, navx, matchTimer);
     Teleop teleop = new Teleop(driver, shooter, climber, navx);
+
+    private static final String kDefaultAuto = "Default";
+    private static final String kCustomAuto = "My Auto";
+    private String m_autoSelected;
+    private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
+    public Robot(){
+        m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
+        m_chooser.addOption("My Auto", kCustomAuto);
+        SmartDashboard.putData("Auto choices", m_chooser);
+    }
+
  
     @Override
     public void robotInit() {
@@ -45,14 +57,17 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         auto.restartTimer();
+
+        m_autoSelected = m_chooser.getSelected();
+        System.out.println("Auto Selected: " + m_autoSelected);
     }
     
     @Override
     public void autonomousPeriodic() {
         auto.moveForwardTest();
-       auto.moveForwardTest();
         //Hi hans this is for testing
-    }
+        }
+
     
     @Override
     public void teleopInit() {
