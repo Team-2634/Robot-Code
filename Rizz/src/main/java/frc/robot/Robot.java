@@ -44,7 +44,8 @@ public class Robot extends TimedRobot {
         matchTimer.reset();
         matchTimer.start();
         navx.reset();
-        driver.initialize();
+        // driver.initialize();
+        // driver.align();
 
     }
     
@@ -65,12 +66,12 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
         auto.autoTest();
+        //Hi hans this is for testing
         }
 
     
     @Override
     public void teleopInit() {
-        
     }
     
     @Override
