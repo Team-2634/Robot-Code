@@ -32,13 +32,7 @@ public class Robot extends TimedRobot {
         matchTimer.start();
         navx.reset();
         driver.initialize();
-        try {
-            GlobalScreen.registerNativeHook();
-        }
-        catch (NativeHookException ex) {
-            System.err.println("There was a problem registering the native hook.");
-            System.err.println(ex.getMessage());
-        }
+        
         
 
     }
@@ -60,11 +54,20 @@ public class Robot extends TimedRobot {
     
     @Override
     public void teleopInit() {
-        GlobalScreen.addNativeKeyListener(key);
+ 
     }
     
     @Override
     public void teleopPeriodic() {
+        try {
+            GlobalScreen.registerNativeHook();
+        }
+        catch (NativeHookException ex) {
+            System.err.println("There was a problem registering the native hook.");
+            System.err.println(ex.getMessage());
+        }
+        GlobalScreen.addNativeKeyListener(key);
+
         teleop.drive();
     }
 }

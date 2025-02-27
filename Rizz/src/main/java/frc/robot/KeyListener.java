@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class KeyListener implements NativeKeyListener {
 
@@ -17,6 +18,7 @@ public class KeyListener implements NativeKeyListener {
                 break;
             case "2":
                 System.out.println("2634");
+                SmartDashboard.putString("Test", "2");
                 break;
             default:
                 break;
