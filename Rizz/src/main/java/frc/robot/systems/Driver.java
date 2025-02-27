@@ -12,7 +12,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
@@ -40,6 +39,16 @@ public class Driver {
     public final CANcoder frontRightAbsEncoder = new CANcoder(Constants.frontRightAbsEncoderID);
     public final CANcoder backLeftAbsEncoder = new CANcoder(Constants.backLeftAbsEncoderID);
     public final CANcoder backRightAbsEncoder = new CANcoder(Constants.backRightAbsEncoderID);
+    public final CANcoder[] absEncoderArray = {frontLeftAbsEncoder, frontRightAbsEncoder, backLeftAbsEncoder, backRightAbsEncoder};
+
+    private final double frontLeftAbsEncoderOffset = Constants.frontLeftAbsEncoderOffset;
+    private final double frontRightEncoderOffset = Constants.frontRightAbsEncoderOffset;
+    private final double backLeftAbsEncoderOffset = Constants.backLeftAbsEncoderOffset;
+    private final double backRightAbsEncoderOffset = Constants.backRightAbsEncoderOffset;
+    private final double[] absEncoderOffsetArray = {frontLeftAbsEncoderOffset, frontRightEncoderOffset, backLeftAbsEncoderOffset, backRightAbsEncoderOffset};
+
+    private double currentRotation;
+    private double movingNumber;
 
     Translation2d m_frontLeftLocation = new Translation2d(0.340, 0.285);
     Translation2d m_frontRightLocation = new Translation2d(0.340, -0.285);
@@ -55,33 +64,14 @@ public class Driver {
     public final double ticksToRadsTurning = Constants.kTurningMotorGearRatio * 2 * Math.PI;
 
     private void initializeModule(int module) {
-        // driveMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
-        // driveMotorArray[module].setInverted(true);
-        // steerMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
-        // steerMotorArray[module].setInverted(true);
-        // steerMotorArray[module].setPosition(0);
-        // pidArray[module].reset();
-        // pidArray[module].enableContinuousInput(-Math.PI, Math.PI);
 
         driveMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
         driveMotorArray[module].setInverted(true);
         steerMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
-        driveMotorArray[module].setInverted(true);
-
-        double absEncoderPosition = 0.0;
-
-        switch(module){
-            case 0: absEncoderPosition = frontLeftAbsEncoder.getAbsolutePosition().getValueAsDouble(); break;
-            case 1: absEncoderPosition = frontRightAbsEncoder.getAbsolutePosition().getValueAsDouble(); break;
-            case 2: absEncoderPosition = backLeftAbsEncoder.getAbsolutePosition().getValueAsDouble(); break;
-            case 3: absEncoderPosition = backRightAbsEncoder.getAbsolutePosition().getValueAsDouble(); break;
-         }
-
-         double initialAngle = absEncoderPosition * 2 * Math.PI; //currently testing
-         steerMotorArray[module].setPosition(initialAngle / ticksToRadsTurning); //currently testing
-
-         pidArray[module].reset();
-         pidArray[module].enableContinuousInput(-Math.PI, Math.PI);
+        steerMotorArray[module].setInverted(true);
+        steerMotorArray[module].setPosition(0);
+        pidArray[module].reset();
+        pidArray[module].enableContinuousInput(-Math.PI, Math.PI);
 
     }
 
@@ -91,6 +81,34 @@ public class Driver {
         initializeModule(1);
         initializeModule(2);
         initializeModule(3);
+    }
+
+    /**
+     * Auto align wheels to forward position
+     * @param module
+     */
+    private void alignModule(int module) {
+
+        currentRotation = absEncoderArray[module].getAbsolutePosition().getValueAsDouble();
+
+        movingNumber = absEncoderOffsetArray[module] - currentRotation;
+
+        steerMotorArray[module].setPosition(movingNumber);
+
+        SmartDashboard.putNumber("module" + module + " moving value", movingNumber);
+
+        SmartDashboard.putNumber("module" + module + " current Rotation", currentRotation);
+
+    }
+
+    public void align(){
+
+        alignModule(0);
+        alignModule(1);
+        alignModule(2);
+        alignModule(3);
+
+        
     }
 
 
