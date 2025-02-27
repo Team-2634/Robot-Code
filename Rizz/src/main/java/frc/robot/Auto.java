@@ -8,9 +8,6 @@
 package frc.robot;
 
 import com.studica.frc.AHRS;
-
-//import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
@@ -41,7 +38,7 @@ public class Auto {
                 autoHelper.autoResetPIDs();
             }
             else if (autoHelper.timerInterval_Auto(1, 5)){
-                autoHelper.driver.swerveDrive(0.25, 0, 0);
+                autoHelper.driver.swerveDrive(0.25, 0, 0); //moves bot 1.25 meters [fwd]
             }
             // else if (autoHelper.timerInterval_Auto(5.1, 7)){
             //     autoHelper.driver.swerveDrive(0.25, 0.25, 0);
@@ -57,28 +54,28 @@ public class Auto {
 
     }
 
-    public void autoMiddle(){
+    // public void autoMiddle(){
          
-        if (timer.get() < 15 ){
+    //     if (timer.get() < 15 ){
 
-            if (autoHelper.timerInterval_Auto(0, 1)){
-                autoHelper.resetDriveEncoders();
-                autoHelper.resetSteerEncoders();
-                autoHelper.autoResetPIDs();
-            }
-            else if (autoHelper.timerInterval_Auto(1, 5)){
-                autoHelper.driver.swerveDrive(0.25, 0, 0); //moves forward
-            }
-            else if (autoHelper.timerInterval_Auto(5.1, 10)){
-                autoHelper.driver.swerveDrive(0.25, 0.25, 0);    
-            }
-        }
+    //         if (autoHelper.timerInterval_Auto(0, 1)){
+    //             autoHelper.resetDriveEncoders();
+    //             autoHelper.resetSteerEncoders();
+    //             autoHelper.autoResetPIDs();
+    //         }
+    //         else if (autoHelper.timerInterval_Auto(1, 5)){
+    //             autoHelper.driver.swerveDrive(0.25, 0, 0); //moves forward
+    //         }
+    //         else if (autoHelper.timerInterval_Auto(5.1, 10)){
+    //             autoHelper.driver.swerveDrive(0.25, 0.25, 0);    
+    //         }
+    //     }
             
-        else {
-            autoHelper.driver.swerveDrive(0, 0, 0); //STOP
-        }
+    //     else {
+    //         autoHelper.driver.swerveDrive(0, 0, 0); //STOP
+    //     }
 
-    }
+    // }
         
 }
     
