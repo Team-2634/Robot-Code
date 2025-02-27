@@ -33,7 +33,7 @@ public class Auto {
     
     public void autoTest(){
 
-        if (timer.get() < 15 ){
+        if (timer.get() < 5 ){
 
             if (autoHelper.timerInterval_Auto(0, 1)){
                 autoHelper.resetDriveEncoders();
@@ -43,12 +43,12 @@ public class Auto {
             else if (autoHelper.timerInterval_Auto(1, 5)){
                 autoHelper.driver.swerveDrive(0.25, 0, 0);
             }
-            else if (autoHelper.timerInterval_Auto(5.1, 7)){
-                autoHelper.driver.swerveDrive(0.25, 0.25, 0);
-            }
-            else if (autoHelper.timerInterval_Auto(8, 15)){
-                autoHelper.driver.swerveDrive(0.25, 0, 0);
-            }
+            // else if (autoHelper.timerInterval_Auto(5.1, 7)){
+            //     autoHelper.driver.swerveDrive(0.25, 0.25, 0);
+            // }
+            // else if (autoHelper.timerInterval_Auto(8, 15)){
+            //     autoHelper.driver.swerveDrive(0.25, 0, 0);
+            // }
 
         }
         else {
