@@ -2,7 +2,9 @@ package frc.robot;
 
 //import com.kauailabs.navx.frc.AHRS;
 import com.studica.frc.AHRS;
-
+import com.github.kwhat.jnativehook.GlobalScreen;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
+import com.github.kwhat.jnativehook.*;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.systems.Climber;
@@ -17,9 +19,8 @@ public class Robot extends TimedRobot {
     Climber climber = new Climber();
     Timer matchTimer = new Timer();
     LimeLight limelight = new LimeLight();
-    
+    KeyListener key = new KeyListener();
     AHRS navx = new AHRS(AHRS.NavXComType.kMXP_SPI); 
-
 
     Auto auto = new Auto(driver, shooter, climber, navx, matchTimer);
     Teleop teleop = new Teleop(driver, shooter, climber, navx);
@@ -31,6 +32,14 @@ public class Robot extends TimedRobot {
         matchTimer.start();
         navx.reset();
         driver.initialize();
+        try {
+            GlobalScreen.registerNativeHook();
+        }
+        catch (NativeHookException ex) {
+            System.err.println("There was a problem registering the native hook.");
+            System.err.println(ex.getMessage());
+        }
+        
 
     }
     
@@ -51,7 +60,7 @@ public class Robot extends TimedRobot {
     
     @Override
     public void teleopInit() {
-        
+        GlobalScreen.addNativeKeyListener(key);
     }
     
     @Override
