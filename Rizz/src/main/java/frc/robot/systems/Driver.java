@@ -48,8 +48,7 @@ public class Driver {
     private final double[] absEncoderOffsetArray = {frontLeftAbsEncoderOffset, frontRightEncoderOffset, backLeftAbsEncoderOffset, backRightAbsEncoderOffset};
 
     private double currentRotation;
-    private double movingNumber;
-
+    
     Translation2d m_frontLeftLocation = new Translation2d(0.340, 0.285);
     Translation2d m_frontRightLocation = new Translation2d(0.340, -0.285);
     Translation2d m_backLeftLocation = new Translation2d(-0.340, 0.285);
@@ -75,14 +74,6 @@ public class Driver {
 
     }
 
-
-    public void initialize() {
-        initializeModule(0);
-        initializeModule(1);
-        initializeModule(2);
-        initializeModule(3);
-    }
-
     /**
      * Auto align wheels to forward position
      * @param module
@@ -91,26 +82,27 @@ public class Driver {
 
         currentRotation = absEncoderArray[module].getAbsolutePosition().getValueAsDouble();
 
-        movingNumber = absEncoderOffsetArray[module] - currentRotation;
-
-        steerMotorArray[module].setPosition(movingNumber);
-
-        SmartDashboard.putNumber("module" + module + " moving value", movingNumber);
-
-        SmartDashboard.putNumber("module" + module + " current Rotation", currentRotation);
-
+        double alignPower = pidArray[module].calculate(currentRotation, absEncoderOffsetArray[module] * ticksToRadsTurning);
+        
+        steerMotorArray[module].setPosition(alignPower);
+        
     }
 
-    public void align(){
+    public void initialize() {
+        initializeModule(0);
+        initializeModule(1);
+        initializeModule(2);
+        initializeModule(3);
+    }
 
+    
+
+    public void align(){
         alignModule(0);
         alignModule(1);
         alignModule(2);
         alignModule(3);
-
-        
     }
-
 
     public double readTurnEncoder(int encoder) {
         //Angle dave = frontLeftSteer.getPosition().getValue();
@@ -149,7 +141,7 @@ public class Driver {
 
     private SwerveModuleState swerveOptimizeModuleState(int id, SwerveModuleState moduleState) {
         double sensorPosition = readTurnEncoder(id) * ticksToRadsTurning;
-        Rotation2d currentAngle = new Rotation2d(sensorPosition);
+        Rotation2d currentAngle = new Rotation2d(sensorPosition);    
         SwerveModuleState optimizedAngle = SwerveModuleState.optimize(moduleState, currentAngle);
         return optimizedAngle;
     }
