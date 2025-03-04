@@ -6,12 +6,13 @@ import com.studica.frc.AHRS;
 
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
-import frc.robot.systems.Shooter;
+import frc.robot.systems.Elevator;
+
 
 public class Teleop {
     TeleopHelper teleopHelper;
-    public Teleop(Driver driver, Shooter shooter, Climber climber, AHRS navx) {
-        teleopHelper = new TeleopHelper(driver, shooter, climber, navx);
+    public Teleop(Driver driver, Climber climber, AHRS navx, Elevator elevator) {
+        teleopHelper = new TeleopHelper(driver, climber, navx, elevator);
     }
     
     public void drive() {

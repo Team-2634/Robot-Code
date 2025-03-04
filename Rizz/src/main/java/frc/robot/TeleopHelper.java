@@ -8,23 +8,26 @@ import com.studica.frc.AHRS; //changed
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
-import frc.robot.systems.Shooter;
+import frc.robot.systems.Elevator;
 
 public class TeleopHelper {
     
     Driver driver;
-    Shooter shooter;
     Climber climber;
     AHRS navx;
-
-    public TeleopHelper(Driver driver, Shooter shooter, Climber climber, AHRS navx) {
+    Elevator elevator;
+    public TeleopHelper(Driver driver, Climber climber, AHRS navx, Elevator elevator) {
         this.driver = driver;
-        this.shooter = shooter;
         this.climber = climber;
         this.navx = navx;
+        this.elevator = elevator;
     }
     
-    final XboxController xbox = new XboxController(0);
+    final XboxController xbox1 = new XboxController(0);
+    final XboxController xbox2 = new XboxController(1);
+
+
+    boolean xboxElevatorInput = xbox1.getLeftBumperButton();
 
     public void drive(double XSpeed, double YSpeed, double TurnSpeed) {
         double[] speedsFieldOriented = Driver.fieldOrient(XSpeed, YSpeed, navx);
@@ -36,11 +39,21 @@ public class TeleopHelper {
     }
 
     public double removeDeadzone(int axisInput) {
-        if (Math.abs(xbox.getRawAxis(axisInput)) < Constants.controllerDeadzone) {
+        if (Math.abs(xbox1.getRawAxis(axisInput)) < Constants.controllerDeadzone) {
             return 0;
         }
-        return xbox.getRawAxis(axisInput);
+        return xbox1.getRawAxis(axisInput);
     }
 
+    public void liftElevatorFromBumper(boolean input){
+        if(xboxElevatorInput) {
+            elevator.elevatorLiftUp(0.05);
+        }
+        else if(xboxElevatorInput != true) {
+            elevator.elevatorLiftUp(0); //just incase it doesnt stop after you press Left bumper
+        }
+
+
+    }
 
 }

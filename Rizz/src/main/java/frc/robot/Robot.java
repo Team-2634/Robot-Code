@@ -9,22 +9,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
-import frc.robot.systems.Shooter;
+import frc.robot.systems.Elevator;
 //import edu.wpi.first.wpilibj.SPI;
 
 public class Robot extends TimedRobot {
 
     Driver driver = new Driver();
-    Shooter shooter = new Shooter();
     Climber climber = new Climber();
     Timer matchTimer = new Timer();
-    
+    Elevator elevator = new Elevator();
     LimeLight limelight = new LimeLight();
 
     AHRS navx = new AHRS(AHRS.NavXComType.kMXP_SPI); 
 
-    Auto auto = new Auto(driver, shooter, climber, navx, matchTimer);
-    Teleop teleop = new Teleop(driver, shooter, climber, navx);
+    Auto auto = new Auto(driver, climber, navx, matchTimer, elevator);
+    Teleop teleop = new Teleop(driver, climber, navx, elevator);
 
     private static final String kDefaultAuto = "Default";
     private static final String kCustomAuto = "My Auto";
