@@ -19,7 +19,11 @@ public class Teleop {
         teleopHelper.drive(teleopHelper.removeDeadzone(1), teleopHelper.removeDeadzone(0), teleopHelper.removeDeadzone(4));
     }
 
-    
+    public void elevatorControl() {
+
+        TeleopHelper.liftElevatorFromBumper(TeleopHelper.xboxElevatorInput);
+
+    }
 
     
 

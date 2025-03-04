@@ -1,9 +1,6 @@
 package frc.robot;
 
-//import com.kauailabs.navx.frc.AHRS;
-import com.studica.frc.AHRS; //changed
-
-//testing
+import com.studica.frc.AHRS; 
 
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.systems.Climber;
@@ -23,11 +20,11 @@ public class TeleopHelper {
         this.elevator = elevator;
     }
     
-    final XboxController xbox1 = new XboxController(0);
-    final XboxController xbox2 = new XboxController(1);
+    final XboxController xbox1 = new XboxController(0); //Controller For Swerve Drive
+    final XboxController xbox2 = new XboxController(1); //Controller For Arm/Elevator
 
-
-    boolean xboxElevatorInput = xbox1.getLeftBumperButton();
+    //boolean xboxElevatorInput = xbox1.getLeftBumperButton();
+    
 
     public void drive(double XSpeed, double YSpeed, double TurnSpeed) {
         double[] speedsFieldOriented = Driver.fieldOrient(XSpeed, YSpeed, navx);
@@ -45,15 +42,55 @@ public class TeleopHelper {
         return xbox1.getRawAxis(axisInput);
     }
 
-    public void liftElevatorFromBumper(boolean input){
-        if(xboxElevatorInput) {
-            elevator.elevatorLiftUp(0.05);
-        }
-        else if(xboxElevatorInput != true) {
-            elevator.elevatorLiftUp(0); //just incase it doesnt stop after you press Left bumper
-        }
+//  public void liftElevatorFromBumper(boolean input){
+//      if(input) {
+//          elevator.elevatorLiftUp(0.05);
+//      }
+//      else if(input != true) {
+//          elevator.elevatorLiftUp(0); //just incase it doesnt stop after you press Left bumper
+//      }
 
+//  }
 
+    // public void liftElevatorFromBumper() {
+    //     if (xbox1.getLeftBumperButtonPressed()) {
+    //         elevator.elevatorLift(0.05); // Moves up
+    //     } 
+    //     else if (xbox1.getRightBumperButtonPressed()) {
+    //         elevator.elevatorLift(-0.05); // Moves down
+    //     } 
+    //     else {
+    //         elevator.elevatorLift(0); // Stops elevator
+    //     }
+    // }
+
+    public void liftElevatorFromBumper() { //STILL HAVE TO TEST!
+        
+        double[] elevatorLevels = {0.1, 0.3, 0.5, 0.7}; //Elevator Lift Height
+        int currentLevel = 0; // Track the elevator level
+    
+        // Move up when right bumper is pressed
+        if (xbox2.getRightBumperPressed()) {
+            if (currentLevel < elevatorLevels.length - 1) {
+                currentLevel++;
+            }
+            elevator.elevatorLift(elevatorLevels[currentLevel]);
+        } 
+        // Move down when left bumper is pressed
+        else if (xbox2.getLeftBumperPressed()) {
+            if (currentLevel > 0) {
+                currentLevel--;
+            }
+            elevator.elevatorLift(elevatorLevels[currentLevel]);
+        }
     }
+
+    public void moveArm(){
+
+        //figure out arm code
+      
+        }
+
+        
 
 }
