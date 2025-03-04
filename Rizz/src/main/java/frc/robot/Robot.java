@@ -44,8 +44,7 @@ public class Robot extends TimedRobot {
         matchTimer.reset();
         matchTimer.start();
         navx.reset();
-        // driver.initialize();
-        // driver.align();
+        driver.initialize();
 
     }
     
