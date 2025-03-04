@@ -30,55 +30,87 @@ public class Auto {
     
     public void autoTest(){
 
-        if (timer.get() < 5 ){
+        if (timer.get() < 8 ){
 
             if (autoHelper.timerInterval_Auto(0, 1)){
                 autoHelper.resetDriveEncoders();
                 autoHelper.resetSteerEncoders();
                 autoHelper.autoResetPIDs();
             }
-            else if (autoHelper.timerInterval_Auto(1, 5)){
-                autoHelper.driver.swerveDrive(0.25, 0, 0); //moves bot 1.25 meters [fwd]
+            else if (autoHelper.timerInterval_Auto(1,5)){
+                autoHelper.driver.swerveDrive(0.10, 0, 0); 
             }
-            // else if (autoHelper.timerInterval_Auto(5.1, 7)){
-            //     autoHelper.driver.swerveDrive(0.25, 0.25, 0);
-            // }
-            // else if (autoHelper.timerInterval_Auto(8, 15)){
-            //     autoHelper.driver.swerveDrive(0.25, 0, 0);
-            // }
+
+            else if (autoHelper.timerInterval_Auto(5,8)){
+                autoHelper.driver.swerveDrive(-0.10, 0.05, 0); 
+            }
 
         }
+
         else {
             autoHelper.driver.swerveDrive(0, 0, 0); //STOP
         }
 
     }
 
-    // public void autoMiddle(){
+    public void autoMiddle(){
          
-    //     if (timer.get() < 15 ){
+        if (timer.get() < 15 ){
 
-    //         if (autoHelper.timerInterval_Auto(0, 1)){
-    //             autoHelper.resetDriveEncoders();
-    //             autoHelper.resetSteerEncoders();
-    //             autoHelper.autoResetPIDs();
-    //         }
-    //         else if (autoHelper.timerInterval_Auto(1, 5)){
-    //             autoHelper.driver.swerveDrive(0.25, 0, 0); //moves forward
-    //         }
-    //         else if (autoHelper.timerInterval_Auto(5.1, 10)){
-    //             autoHelper.driver.swerveDrive(0.25, 0.25, 0);    
-    //         }
-    //     }
+            if (autoHelper.timerInterval_Auto(0, 1)){
+                autoHelper.resetDriveEncoders();
+                autoHelper.resetSteerEncoders();
+                autoHelper.autoResetPIDs();
+            }
+            else if (autoHelper.timerInterval_Auto(1, 3)){
+                autoHelper.driver.swerveDrive(0.25, 0, 0); //moves forward to the reef
+            }
+            else if (autoHelper.timerInterval_Auto(4.1, 10)){
+                autoHelper.driver.swerveDrive(0, 0, 0);
+                /* 
+                Arm Code here: Extend Arm, Release Coral into L4, Take off an Algae
+                 */ 
+            }
+        }
             
-    //     else {
-    //         autoHelper.driver.swerveDrive(0, 0, 0); //STOP
-    //     }
+        else {
+            autoHelper.driver.swerveDrive(0, 0, 0); //STOP
+        }
 
-    // }
-        
+    }
+
+    public void autoLeft() {
+        if (timer.get() < 15) {
+            
+            if (autoHelper.timerInterval_Auto(0, 1)) {
+                autoHelper.resetDriveEncoders();
+                autoHelper.resetSteerEncoders();
+                autoHelper.autoResetPIDs();
+            }
+            else if (autoHelper.timerInterval_Auto(1, 2)) {
+                autoHelper.driver.swerveDrive(0.4, 0, 0); // Drive Forward
+            }
+            else if (autoHelper.timerInterval_Auto(2, 3)) {
+                autoHelper.driver.swerveDrive(0, 0, 0.20); // Rotate towards Reef
+            }
+            else if (autoHelper.timerInterval_Auto(3, 4)) {
+                autoHelper.driver.swerveDrive(0.10, 0, 0); // Drive towards reef
+                //Elevator and Arm Both Lift Up
+            }
+            else if (autoHelper.timerInterval_Auto(4, 6)) {
+                autoHelper.driver.swerveDrive(0, 0, 0); 
+                // Stops At reef, Arm Code Goes here
+                // Release Coral
+            }
+            else if (autoHelper.timerInterval_Auto(6, 8)) {
+                autoHelper.driver.swerveDrive(0, 0, 0);
+            }
+            
+        } 
+        else {
+            autoHelper.driver.swerveDrive(0, 0, 0); // STOP
+        }
+    }
+
+    
 }
-    
-    
-
-
