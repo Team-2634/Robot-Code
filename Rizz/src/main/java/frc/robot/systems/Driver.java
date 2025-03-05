@@ -9,10 +9,13 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -64,8 +67,25 @@ public class Driver {
     Translation2d m_backLeftLocation = new Translation2d(-0.340, 0.285);
     Translation2d m_backRightLocation = new Translation2d(-0.340, -0.285);
 
-    SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
+    final SwerveModulePosition frontLeftModulePosition = new SwerveModulePosition();
+    final SwerveModulePosition frontRightModulePosition = new SwerveModulePosition();
+    final SwerveModulePosition backLeftModulePosition = new SwerveModulePosition();
+    final SwerveModulePosition backRightModulePosition = new SwerveModulePosition();
+    final SwerveModulePosition[] modulePositionArray = {
+        frontLeftModulePosition, frontRightModulePosition, backLeftModulePosition, backRightModulePosition
+    };
+
+    public final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
         m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
+
+    //DO NOT REMOVE ANYTHING WITH POSE2D ESTIMATOR THIS DOES STUFF TO MAKE IT AUTO ALIGN
+
+    SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
+        m_kinematics, 
+        navx.getRotation2d(), 
+        modulePositionArray,
+        new Pose2d()
+    );
 
     //rotations counted by motor -> rotations wheel side -> distance travelled (meters) 
     public final double ticksToMetersDrive = Constants.kDriveMotorGearRatio * (Units.inchesToMeters(Constants.kWheelDiameterInches) * Math.PI);
@@ -75,10 +95,15 @@ public class Driver {
     private void initializeModule(int module) {
 
         driveMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
-        driveMotorArray[module].setInverted(true);
+        steerMotorArray[module].setInverted(true);
         driveMotorArray[module].setPosition(0);
         steerMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
-        steerMotorArray[module].setInverted(true);
+
+        if (module == 0) {
+        driveMotorArray[module].setInverted(false);
+        } else {
+            driveMotorArray[module].setInverted(true);
+        }
         steerMotorArray[module].setPosition(0);
         pidArray[module].reset();
         pidArray[module].enableContinuousInput(-Math.PI, Math.PI);
@@ -95,6 +120,8 @@ public class Driver {
         initializeModule(1);
         initializeModule(2);
         initializeModule(3);
+        poseEstimator.resetPosition(navx.getRotation2d(), modulePositionArray, getPose());
+        navx.reset();
     }
 
     public double readAbsEncoderRad(int module) {
@@ -189,7 +216,36 @@ public class Driver {
         return speeds;
     }
 
-  
+    SwerveModulePosition getModulePosition(int module) {
+        return new SwerveModulePosition(
+            readDriveEncoder(module) * Constants.driveRotsToMeter, 
+            new Rotation2d(readAbsEncoderRad(module))
+        );
+    }
+
+    SwerveModulePosition[] getModulePositionArray() {
+        SwerveModulePosition[] swerveModulePositionArray = {
+            getModulePosition(0),
+            getModulePosition(1),
+            getModulePosition(2),
+            getModulePosition(3)
+        };
+        return swerveModulePositionArray;
+    }
+
+    public Pose2d updatePose() {
+        return poseEstimator.update(navx.getRotation2d(), getModulePositionArray());
+    }
+
+    public Pose2d getPose() {
+        return poseEstimator.getEstimatedPosition();
+    }
+
+    public void panicReset() {
+        navx.reset();
+        navx.zeroYaw();
+        navx.setAngleAdjustment(0);
+    }
 
     // public void resetTurnEncoders() {
     //     frontLeftSteer.setPosition(0);
