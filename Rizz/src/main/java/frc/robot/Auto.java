@@ -18,7 +18,7 @@ public class Auto {
 
     AutoHelper autoHelper;
     public Auto(Driver driver, Climber climber, AHRS navx, Timer timer, Elevator elevator) {
-        this.autoHelper = new AutoHelper(driver, climber, navx, timer);
+        this.autoHelper = new AutoHelper(driver, climber, navx, timer, elevator);
         this.timer = timer;
     }
 
@@ -52,30 +52,35 @@ public class Auto {
 
     }
 
-    public void autoMiddle(){
-         
-        if (timer.get() < 15 ){
+    public void autoMiddle() {
 
-            if (autoHelper.timerInterval_Auto(0, 1)){
+        if (timer.get() < 15) {
+    
+            if (autoHelper.timerInterval_Auto(0, 1)) {
+
                 autoHelper.resetDriveEncoders();
                 autoHelper.resetSteerEncoders();
                 autoHelper.autoResetPIDs();
-            }
-            else if (autoHelper.timerInterval_Auto(1, 3)){
-                autoHelper.driver.swerveDrive(0.25, 0, 0); //moves forward to the reef
-            }
-            else if (autoHelper.timerInterval_Auto(4.1, 10)){
-                autoHelper.driver.swerveDrive(0, 0, 0);
-                /* 
-                Arm Code here: Extend Arm, Release Coral into L4, Take off an Algae
-                 */ 
-            }
-        }
-            
-        else {
-            autoHelper.driver.swerveDrive(0, 0, 0); //STOP
-        }
 
+            } else if (autoHelper.timerInterval_Auto(1, 3)) {
+
+                autoHelper.driver.swerveDrive(0.25, 0, 0); // moves forward to the reef
+                autoHelper.elevator.elevatorLift(0.05);
+
+            } else if (autoHelper.timerInterval_Auto(4.1, 10)) {
+
+                autoHelper.driver.swerveDrive(0, 0, 0);
+    
+                // Target angle (arm should move down to 45 degrees)
+                double targetAngle = 45;  
+                targetAngle = Math.max(0, Math.min(targetAngle, 90)); 
+                autoHelper.elevator.armAngle(targetAngle); 
+    
+            }
+        } 
+        else {
+            autoHelper.driver.swerveDrive(0, 0, 0); // STOP
+        }
     }
 
     public void autoLeft() {

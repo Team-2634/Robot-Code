@@ -66,17 +66,17 @@ public class TeleopHelper {
 
     public void liftElevatorFromBumper() { //STILL HAVE TO TEST!
         
-        double[] elevatorLevels = {0.1, 0.3, 0.5, 0.7}; //Elevator Lift Height
+        double[] elevatorLevels = {0.1, 0.3, 0.5, 0.7}; //Elevator Lift Height 
         int currentLevel = 0; // Track the elevator level
     
-        // Move up when right bumper is pressed
+        // Move up
         if (xbox2.getRightBumperPressed()) {
             if (currentLevel < elevatorLevels.length - 1) {
                 currentLevel++;
             }
             elevator.elevatorLift(elevatorLevels[currentLevel]);
         } 
-        // Move down when left bumper is pressed
+        // Move down
         else if (xbox2.getLeftBumperPressed()) {
             if (currentLevel > 0) {
                 currentLevel--;
@@ -88,7 +88,8 @@ public class TeleopHelper {
     public void moveArm(){
 
         //figure out arm code
-      
+
+       
         }
 
         

@@ -8,22 +8,22 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
-import frc.robot.systems.Shooter;
+import frc.robot.systems.Elevator;
 
 public class AutoHelper {
 
     Driver driver;
-    Shooter shooter;
     Climber climber;
     AHRS navx;
     Timer timer;
+    Elevator elevator;
 
-    public AutoHelper(Driver driver, Shooter shooter, Climber climber, AHRS navx, Timer timer) {
+    public AutoHelper(Driver driver, Climber climber, AHRS navx, Timer timer, Elevator elevator) {
         this.driver = driver;
-        this.shooter = shooter;
         this.climber = climber;
         this.navx = navx;
         this.timer = timer;
+        this.elevator = elevator;
     }
 
     PIDController autoXPID = new PIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto);

@@ -21,8 +21,9 @@ public class Teleop {
 
     public void elevatorControl() {
 
-        TeleopHelper.liftElevatorFromBumper(TeleopHelper.xboxElevatorInput);
-
+        //teleopHelper.liftElevatorFromBumper(teleopHelper.xboxElevatorInput);
+        teleopHelper.liftElevatorFromBumper();
+        
     }
 
     

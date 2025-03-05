@@ -63,8 +63,7 @@ public class Robot extends TimedRobot {
     
     @Override
     public void autonomousPeriodic() {
-        auto.autoLeft();
-        //Hi hans this is for testing
+        auto.autoMiddle();
         }
 
     
