@@ -26,11 +26,7 @@ public class Teleop {
     }
     
     public void drive() {
-        teleopHelper.drive(
-        -removeDeadzone(xboxDrive.getLeftY()), 
-        -removeDeadzone(xboxDrive.getLeftX()), 
-        -removeDeadzone(xboxDrive.getRightX()), 
-        xboxDrive.getXButton());
+        teleopHelper.drive(teleopHelper.removeDeadzone(1), teleopHelper.removeDeadzone(0), teleopHelper.removeDeadzone(4));
     }
 
 }
