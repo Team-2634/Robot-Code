@@ -3,7 +3,7 @@ package frc.robot;
 //import com.kauailabs.navx.frc.AHRS;
 import com.studica.frc.AHRS;
 
-
+// import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Elevator;
@@ -17,12 +17,13 @@ public class Teleop {
     
     public void drive() {
         teleopHelper.drive(teleopHelper.removeDeadzone(1), teleopHelper.removeDeadzone(0), teleopHelper.removeDeadzone(4));
+        
     }
 
     public void elevatorControl() {
 
         //teleopHelper.liftElevatorFromBumper(teleopHelper.xboxElevatorInput);
-        teleopHelper.liftElevatorFromBumper();
+        teleopHelper.elevatorControl(teleopHelper.xbox2);
         
     }
 

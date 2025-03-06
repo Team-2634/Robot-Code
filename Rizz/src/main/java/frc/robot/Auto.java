@@ -9,9 +9,9 @@ package frc.robot;
 
 import com.studica.frc.AHRS;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Elevator;
+
 public class Auto {
 
     Timer timer;
@@ -27,31 +27,31 @@ public class Auto {
         timer.start();    
     }
     
-    public void autoTest(){
+    // public void autoTest(){
 
-        if (timer.get() < 8 ){
+    //     if (timer.get() < 8 ){
 
-            if (autoHelper.timerInterval_Auto(0, 1)){
-                autoHelper.resetDriveEncoders();
-                autoHelper.resetSteerEncoders();
-                autoHelper.autoResetPIDs();
-            }
-            else if (autoHelper.timerInterval_Auto(1,5)){
-                autoHelper.driver.swerveDrive(0.10, 0, 0); 
-                //autoHelper.autoDriveByDistance(1,1);
-            }
+    //         if (autoHelper.timerInterval_Auto(0, 1)){
+    //             autoHelper.resetDriveEncoders();
+    //             autoHelper.resetSteerEncoders();
+    //             autoHelper.autoResetPIDs();
+    //         }
+    //         else if (autoHelper.timerInterval_Auto(1,5)){
+    //             autoHelper.driver.swerveDrive(0.10, 0, 0); 
+    //             //autoHelper.autoDriveByDistance(1,1);
+    //         }
 
-            else if (autoHelper.timerInterval_Auto(5,8)){
-                autoHelper.driver.swerveDrive(-0.10, 0.05, 0); 
-            }
+    //         else if (autoHelper.timerInterval_Auto(5,8)){
+    //             autoHelper.driver.swerveDrive(-0.10, 0.05, 0); 
+    //         }
 
-        }
+    //     }
 
-        else {
-            autoHelper.driver.swerveDrive(0, 0, 0); //STOP
-        }
+    //     else {
+    //         autoHelper.driver.swerveDrive(0, 0, 0); //STOP
+    //     }
 
-    }
+    // }
 
     public void autoMiddle() {
 
@@ -61,6 +61,7 @@ public class Auto {
 
                 autoHelper.resetDriveEncoders();
                 autoHelper.resetSteerEncoders();
+                autoHelper.resetElevatorEncoders();
                 autoHelper.autoResetPIDs();
 
             } else if (autoHelper.timerInterval_Auto(1, 3)) {
@@ -127,6 +128,7 @@ public class Auto {
                 autoHelper.resetDriveEncoders();
                 autoHelper.resetSteerEncoders();
                 autoHelper.autoResetPIDs();
+                
             }
             else if (autoHelper.timerInterval_Auto(1, 2)) {
                 autoHelper.driver.swerveDrive(0.10, 0, 0); // Drive Forward
@@ -137,6 +139,7 @@ public class Auto {
             else if (autoHelper.timerInterval_Auto(3, 4)) {
                 autoHelper.driver.swerveDrive(0.10, 0, 0); // Drive towards reef, while elevator lifts up
                 autoHelper.elevator.elevatorLift(0.05);
+                //autoHelper.elevator.moveToL4();
             }
             else if (autoHelper.timerInterval_Auto(4, 6)) {
                 autoHelper.driver.swerveDrive(0, 0, 0); 
@@ -154,7 +157,7 @@ public class Auto {
 
     }
 
-    int counter = 0;
+    // int counter = 0;
 
     // public void autoProgramTest() {
     //     SmartDashboard.putNumber("auto",counter);

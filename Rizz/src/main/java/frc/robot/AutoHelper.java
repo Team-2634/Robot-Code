@@ -19,10 +19,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.systems.Climber;
-
-
-
 
 public class AutoHelper {
 
@@ -73,6 +69,11 @@ public class AutoHelper {
         driver.frontRightSteer.setPosition(0);
         driver.backLeftSteer.setPosition(0);
         driver.backRightSteer.setPosition(0);
+    }
+
+    public void resetElevatorEncoders(){
+        elevator.elevatorMotor.setPosition(0);
+        elevator.armMotor.setPosition(0);
     }
 
     public void autoDriveByDistance(double distanceX, double distanceY) {

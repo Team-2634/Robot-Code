@@ -53,10 +53,10 @@ public class TeleopHelper {
 //  }
 
     // public void liftElevatorFromBumper() {
-    //     if (xbox1.getLeftBumperButtonPressed()) {
+    //     if (xbox1.getRightTriggerAxis() > 0.2) {
     //         elevator.elevatorLift(0.05); // Moves up
     //     } 
-    //     else if (xbox1.getRightBumperButtonPressed()) {
+    //     else if (xbox1.getRightTriggerAxis() > 0.2) {
     //         elevator.elevatorLift(-0.05); // Moves down
     //     } 
     //     else {
@@ -64,38 +64,64 @@ public class TeleopHelper {
     //     }
     // }
 
-    public void liftElevatorFromBumper() { //STILL HAVE TO TEST!
-        
-        double[] elevatorLevels = {0.1, 0.3, 0.5, 0.7}; //Elevator Lift Height 
-        int currentLevel = 0; // Track the elevator level
+    private int currentLevel = 1;  // Start at L1
+    private boolean rtPressed = false;
+    private boolean ltPressed = false;
+
+    public void elevatorControl(XboxController xbox2) {
+        double rtValue = xbox2.getRightTriggerAxis();
+        double ltValue = xbox2.getLeftTriggerAxis();
     
-        // Move up
-        if (xbox2.getRightBumperPressed()) {
-            if (currentLevel < elevatorLevels.length - 1) {
+        
+        if (rtValue > 0.5 && !rtPressed) { 
+            if (currentLevel < 4) { // Max level is L4
                 currentLevel++;
+                moveToCurrentLevel();
             }
-            elevator.elevatorLift(elevatorLevels[currentLevel]);
-        } 
-        // Move down
-        else if (xbox2.getLeftBumperPressed()) {
-            if (currentLevel > 0) {
+            rtPressed = true; 
+        } else if (rtValue < 0.2) {
+            rtPressed = false; 
+        }
+    
+        if (ltValue > 0.5 && !ltPressed) {
+            if (currentLevel > 1) { // Min level is L1
                 currentLevel--;
+                moveToCurrentLevel();
             }
-            elevator.elevatorLift(elevatorLevels[currentLevel]);
+            ltPressed = true;
+        } else if (ltValue < 0.2) {
+            ltPressed = false;
         }
     }
 
-    public void moveArm() {
-        double currentAngle = elevator.getArmAngle(); 
-    
-        if (xbox1.getAButtonPressed() && Math.abs(currentAngle - 45) > 2) {
-            elevator.armAngle(45); //not real angle
-        } 
-        
-        else if (xbox1.getBButtonPressed() && Math.abs(currentAngle - 0) > 2) {
-            elevator.armAngle(0);
+    // Moves elevator based on current level
+    private void moveToCurrentLevel() {
+        switch (currentLevel) {
+            case 1: elevator.moveToL1(); break;
+            case 2: elevator.moveToL2(); break;
+            case 3: elevator.moveToL3(); break;
+            case 4: elevator.moveToL4(); break;
         }
     }
     
+    public void moveArm() {
+    
+        if (xbox2.getAButtonPressed()) { 
+            elevator.armAngle(35); // Moves arm to 35° downward
+        } 
+        else if (xbox2.getBButtonPressed()) { 
+            elevator.armAngle(0);  // Moves arm back up to 0°
+        }
+
+        if (xbox2.getLeftBumperButtonPressed()) {
+            elevator.openClaw(null);
+        } 
+
+        else if (xbox2.getRightBumperButtonPressed()) {  
+            elevator.closeClaw(null);
+        
+        }
+        
+    }
 
 }

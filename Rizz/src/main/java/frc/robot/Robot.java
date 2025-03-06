@@ -44,7 +44,8 @@ public class Robot extends TimedRobot {
         matchTimer.start();
         navx.reset();
         driver.initialize();
-
+        elevator.elevatorEncoderReset();
+        //May Nahida Guide Us
     }
     
     @Override

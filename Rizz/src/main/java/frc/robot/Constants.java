@@ -96,7 +96,18 @@ public class Constants {
     //auto
     public final static double maxAutoVelocity = 0.5;
 
+    // arm & elevator properties
 
+    public static final double ENCODER_TICKS_PER_REV = 2048;
+    public static final double ARM_GEAR_RATIO = 2.0; // If arm has a gearbox, adjust this
+    public static final double DEGREES_PER_REV = 360.0;        
 
+    public static final double PULLEY_DIAMETER_METERS = 0.05; // Measure this
+    public static final double PULLEY_CIRCUMFERENCE = Math.PI * PULLEY_DIAMETER_METERS;
+
+    public static final double L1_HEIGHT = 0.2;  // Values needs to be measured (in meters)
+    public static final double L2_HEIGHT = 0.5;
+    public static final double L3_HEIGHT = 1.0;
+    public static final double L4_HEIGHT = 1.5;
 
 }
