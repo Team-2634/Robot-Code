@@ -1,21 +1,30 @@
 package frc.robot.systems;
 
 import com.studica.frc.AHRS;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 public class Driver {
+
+    AHRS navx = new AHRS(AHRS.NavXComType.kMXP_SPI);
+
     PIDController pidFrontLeftTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
     PIDController pidFrontRightTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
     PIDController pidBackLeftTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
@@ -46,16 +55,37 @@ public class Driver {
     private final double backLeftAbsEncoderOffset = Constants.backLeftAbsEncoderOffset;
     private final double backRightAbsEncoderOffset = Constants.backRightAbsEncoderOffset;
     private final double[] absEncoderOffsetArray = {frontLeftAbsEncoderOffset, frontRightEncoderOffset, backLeftAbsEncoderOffset, backRightAbsEncoderOffset};
-
-    private double currentRotation;
     
+    public final CANcoderConfigurator frontLeftEncoderConfig = absEncoderArray[0].getConfigurator();
+    public final CANcoderConfigurator frontRightEncoderConfig = absEncoderArray[1].getConfigurator();
+    public final CANcoderConfigurator backLeftEncoderConfig = absEncoderArray[2].getConfigurator();
+    public final CANcoderConfigurator backRightEncoderConfig = absEncoderArray[3].getConfigurator();
+    public final CANcoderConfigurator[] encoderConfigArray = {frontLeftEncoderConfig, frontRightEncoderConfig, backLeftEncoderConfig, backRightEncoderConfig};
+
     Translation2d m_frontLeftLocation = new Translation2d(0.340, 0.285);
     Translation2d m_frontRightLocation = new Translation2d(0.340, -0.285);
     Translation2d m_backLeftLocation = new Translation2d(-0.340, 0.285);
     Translation2d m_backRightLocation = new Translation2d(-0.340, -0.285);
 
-    SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
+    final SwerveModulePosition frontLeftModulePosition = new SwerveModulePosition();
+    final SwerveModulePosition frontRightModulePosition = new SwerveModulePosition();
+    final SwerveModulePosition backLeftModulePosition = new SwerveModulePosition();
+    final SwerveModulePosition backRightModulePosition = new SwerveModulePosition();
+    final SwerveModulePosition[] modulePositionArray = {
+        frontLeftModulePosition, frontRightModulePosition, backLeftModulePosition, backRightModulePosition
+    };
+
+    public final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
         m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
+
+    //DO NOT REMOVE ANYTHING WITH POSE2D ESTIMATOR THIS DOES STUFF TO MAKE IT AUTO ALIGN
+
+    SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
+        m_kinematics, 
+        navx.getRotation2d(), 
+        modulePositionArray,
+        new Pose2d()
+    );
 
     //rotations counted by motor -> rotations wheel side -> distance travelled (meters) 
     public final double ticksToMetersDrive = Constants.kDriveMotorGearRatio * (Units.inchesToMeters(Constants.kWheelDiameterInches) * Math.PI);
@@ -65,31 +95,24 @@ public class Driver {
     private void initializeModule(int module) {
 
         driveMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
-if (module == 2) {
+        steerMotorArray[module].setInverted(true);
+        driveMotorArray[module].setPosition(0);
+        steerMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
 
-        driveMotorArray[module].setInverted(false); } else {
+        if (module == 0) {
+        driveMotorArray[module].setInverted(false);
+        } else {
             driveMotorArray[module].setInverted(true);
         }
-        steerMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
-        steerMotorArray[module].setInverted(true);
         steerMotorArray[module].setPosition(0);
         pidArray[module].reset();
         pidArray[module].enableContinuousInput(-Math.PI, Math.PI);
 
-    }
+        CANcoderConfiguration defaultEncoderConfig = new CANcoderConfiguration();
+        defaultEncoderConfig.MagnetSensor.MagnetOffset = absEncoderOffsetArray[module];
+        defaultEncoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+        encoderConfigArray[module].apply(defaultEncoderConfig);
 
-    /**
-     * Auto align wheels to forward position
-     * @param module
-     */
-    private void alignModule(int module) {
-
-        currentRotation = absEncoderArray[module].getAbsolutePosition().getValueAsDouble();
-
-        double alignPower = pidArray[module].calculate(currentRotation, absEncoderOffsetArray[module] * ticksToRadsTurning);
-        
-        steerMotorArray[module].setPosition(alignPower);
-        
     }
 
     public void initialize() {
@@ -97,38 +120,31 @@ if (module == 2) {
         initializeModule(1);
         initializeModule(2);
         initializeModule(3);
+        poseEstimator.resetPosition(navx.getRotation2d(), modulePositionArray, getPose());
+        navx.reset();
     }
 
-    
-
-    public void align(){
-        alignModule(0);
-        alignModule(1);
-        alignModule(2);
-        alignModule(3);
+    public double readAbsEncoderRad(int module) {
+        absEncoderArray[module].getPosition().refresh();
+        return absEncoderArray[module].getAbsolutePosition().getValueAsDouble() * 2 * Math.PI;
     }
 
+    /**
+     * Gets encoder position of given encoder
+     * @param encoder location id (0 is front left, 3 is back right)
+     * @return value of requested encoder
+     */
     public double readTurnEncoder(int encoder) {
-        //Angle dave = frontLeftSteer.getPosition().getValue();
-        double[] turningEncoderArray = {
-            frontLeftSteer.getPosition().getValueAsDouble(),// changed to return double instead of angle - angleis new thing???
-            frontRightSteer.getPosition().getValueAsDouble(),
-            backLeftSteer.getPosition().getValueAsDouble(),
-            backRightSteer.getPosition().getValueAsDouble()
-        };
-        return turningEncoderArray[encoder];
-
-        
+        return steerMotorArray[encoder].getPosition().getValueAsDouble();        
     }
 
+    /**
+     * Gets encoder position of given encoder
+     * @param encoder location id (0 is front left, 3 is back right)
+     * @return value of requested encoder
+     */
     public double readDriveEncoder(int encoder) {
-        double[] driveEncoderArray = {
-            frontLeftDrive.getPosition().getValueAsDouble(), 
-            frontRightDrive.getPosition().getValueAsDouble(), 
-            backLeftDrive.getPosition().getValueAsDouble(), 
-            backRightDrive.getPosition().getValueAsDouble()
-        };
-        return driveEncoderArray[encoder];
+        return driveMotorArray[encoder].getPosition().getValueAsDouble();
     }
 
     private SwerveModuleState[] swerveInputToModuleStates(double xSpeed, double ySpeed, double rotSpeed) {
@@ -144,7 +160,7 @@ if (module == 2) {
     }
 
     private SwerveModuleState swerveOptimizeModuleState(int id, SwerveModuleState moduleState) {
-        double sensorPosition = readTurnEncoder(id) * ticksToRadsTurning;
+        double sensorPosition = readAbsEncoderRad(id); //readTurnEncoder(id) * ticksToRadsTurning;
         Rotation2d currentAngle = new Rotation2d(sensorPosition);    
         SwerveModuleState optimizedAngle = SwerveModuleState.optimize(moduleState, currentAngle);
         return optimizedAngle;
@@ -162,7 +178,7 @@ if (module == 2) {
         double drivePower = optimizedState.speedMetersPerSecond / Constants.maxSpeedMpS;
         
         double turnPower = pidArray[module].calculate(
-            steerMotorArray[module].getPosition().getValueAsDouble() * ticksToRadsTurning, 
+            readAbsEncoderRad(module), //steerMotorArray[module].getPosition().getValueAsDouble() * ticksToRadsTurning, 
             optimizedState.angle.getRadians()
         );
         SmartDashboard.putNumber("module" + module + " rawsensordata", steerMotorArray[module].getPosition().getValueAsDouble());
@@ -200,7 +216,36 @@ if (module == 2) {
         return speeds;
     }
 
-  
+    SwerveModulePosition getModulePosition(int module) {
+        return new SwerveModulePosition(
+            readDriveEncoder(module) * Constants.driveRotsToMeter, 
+            new Rotation2d(readAbsEncoderRad(module))
+        );
+    }
+
+    SwerveModulePosition[] getModulePositionArray() {
+        SwerveModulePosition[] swerveModulePositionArray = {
+            getModulePosition(0),
+            getModulePosition(1),
+            getModulePosition(2),
+            getModulePosition(3)
+        };
+        return swerveModulePositionArray;
+    }
+
+    public Pose2d updatePose() {
+        return poseEstimator.update(navx.getRotation2d(), getModulePositionArray());
+    }
+
+    public Pose2d getPose() {
+        return poseEstimator.getEstimatedPosition();
+    }
+
+    public void panicReset() {
+        navx.reset();
+        navx.zeroYaw();
+        navx.setAngleAdjustment(0);
+    }
 
     // public void resetTurnEncoders() {
     //     frontLeftSteer.setPosition(0);

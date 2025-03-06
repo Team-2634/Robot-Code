@@ -5,10 +5,10 @@ public class Constants {
     public final static double talonEncoder_TicksPerRev = 2048;
     public final static double neoEncoder_TicksPerRev = 42;
 
-    public final static double frontLeftAbsEncoderOffset = 0.498535;
-    public final static double frontRightAbsEncoderOffset = -0.492676;
-    public final static double backLeftAbsEncoderOffset = 0.022705;
-    public final static double backRightAbsEncoderOffset = 0.015381;
+    public final static double frontLeftAbsEncoderOffset = 0.134033203125;
+    public final static double frontRightAbsEncoderOffset = 0.035888671875;
+    public final static double backLeftAbsEncoderOffset = -0.287109375;
+    public final static double backRightAbsEncoderOffset = -0.38818359375;
 
     public final static double maxDegree = 360;
 
@@ -73,6 +73,7 @@ public class Constants {
     public final static double kWheelDiameterInches = 3.75;
     public final static double kDriveMotorGearRatio = 1 / 8.14;
     public final static double kTurningMotorGearRatio = 1.0 / (150.0 / 7.0);
+    public final static double driveRotsToMeter = 0.055555555; //0.073286;
 
     //controller settings
     public final static double XdriveSensitivity = 1;
