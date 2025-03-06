@@ -94,17 +94,18 @@ public class Driver {
 
     private void initializeModule(int module) {
 
-        driveMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
         steerMotorArray[module].setInverted(true);
-        driveMotorArray[module].setPosition(0);
         steerMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
-
-        if (module == 0) {
-        driveMotorArray[module].setInverted(false);
-        } else {
-            driveMotorArray[module].setInverted(true);
-        }
         steerMotorArray[module].setPosition(0);
+        driveMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
+        driveMotorArray[module].setPosition(0);
+
+        if (module == 3) {
+        driveMotorArray[module].setInverted(true);
+        } else {
+            driveMotorArray[module].setInverted(false);
+        }
+
         pidArray[module].reset();
         pidArray[module].enableContinuousInput(-Math.PI, Math.PI);
 

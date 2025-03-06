@@ -5,10 +5,10 @@ public class Constants {
     public final static double talonEncoder_TicksPerRev = 2048;
     public final static double neoEncoder_TicksPerRev = 42;
 
-    public final static double frontLeftAbsEncoderOffset = 0.134033203125;
-    public final static double frontRightAbsEncoderOffset = 0.035888671875;
-    public final static double backLeftAbsEncoderOffset = -0.287109375;
-    public final static double backRightAbsEncoderOffset = -0.38818359375;
+    public final static double frontLeftAbsEncoderOffset = -0.438232421875;
+    public final static double frontRightAbsEncoderOffset = 0.2087402343755;
+    public final static double backLeftAbsEncoderOffset = -0.403564453125;
+    public final static double backRightAbsEncoderOffset = -0.02294921875;
 
     public final static double maxDegree = 360;
 
@@ -31,15 +31,15 @@ public class Constants {
 
     //switched back so bot can run properly
 
-    public final static int frontLeftDriveID = 0;
-    public final static int frontRightDriveID = 2;
-    public final static int backLeftDriveID = 4;
-    public final static int backRightDriveID = 6;
+    public final static int frontLeftDriveID = 3;
+    public final static int frontRightDriveID = 5;
+    public final static int backLeftDriveID = 1;
+    public final static int backRightDriveID = 7;
 
-    public final static int frontLeftSteerID = 1;
-    public final static int frontRightSteerID = 3;
-    public final static int backLeftSteerID = 5;
-    public final static int backRightSteerID = 7;
+    public final static int frontLeftSteerID = 2;
+    public final static int frontRightSteerID = 4;
+    public final static int backLeftSteerID = 0;
+    public final static int backRightSteerID = 6;
     
     // public final static int frontLeftAbsEncoderID = 3;
     // public final static int frontRightAbsEncoderID = 0;
@@ -48,9 +48,9 @@ public class Constants {
 
     //fixed encoder id's
 
-    public final static int frontLeftAbsEncoderID = 0;
-    public final static int frontRightAbsEncoderID = 1;
-    public final static int backLeftAbsEncoderID = 2;
+    public final static int frontLeftAbsEncoderID = 1;
+    public final static int frontRightAbsEncoderID = 2;
+    public final static int backLeftAbsEncoderID = 0;
     public final static int backRightAbsEncoderID = 3;
 
     //PID values
@@ -76,7 +76,7 @@ public class Constants {
     public final static double XdriveSensitivity = 1;
     public final static double YdriveSensitivity = 1; 
     public final static double turningSensitivity = 1;
-    public final static double maxSpeedMpS = 1; //robot speed
+    public final static double maxSpeedMpS = 0.5; //robot speed
 
     public final static double controllerDeadzone = 0.1;
 

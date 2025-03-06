@@ -30,7 +30,7 @@ public class TeleopHelper {
 
     public void drive(double XSpeed, double YSpeed, double TurnSpeed, boolean disableFieldOrient) {
 
-        if (disableFieldOrient) {
+        if (!disableFieldOrient) {
             double[] speedsFieldOriented = Driver.fieldOrient(XSpeed, YSpeed, navx);
             XSpeed = speedsFieldOriented[0];
             YSpeed = speedsFieldOriented[1];
