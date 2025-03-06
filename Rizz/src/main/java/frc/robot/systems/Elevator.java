@@ -56,7 +56,7 @@ public class Elevator {
         solenoid.set(true);
     }
 
-    public void pneumaticsClolse(Solenoid solenoid) {
+    public void pneumaticsClose(Solenoid solenoid) {
 
         solenoid.set(false);
     }

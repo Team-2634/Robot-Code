@@ -65,7 +65,11 @@ public class Driver {
     private void initializeModule(int module) {
 
         driveMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
-        driveMotorArray[module].setInverted(true);
+if (module == 2) {
+
+        driveMotorArray[module].setInverted(false); } else {
+            driveMotorArray[module].setInverted(true);
+        }
         steerMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
         steerMotorArray[module].setInverted(true);
         steerMotorArray[module].setPosition(0);

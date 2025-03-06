@@ -9,7 +9,6 @@ package frc.robot;
 
 import com.studica.frc.AHRS;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Elevator;
 public class Auto {
@@ -17,8 +16,8 @@ public class Auto {
     Timer timer;
 
     AutoHelper autoHelper;
-    public Auto(Driver driver, Climber climber, AHRS navx, Timer timer, Elevator elevator) {
-        this.autoHelper = new AutoHelper(driver, climber, navx, timer, elevator);
+    public Auto(Driver driver, AHRS navx, Timer timer, Elevator elevator) {
+        this.autoHelper = new AutoHelper(driver, timer, elevator);
         this.timer = timer;
     }
 
@@ -38,6 +37,7 @@ public class Auto {
             }
             else if (autoHelper.timerInterval_Auto(1,5)){
                 autoHelper.driver.swerveDrive(0.10, 0, 0); 
+                //autoHelper.autoDriveByDistance(1,1);
             }
 
             else if (autoHelper.timerInterval_Auto(5,8)){
@@ -54,7 +54,7 @@ public class Auto {
 
     public void autoMiddle() {
 
-        if (timer.get() < 15) {
+        if (timer.get() < 15) { //eventually add limelight target
     
             if (autoHelper.timerInterval_Auto(0, 1)) {
 
@@ -64,23 +64,24 @@ public class Auto {
 
             } else if (autoHelper.timerInterval_Auto(1, 3)) {
 
-                autoHelper.driver.swerveDrive(0.25, 0, 0); // moves forward to the reef
-                autoHelper.elevator.elevatorLift(0.05);
+                autoHelper.driver.swerveDrive(0, 0,  0.10 ); // moves forward to the reef
+                //autoHelper.elevator.elevatorLift(0.05);
 
-            } else if (autoHelper.timerInterval_Auto(4.1, 10)) {
+            } else if (autoHelper.timerInterval_Auto(3.1, 10)) {
 
                 autoHelper.driver.swerveDrive(0, 0, 0);
     
                 // Target angle (arm should move down to 45 degrees)
-                double targetAngle = 45;  
-                targetAngle = Math.max(0, Math.min(targetAngle, 90)); 
-                autoHelper.elevator.armAngle(targetAngle); 
+                // double targetAngle = 45;  
+                // targetAngle = Math.max(0, Math.min(targetAngle, 90)); 
+                // autoHelper.elevator.armAngle(targetAngle); 
     
             }
         } 
         else {
             autoHelper.driver.swerveDrive(0, 0, 0); // STOP
         }
+
     }
 
     public void autoLeft() {
@@ -92,14 +93,14 @@ public class Auto {
                 autoHelper.autoResetPIDs();
             }
             else if (autoHelper.timerInterval_Auto(1, 2)) {
-                autoHelper.driver.swerveDrive(0.4, 0, 0); // Drive Forward
+                autoHelper.driver.swerveDrive(0.25, 0, 0); // Drive Forward
             }
             else if (autoHelper.timerInterval_Auto(2, 3)) {
-                autoHelper.driver.swerveDrive(0, 0, 0.20); // Rotate towards Reef
+                autoHelper.driver.swerveDrive(0, 0, 0.25); // Rotate towards Reef
             }
             else if (autoHelper.timerInterval_Auto(3, 4)) {
-                autoHelper.driver.swerveDrive(0.10, 0, 0); // Drive towards reef
-                //Elevator and Arm Both Lift Up
+                autoHelper.driver.swerveDrive(0.10, 0, 0); // Drive towards reef, while elevator lifts up
+                autoHelper.elevator.elevatorLift(0.05);
             }
             else if (autoHelper.timerInterval_Auto(4, 6)) {
                 autoHelper.driver.swerveDrive(0, 0, 0); 
@@ -114,6 +115,43 @@ public class Auto {
         else {
             autoHelper.driver.swerveDrive(0, 0, 0); // STOP
         }
+    }
+
+    public void autoRight(){
+
+        if (timer.get() < 15) {
+            
+            if (autoHelper.timerInterval_Auto(0, 1)) {
+                autoHelper.resetDriveEncoders();
+                autoHelper.resetSteerEncoders();
+                autoHelper.autoResetPIDs();
+            }
+            else if (autoHelper.timerInterval_Auto(1, 2)) {
+                autoHelper.driver.swerveDrive(0.10, 0, 0); // Drive Forward
+            }
+            else if (autoHelper.timerInterval_Auto(2, 3)) {
+                autoHelper.driver.swerveDrive(0, 0, -0.20); // Rotate towards Reef
+            }
+            else if (autoHelper.timerInterval_Auto(3, 4)) {
+                autoHelper.driver.swerveDrive(0.10, 0, 0); // Drive towards reef, while elevator lifts up
+                autoHelper.elevator.elevatorLift(0.05);
+            }
+            else if (autoHelper.timerInterval_Auto(4, 6)) {
+                autoHelper.driver.swerveDrive(0, 0, 0); 
+                // Stops At reef, Arm Code Goes here
+                // Release Coral
+            }
+            else if (autoHelper.timerInterval_Auto(6, 8)) {
+                autoHelper.driver.swerveDrive(0, 0, 0);
+            }
+            
+        } 
+        else {
+            autoHelper.driver.swerveDrive(0, 0, 0); // STOP
+        }
+
+
+
     }
 
     

@@ -5,23 +5,22 @@ import com.studica.frc.AHRS;
 
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Elevator;
+import edu.wpi.first.math.*;
+
 
 public class AutoHelper {
 
     Driver driver;
-    Climber climber;
     AHRS navx;
     Timer timer;
     Elevator elevator;
 
-    public AutoHelper(Driver driver, Climber climber, AHRS navx, Timer timer, Elevator elevator) {
+    public AutoHelper(Driver driver, Timer timer, Elevator elevator) {
         this.driver = driver;
-        this.climber = climber;
-        this.navx = navx;
         this.timer = timer;
         this.elevator = elevator;
     }
@@ -37,6 +36,18 @@ public class AutoHelper {
         } else {
             return false;
         }
+    }
+
+    void initialize(){
+        autoXPID.setTolerance(Constants.autoPositionToleranceMeters);
+        autoXPID.reset();
+
+        autoYPID.setTolerance(Constants.autoPositionToleranceMeters);
+        autoYPID.reset();
+
+        autoTurnPID.enableContinuousInput(-Math.PI, Math.PI);
+        autoTurnPID.setTolerance(Constants.autoRotationToleranceRadians);
+        autoTurnPID.reset();
     }
 
     public void resetDriveEncoders() {
@@ -71,6 +82,14 @@ public class AutoHelper {
         autoXPID.reset();
         autoYPID.reset();
     }
+
+    // public void driveToPosition(Pose2d endPose){
+    //     Pose2d startPose = driver.getPose();
+
+    //     double xSpeed = autoXPID.calculate(startPose.getX(), endPose.getX());
+    //     double ySpeed = autoYPID.calculate(startPose.getX(), endPose.getY());
+    //     double rotSpeed = autoTurnPID.calculate(MathUtil.angleModulus(startPose.getRotation().getRadians()))
+    // }
 
     /**
      * @deprecated

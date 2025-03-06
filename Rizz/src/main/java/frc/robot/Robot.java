@@ -22,7 +22,7 @@ public class Robot extends TimedRobot {
 
     AHRS navx = new AHRS(AHRS.NavXComType.kMXP_SPI); 
 
-    Auto auto = new Auto(driver, climber, navx, matchTimer, elevator);
+    Auto auto = new Auto(driver, navx, matchTimer, elevator);
     Teleop teleop = new Teleop(driver, climber, navx, elevator);
 
     private static final String kDefaultAuto = "Default";

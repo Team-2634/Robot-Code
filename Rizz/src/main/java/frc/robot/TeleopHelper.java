@@ -85,13 +85,17 @@ public class TeleopHelper {
         }
     }
 
-    public void moveArm(){
-
-        //figure out arm code
-
-       
-        }
-
+    public void moveArm() {
+        double currentAngle = elevator.getArmAngle(); 
+    
+        if (xbox1.getAButtonPressed() && Math.abs(currentAngle - 45) > 2) {
+            elevator.armAngle(45); //not real angle
+        } 
         
+        else if (xbox1.getBButtonPressed() && Math.abs(currentAngle - 0) > 2) {
+            elevator.armAngle(0);
+        }
+    }
+    
 
 }
