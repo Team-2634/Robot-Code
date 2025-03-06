@@ -64,7 +64,7 @@ public class Auto {
 
             } else if (autoHelper.timerInterval_Auto(1, 3)) {
 
-                autoHelper.driver.swerveDrive(0, 0,  0.10 ); // moves forward to the reef
+                autoHelper.driver.swerveDrive(0, 0,  0.25); // moves forward to the reef
                 //autoHelper.elevator.elevatorLift(0.05);
 
             } else if (autoHelper.timerInterval_Auto(3.1, 10)) {

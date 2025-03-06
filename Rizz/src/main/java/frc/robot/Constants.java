@@ -84,6 +84,8 @@ public class Constants {
 
     //field oriented on/off
     public final static boolean fieldOriented = true;
+    public static final double autoPositionToleranceMeters = 0.2;
+    public static final double autoRotationToleranceRadians = 0.2;
 
     //functions
     public final static double clamp(double input, double min, double max) {
