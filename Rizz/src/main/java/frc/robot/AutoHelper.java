@@ -46,15 +46,21 @@ public class AutoHelper {
         driver.backRightDrive.setPosition(0);
     }
 
-    
+    public void resetSteerEncoders(){
+        driver.frontLeftSteer.setPosition(0);
+        driver.frontRightSteer.setPosition(0);
+        driver.backLeftSteer.setPosition(0);
+        driver.backRightSteer.setPosition(0);
+    }
+
     public void autoDriveByDistance(double distanceX, double distanceY) {
         double[] distanceFieldOriented = Driver.fieldOrient(distanceX, distanceY, navx);
         double fieldDistanceX = distanceFieldOriented[0];
-        double fieldDistanceY = distanceFieldOriented[1];
+        double fieldDistanceY = distanceFieldOriented[1]; 
 
         double[] displacementFieldOriented = Driver.fieldOrient(navx.getDisplacementX(), navx.getDisplacementY(), navx);
         double currentDisplacementX = displacementFieldOriented[0];
-        double currentDisplacementY = displacementFieldOriented[1];
+        double currentDisplacementY = displacementFieldOriented[1]; 
         
         double xSpeed = autoXPID.calculate(currentDisplacementX, fieldDistanceX);
         double ySpeed = autoYPID.calculate(currentDisplacementY, fieldDistanceY);
