@@ -3,8 +3,9 @@ package frc.robot.systems;
 import com.studica.frc.AHRS;
 
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import frc.robot.Constants;
-
+import edu.wpi.first.wpilibj.Solenoid;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -15,6 +16,7 @@ public class Elevator {
     public final TalonFX armMotor = new TalonFX(Constants.armMotorID); //no ID value yet
     public final TalonFX elevatorMotor = new TalonFX(Constants.elevatorMotorID); //no ID value yet
     private Encoder armEncoder;
+    Solenoid solenoid1 = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
 
     private static final double ENCODER_TICKS_PER_REV = 4096; // Example value
     private static final double ARM_GEAR_RATIO = 2.0; // If arm has a gearbox, adjust this
@@ -46,6 +48,16 @@ public class Elevator {
         else {
             armMotor.set(0);  // Stop the motor when at target
         }
-}
 
+    }
+
+    public void pneumaticsOpen(Solenoid solenoid) {
+
+        solenoid.set(true);
+    }
+
+    public void pneumaticsClolse(Solenoid solenoid) {
+
+        solenoid.set(false);
+    }
 }
