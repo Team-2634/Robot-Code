@@ -59,8 +59,8 @@ public class Elevator{
     }
 
     public double getArmAngle() {
-        double rotations = armMotor.getPosition().getValueAsDouble(); // Get rotations from TalonFX encoder
-        return (rotations / Constants.ARM_GEAR_RATIO) * Constants.DEGREES_PER_REV; // Convert to degrees
+        double rotations = armMotor.getPosition().getValueAsDouble(); 
+        return (rotations / Constants.ARM_GEAR_RATIO) * Constants.DEGREES_PER_REV;  
     }
 
     public void armAngle(double targetAngle) {
