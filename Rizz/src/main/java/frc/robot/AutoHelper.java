@@ -7,9 +7,21 @@ import com.studica.frc.AHRS;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Elevator;
 import edu.wpi.first.math.*;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.systems.Climber;
+
+
 
 
 public class AutoHelper {
@@ -28,7 +40,6 @@ public class AutoHelper {
     PIDController autoXPID = new PIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto);
     PIDController autoYPID = new PIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto);
     PIDController autoTurnPID = new PIDController(Constants.kpAutoRotate, Constants.kiAutoRotate, Constants.kdAutoRotate);
-
 
     public boolean timerInterval_Auto(double min, double max) {
         if (timer.get() > min && timer.get() < max) {
@@ -83,13 +94,31 @@ public class AutoHelper {
         autoYPID.reset();
     }
 
-    // public void driveToPosition(Pose2d endPose){
-    //     Pose2d startPose = driver.getPose();
+    public void driveToPosition(Pose2d endPose){
+        Pose2d startPose = driver.getPose();
 
-    //     double xSpeed = autoXPID.calculate(startPose.getX(), endPose.getX());
-    //     double ySpeed = autoYPID.calculate(startPose.getX(), endPose.getY());
-    //     double rotSpeed = autoTurnPID.calculate(MathUtil.angleModulus(startPose.getRotation().getRadians()), MathUtil.angleModulus(endPose.getRotation().getRadians()));
-    // }
+        double xSpeed = autoXPID.calculate(startPose.getX(), endPose.getX());
+        double ySpeed = autoYPID.calculate(startPose.getX(), endPose.getY());
+        double rotSpeed = autoTurnPID.calculate(MathUtil.angleModulus(startPose.getRotation().getRadians()), MathUtil.angleModulus(endPose.getRotation().getRadians()));
+
+        double[] fieldOriented = driver.fieldOrient(xSpeed, ySpeed, navx);
+        driver.swerveDrive(Constants.clamp(fieldOriented[0], -Constants.maxAutoVelocity, Constants.maxAutoVelocity), Constants.clamp(fieldOriented[1], -Constants.maxAutoVelocity, Constants.maxAutoVelocity), Constants.clamp(rotSpeed, -Constants.maxAutoVelocity, Constants.maxAutoVelocity));
+    }
+
+    public boolean atTargetPosition() {
+        boolean at = (autoXPID.atSetpoint() && autoYPID.atSetpoint() && autoTurnPID.atSetpoint()) ? true : false;
+        SmartDashboard.putBoolean("x good", autoXPID.atSetpoint());
+        SmartDashboard.putBoolean("y good", autoYPID.atSetpoint());
+        SmartDashboard.putBoolean("rot good", autoTurnPID.atSetpoint());
+
+        if (at) {
+            autoXPID.reset();//driver.getPose().getX());
+            autoYPID.reset();//driver.getPose().getY());
+            autoTurnPID.reset();
+        }
+        return at;
+    }
+
 
     /**
      * @deprecated
@@ -148,6 +177,11 @@ public class AutoHelper {
 
     public void autoDriveRotatePID(double targetYawRadians) {
         driver.swerveDrive(0, 0, autoTurnPID.calculate(targetYawRadians, Math.toRadians(navx.getYaw())));
+    }
+
+    public Pose2d setDesiredPose(int i, int j, double pi) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setDesiredPose'");
     }
     
 }

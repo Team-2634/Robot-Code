@@ -9,6 +9,7 @@ package frc.robot;
 
 import com.studica.frc.AHRS;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Elevator;
 public class Auto {
@@ -66,6 +67,7 @@ public class Auto {
 
                 autoHelper.driver.swerveDrive(0, 0,  0.25); // moves forward to the reef
                 //autoHelper.elevator.elevatorLift(0.05);
+                
 
             } else if (autoHelper.timerInterval_Auto(3.1, 10)) {
 
@@ -150,9 +152,26 @@ public class Auto {
             autoHelper.driver.swerveDrive(0, 0, 0); // STOP
         }
 
-
-
     }
 
-    
+    int counter = 0;
+
+    // public void autoProgramTest() {
+    //     SmartDashboard.putNumber("auto",counter);
+    //     switch (counter) {
+    //         case 0:
+    //             autoHelper.driveToPosition(autoHelper.setDesiredPose(1, 0, 0));
+
+    //             if (autoHelper.atTargetPosition()) {driveFinished = true;}
+    //             if (driveFinished) {counter += 1; driveFinished = false;}
+    //             break;
+
+    //         case 1:
+    //             autoHelper.driveToPosition(autoHelper.setDesiredPose(1, 0, Math.PI));
+    //             if (autoHelper.atTargetPosition()) {driveFinished = true;}
+
+    //         default: autoHelper.stopDrive();
+    //             break;
+    //     }
+    // }
 }

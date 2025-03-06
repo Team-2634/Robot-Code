@@ -93,6 +93,9 @@ public class Constants {
         return Math.max(Math.min(input, max), min);
     }
 
+    //auto
+    public final static double maxAutoVelocity = 0.5;
+
 
 
 
