@@ -83,13 +83,13 @@ public class AutoHelper {
         autoYPID.reset();
     }
 
-    public void driveToPosition(Pose2d endPose){
-        Pose2d startPose = driver.getPose();
+    // public void driveToPosition(Pose2d endPose){
+    //     Pose2d startPose = driver.getPose();
 
-        double xSpeed = autoXPID.calculate(startPose.getX(), endPose.getX());
-        double ySpeed = autoYPID.calculate(startPose.getX(), endPose.getY());
-        double rotSpeed = autoTurnPID.calculate(MathUtil.angleModulus(startPose.getRotation().getRadians()), MathUtil.angleModulus(endPose.getRotation().getRadians()));
-    }
+    //     double xSpeed = autoXPID.calculate(startPose.getX(), endPose.getX());
+    //     double ySpeed = autoYPID.calculate(startPose.getX(), endPose.getY());
+    //     double rotSpeed = autoTurnPID.calculate(MathUtil.angleModulus(startPose.getRotation().getRadians()), MathUtil.angleModulus(endPose.getRotation().getRadians()));
+    // }
 
     /**
      * @deprecated
