@@ -14,8 +14,8 @@ public class Teleop {
     XboxController xboxDrive = new XboxController(0);
 
     TeleopHelper teleopHelper;
-    public Teleop(Driver driver, Shooter shooter, Climber climber, AHRS navx) {
-        teleopHelper = new TeleopHelper(driver, shooter, climber, navx);
+    public Teleop(Driver driver, Shooter shooter, Climber climber, AHRS navx, LimeLight limelight) {
+        teleopHelper = new TeleopHelper(driver, shooter, climber, navx, limelight);
     }
 
     public double removeDeadzone(double input) {
@@ -29,4 +29,11 @@ public class Teleop {
         teleopHelper.drive(teleopHelper.removeDeadzone(1), teleopHelper.removeDeadzone(0), teleopHelper.removeDeadzone(4));
     }
 
+    public void limelightAlign() {
+        if (teleopHelper.xbox1.getAButton()) {
+            if 
+
+
+        }
+    }
 }
