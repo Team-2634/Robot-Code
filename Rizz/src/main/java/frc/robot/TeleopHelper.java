@@ -5,17 +5,15 @@ import com.studica.frc.AHRS;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
-import frc.robot.systems.Shooter;
+
 
 public class TeleopHelper {
     
     Driver driver;
-    Shooter shooter;
     Climber climber;
     AHRS navx;
-    public TeleopHelper(Driver driver, Shooter shooter, Climber climber, AHRS navx) {
+    public TeleopHelper(Driver driver, Climber climber, AHRS navx) {
         this.driver = driver;
-        this.shooter = shooter;
         this.climber = climber;
         this.navx = navx;
     }

@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
-import frc.robot.systems.Shooter;
 //import edu.wpi.first.wpilibj.SPI;
 
 public class Robot extends TimedRobot {

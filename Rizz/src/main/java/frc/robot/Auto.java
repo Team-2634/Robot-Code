@@ -11,7 +11,6 @@ import com.studica.frc.AHRS;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
-import frc.robot.systems.Shooter;
 
 public class Auto {
 
