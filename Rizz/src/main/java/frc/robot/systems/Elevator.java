@@ -23,7 +23,7 @@ public class Elevator{
     private Encoder elevatorEncoder;
     
     private final Compressor compressor1 = new Compressor(PneumaticsModuleType.CTREPCM);
-    DoubleSolenoid solenoid1 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
+    DoubleSolenoid solenoid1 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 1);
     public Elevator() {
         armEncoder = new Encoder(0, 1); // Replace with actual encoder ports
        
@@ -90,13 +90,12 @@ public class Elevator{
 
     public void openClaw() {
         solenoid1.set(Value.kForward);
-        solenoid1.set(Value.kReverse);
 
     }
 
     public void closeClaw() {
 
-        solenoid1.set(Value.kOff);
+        solenoid1.set(Value.kReverse);
     }
     
         

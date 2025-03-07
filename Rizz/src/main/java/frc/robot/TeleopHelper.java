@@ -108,19 +108,19 @@ public class TeleopHelper {
     
     public void moveArm(XboxController xbox) {
     
-        // if (xbox2.getAButtonPressed()) { 
-        //     elevator.armAngle(35); // Moves arm to 35° downward
-        // } 
-        // else if (xbox2.getBButtonPressed()) { 
-        //     elevator.armAngle(0);  // Moves arm back up to 0°
-        // }
+        if (xbox.getAButtonPressed()) { 
+            elevator.armAngle(35); // Moves arm to 35° downward
+        } 
+        else if (xbox.getBButtonPressed()) { 
+            elevator.armAngle(0);  // Moves arm back up to 0°
+        }
 
         if (xbox.getLeftBumperButtonPressed()) {
-            elevator.openClaw();
+            elevator.closeClaw();
         } 
 
-        else if (xbox.getRightBumperButtonPressed()) {  
-            elevator.closeClaw();
+        if (xbox.getRightBumperButtonPressed()) {  
+            elevator.openClaw();
         
         }
     }
