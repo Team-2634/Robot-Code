@@ -3,7 +3,7 @@ package frc.robot;
 import com.studica.frc.AHRS; 
 
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.systems.Arm;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Elevator;
@@ -58,7 +58,7 @@ public class TeleopHelper {
 
 //  }
 
-    public void liftElevatorFromBumper(XboxController xbox1) {
+    public void moveElevator(XboxController xbox1) {
         if (xbox1.getRightTriggerAxis() > 0.2) {
             elevator.elevatorLift(0.35); // Moves up
         } 
@@ -110,16 +110,10 @@ public class TeleopHelper {
         }
     }
     
-    public void moveArm(XboxController xbox) {
-    
-    //     if (xbox.getAButtonPressed()) { 
-    //         elevator.armAngle(35); // Moves arm to 35° downward
-    //     } 
-    //     else if (xbox.getBButtonPressed()) { 
-    //         elevator.armAngle(0);  // Moves arm back up to 0°
-    //     }
+    public void moveClamp(XboxController xbox) {
 
         if (xbox.getLeftBumperButtonPressed()) {
+            arm.closeClaw();
             arm.closeClaw();
         } 
 
@@ -128,4 +122,34 @@ public class TeleopHelper {
         
         }
     }
+
+    public void moveArm(XboxController xbox) {
+
+        // if (xbox.getAButtonPressed() && arm.isHardStoppedHigh() && arm.isHardStoppedLow()) {
+        //     arm.moveArmPID(Constants.armLowPosition);
+        // } else if (xbox.getBButtonPressed() && arm.isHardStoppedHigh() && arm.isHardStoppedLow()) {
+        //     arm.moveArmPID(Constants.arm60);
+        // } else if (xbox.getXButtonPressed() && arm.isHardStoppedHigh() && arm.isHardStoppedLow()) {
+        //     arm.moveArmPID(Constants.arm35);
+        // } else if (xbox.getYButtonPressed() && arm.isHardStoppedHigh() && arm.isHardStoppedLow()) {
+        //     arm.moveArmPID(Constants.armIntake);
+        // } else {
+        //     arm.moveArm(0);
+        // }
+    }
+
+    double speed = 0;
+
+    public void armTestTest(XboxController xbox) {
+        if (xbox.getXButton()) {
+            speed = -0.1;
+        } else {
+            speed = 0;
+        }
+
+        SmartDashboard.putNumber("arm speed", speed);
+        arm.moveArm(speed);
+
+    }
+
  }

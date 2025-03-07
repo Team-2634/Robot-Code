@@ -41,7 +41,7 @@ public class Constants {
     public final static int backLeftSteerID = 0;
     public final static int backRightSteerID = 6;
 
-    public final static int armMotorID = 9;  //Put Device ID Later On "8 is not the right one"
+    public final static int armMotorID = 9;  
     public final static int elevatorMotorID = 8; 
     
     
@@ -106,5 +106,17 @@ public class Constants {
     public static final double L2_HEIGHT = 0.5;
     public static final double L3_HEIGHT = 1.0;
     public static final double L4_HEIGHT = 1.5;
+
+    public final static double kpArm = 1.5;
+    public final static double kiArm = 0;
+    public final static double kdArm = 0;
+
+    public final static double minArmRotationRads = -3.4; //remember to change these
+    public final static double maxArmRotationRads = 0.3;
+
+    public final static double armLowPosition = -3.14;
+    public final static double armIntake = 0;
+    public final static double arm35 = -0.96;
+    public final static double arm60 = -0.52;
 
 }

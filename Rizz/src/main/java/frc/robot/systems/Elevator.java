@@ -4,12 +4,7 @@ package frc.robot.systems;
 import com.studica.frc.AHRS;
 
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import frc.robot.Constants;
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -17,14 +12,16 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class Elevator{
 
-    public final TalonFX elevatorMotor = new TalonFX(Constants.elevatorMotorID); //no ID value yet
+    public final TalonFX elevatorMotor = new TalonFX(Constants.elevatorMotorID);
     private Encoder armEncoder;
     private Encoder elevatorEncoder;
     
 
     public void elevatorInitiallize(){
         elevatorMotor.setNeutralMode(NeutralModeValue.Brake);
+        elevatorMotor.setPosition(0);
     }
+
     public void elevatorEncoderReset(){
         elevatorEncoder.reset();
         armEncoder.reset();
@@ -56,6 +53,4 @@ public class Elevator{
             elevatorMotor.set(0); // Stop at target
         }
     }
-
-
 }

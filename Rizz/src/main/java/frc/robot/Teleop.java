@@ -35,13 +35,24 @@ public class Teleop {
         xboxDrive.getXButton());
     }
 
-    public void elevatorControl() {
+    public void elevator() {
 
         // teleopHelper.elevatorControl(
         //     xboxElevator.getRightTriggerAxis(),
         //     xboxElevator.getLeftTriggerAxis()
         // );
-        teleopHelper.liftElevatorFromBumper(xboxDrive);
+        teleopHelper.moveElevator(xboxDrive);
+    }
+
+    public void arm() {
         teleopHelper.moveArm(xboxDrive);
+    }
+
+    public void clamp() {
+        teleopHelper.moveClamp(xboxDrive);
+    }
+
+    public void armTest() {
+        teleopHelper.armTestTest(xboxDrive);
     }
 }

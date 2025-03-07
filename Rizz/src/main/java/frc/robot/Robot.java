@@ -13,7 +13,6 @@ import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Elevator;
 import frc.robot.systems.Arm;
-
 //import edu.wpi.first.wpilibj.SPI;
 
 public class Robot extends TimedRobot {
@@ -51,6 +50,7 @@ public class Robot extends TimedRobot {
         driver.initialize();
         elevator.elevatorInitiallize();
         arm.armInitiallize();
+
     }
     
     @Override
@@ -81,6 +81,9 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         teleop.drive();
-        teleop.elevatorControl();
+        teleop.elevator();
+        teleop.clamp();
+        //teleop.arm();
+        teleop.armTest();
     }
 }
