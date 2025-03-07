@@ -4,33 +4,33 @@ package frc.robot;
 import com.studica.frc.AHRS;
 
 import edu.wpi.first.wpilibj.XboxController;
-// import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
-import frc.robot.systems.Elevator;
+import frc.robot.systems.Shooter;
 
 
 public class Teleop {
+
+    XboxController xboxDrive = new XboxController(0);
+
     TeleopHelper teleopHelper;
-    public Teleop(Driver driver, Climber climber, AHRS navx, Elevator elevator) {
-        teleopHelper = new TeleopHelper(driver, climber, navx, elevator);
+    public Teleop(Driver driver, Climber climber, AHRS navx) {
+        teleopHelper = new TeleopHelper(driver, climber, navx);
+    }
+
+    public double removeDeadzone(double input) {
+        if (Math.abs(input) < Constants.controllerDeadzone) {
+            return 0;
+        } 
+        return input;
     }
     
     public void drive() {
-        teleopHelper.drive(teleopHelper.removeDeadzone(1), teleopHelper.removeDeadzone(0), teleopHelper.removeDeadzone(4), false);
-        
+        teleopHelper.drive(
+        -removeDeadzone(xboxDrive.getLeftY()), 
+        -removeDeadzone(xboxDrive.getLeftX()), 
+        -removeDeadzone(xboxDrive.getRightX()), 
+        xboxDrive.getXButton());
     }
-
-    public void elevatorControl() {
-
-        //teleopHelper.liftElevatorFromBumper(teleopHelper.xboxElevatorInput);
-        teleopHelper.elevatorControl(XboxController.xboxElevatorInput);
-        
-    }
-
-    
-
-
-
 
 }
