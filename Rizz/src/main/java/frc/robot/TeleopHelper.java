@@ -5,6 +5,7 @@ import com.studica.frc.AHRS;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
+import frc.robot.systems.Elevator;
 
 
 public class TeleopHelper {
@@ -12,10 +13,12 @@ public class TeleopHelper {
     Driver driver;
     Climber climber;
     AHRS navx;
-    public TeleopHelper(Driver driver, Climber climber, AHRS navx) {
+    Elevator elevator;
+    public TeleopHelper(Driver driver, Climber climber, AHRS navx, Elevator elevator) {
         this.driver = driver;
         this.climber = climber;
         this.navx = navx;
+        this.elevator = elevator;
     }
 
     /**

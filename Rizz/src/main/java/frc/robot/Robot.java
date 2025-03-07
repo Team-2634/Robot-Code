@@ -1,5 +1,7 @@
 package frc.robot;
 
+import org.ejml.data.ElementLocation;
+
 //import com.kauailabs.navx.frc.AHRS;
 import com.studica.frc.AHRS;
 
@@ -9,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
+import frc.robot.systems.Elevator;
 //import edu.wpi.first.wpilibj.SPI;
 
 public class Robot extends TimedRobot {
@@ -16,13 +19,13 @@ public class Robot extends TimedRobot {
     Driver driver = new Driver();
     Climber climber = new Climber();
     Timer matchTimer = new Timer();
-    
+    Elevator elevator = new Elevator();
     LimeLight limelight = new LimeLight();
 
     AHRS navx = new AHRS(AHRS.NavXComType.kMXP_SPI); 
 
     Auto auto = new Auto(driver, climber, navx, matchTimer);
-    Teleop teleop = new Teleop(driver, climber, navx);
+    Teleop teleop = new Teleop(driver, climber, navx, elevator);
 
     private static final String kDefaultAuto = "Default";
     private static final String kCustomAuto = "My Auto";
