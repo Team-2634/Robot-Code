@@ -40,6 +40,10 @@ public class Constants {
     public final static int frontRightSteerID = 4;
     public final static int backLeftSteerID = 0;
     public final static int backRightSteerID = 6;
+
+    public final static int armMotorID = 8;  //Put Device ID Later On "8 is not the right one"
+    public final static int elevatorMotorID = 9; 
+    
     
     // public final static int frontLeftAbsEncoderID = 3;
     // public final static int frontRightAbsEncoderID = 0;
