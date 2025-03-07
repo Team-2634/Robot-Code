@@ -46,6 +46,7 @@ public class Robot extends TimedRobot {
         matchTimer.start();
         navx.reset();
         driver.initialize();
+        elevator.elevatorInitiallize();
 
     }
     

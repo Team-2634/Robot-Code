@@ -7,7 +7,10 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -20,8 +23,7 @@ public class Elevator{
     private Encoder elevatorEncoder;
     
     private final Compressor compressor1 = new Compressor(PneumaticsModuleType.CTREPCM);
-    Solenoid solenoid1 = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
-
+    DoubleSolenoid solenoid1 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
     public Elevator() {
         armEncoder = new Encoder(0, 1); // Replace with actual encoder ports
        
@@ -86,13 +88,16 @@ public class Elevator{
         }
     }
 
-    public void openClaw(Solenoid solenoid) {
-        solenoid.set(true);
+    public void openClaw() {
+        solenoid1.set(Value.kForward);
+        solenoid1.set(Value.kReverse);
+
     }
 
-    public void closeClaw(Solenoid solenoid) {
+    public void closeClaw() {
 
-        solenoid.set(false);
+        solenoid1.set(Value.kOff);
     }
     
+        
 }

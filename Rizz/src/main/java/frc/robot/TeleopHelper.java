@@ -116,11 +116,11 @@ public class TeleopHelper {
         // }
 
         if (xbox.getLeftBumperButtonPressed()) {
-            elevator.openClaw(null);
+            elevator.openClaw();
         } 
 
         else if (xbox.getRightBumperButtonPressed()) {  
-            elevator.closeClaw(null);
+            elevator.closeClaw();
         
         }
     }

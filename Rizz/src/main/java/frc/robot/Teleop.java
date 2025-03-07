@@ -41,6 +41,6 @@ public class Teleop {
             xboxElevator.getLeftTriggerAxis()
         );
 
-        teleopHelper.moveArm(xboxElevator);
+        teleopHelper.moveArm(xboxDrive);
     }
 }
