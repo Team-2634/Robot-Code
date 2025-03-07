@@ -22,10 +22,15 @@ public class Elevator{
 
     public Elevator() {
         armEncoder = new Encoder(0, 1); // Replace with actual encoder ports
-        elevatorEncoder = new Encoder(2, 3); // Replace with actual encoder ports
-
+       
     }
 
+    public void elevatorInitiallize(){
+        elevatorMotor.setNeutralMode(NeutralModeValue.Brake);
+        armMotor.setNeutralMode(NeutralModeValue.Brake);
+
+
+    }
     public void elevatorEncoderReset(){
         elevatorEncoder.reset();
         armEncoder.reset();
