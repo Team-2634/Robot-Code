@@ -6,16 +6,17 @@ import com.studica.frc.AHRS;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
-import frc.robot.systems.Shooter;
+import frc.robot.systems.Elevator;
 
 
 public class Teleop {
 
     XboxController xboxDrive = new XboxController(0);
+    XboxController xboxElevator = new XboxController(1);
 
     TeleopHelper teleopHelper;
-    public Teleop(Driver driver, Shooter shooter, Climber climber, AHRS navx) {
-        teleopHelper = new TeleopHelper(driver, shooter, climber, navx);
+    public Teleop(Driver driver, Climber climber, AHRS navx, Elevator elevator) {
+        teleopHelper = new TeleopHelper(driver, climber, navx, elevator);
     }
 
     public double removeDeadzone(double input) {
@@ -33,4 +34,13 @@ public class Teleop {
         xboxDrive.getXButton());
     }
 
+    public void elevatorControl() {
+
+        teleopHelper.elevatorControl(
+            xboxElevator.getRightTriggerAxis(),
+            xboxElevator.getLeftTriggerAxis()
+        );
+
+        teleopHelper.moveArm(xboxElevator);
+    }
 }
