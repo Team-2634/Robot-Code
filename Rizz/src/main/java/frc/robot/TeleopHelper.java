@@ -3,9 +3,11 @@ package frc.robot;
 import com.studica.frc.AHRS; 
 
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.systems.Arm;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Elevator;
+import frc.robot.systems.Arm;
 
 
 public class TeleopHelper {
@@ -14,11 +16,13 @@ public class TeleopHelper {
     Climber climber;
     AHRS navx;
     Elevator elevator;
-    public TeleopHelper(Driver driver, Climber climber, AHRS navx, Elevator elevator) {
+    Arm arm;
+    public TeleopHelper(Driver driver, Climber climber, AHRS navx, Elevator elevator, Arm arm) {
         this.driver = driver;
         this.climber = climber;
         this.navx = navx;
         this.elevator = elevator;
+        this.arm = arm;
     }
 
     /**
@@ -108,19 +112,19 @@ public class TeleopHelper {
     
     public void moveArm(XboxController xbox) {
     
-        if (xbox.getAButtonPressed()) { 
-            elevator.armAngle(35); // Moves arm to 35° downward
-        } 
-        else if (xbox.getBButtonPressed()) { 
-            elevator.armAngle(0);  // Moves arm back up to 0°
-        }
+    //     if (xbox.getAButtonPressed()) { 
+    //         elevator.armAngle(35); // Moves arm to 35° downward
+    //     } 
+    //     else if (xbox.getBButtonPressed()) { 
+    //         elevator.armAngle(0);  // Moves arm back up to 0°
+    //     }
 
         if (xbox.getLeftBumperButtonPressed()) {
-            elevator.closeClaw();
+            arm.closeClaw();
         } 
 
         if (xbox.getRightBumperButtonPressed()) {  
-            elevator.openClaw();
+            arm.openClaw();
         
         }
     }

@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Elevator;
+import frc.robot.systems.Arm;
+
 //import edu.wpi.first.wpilibj.SPI;
 
 public class Robot extends TimedRobot {
@@ -21,11 +23,12 @@ public class Robot extends TimedRobot {
     Timer matchTimer = new Timer();
     Elevator elevator = new Elevator();
     LimeLight limelight = new LimeLight();
+    Arm arm = new Arm();
 
     AHRS navx = new AHRS(AHRS.NavXComType.kMXP_SPI); 
 
     Auto auto = new Auto(driver, climber, navx, matchTimer);
-    Teleop teleop = new Teleop(driver, climber, navx, elevator);
+    Teleop teleop = new Teleop(driver, climber, navx, elevator, arm);
 
     private static final String kDefaultAuto = "Default";
     private static final String kCustomAuto = "My Auto";
@@ -47,7 +50,7 @@ public class Robot extends TimedRobot {
         navx.reset();
         driver.initialize();
         elevator.elevatorInitiallize();
-
+        arm.armInitiallize();
     }
     
     @Override

@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Elevator;
+import frc.robot.systems.Arm;
 
 
 public class Teleop {
@@ -15,8 +16,8 @@ public class Teleop {
     XboxController xboxElevator = new XboxController(1);
 
     TeleopHelper teleopHelper;
-    public Teleop(Driver driver, Climber climber, AHRS navx, Elevator elevator) {
-        teleopHelper = new TeleopHelper(driver, climber, navx, elevator);
+    public Teleop(Driver driver, Climber climber, AHRS navx, Elevator elevator, Arm arm) {
+        teleopHelper = new TeleopHelper(driver, climber, navx, elevator, arm);
     }
 
     public double removeDeadzone(double input) {

@@ -80,7 +80,7 @@ public class Constants {
     public final static double XdriveSensitivity = 1;
     public final static double YdriveSensitivity = 1; 
     public final static double turningSensitivity = 1;
-    public final static double maxSpeedMpS = 0.7; //robot speed
+    public final static double maxSpeedMpS = 0.5; //robot speed
 
     public final static double controllerDeadzone = 0.1;
 
