@@ -73,7 +73,7 @@ public class Elevator{
 
     public void armAngle(double targetAngle) {
         double currentAngle = getArmAngle(); 
-        double speed = 0.2;  //arm speed
+        double speed = 0.4;  //arm speed
         
         targetAngle = Math.max(0, Math.min(targetAngle, 90));
     

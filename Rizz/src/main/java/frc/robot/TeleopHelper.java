@@ -54,17 +54,17 @@ public class TeleopHelper {
 
 //  }
 
-    // public void liftElevatorFromBumper() {
-    //     if (xbox1.getRightTriggerAxis() > 0.2) {
-    //         elevator.elevatorLift(0.05); // Moves up
-    //     } 
-    //     else if (xbox1.getRightTriggerAxis() > 0.2) {
-    //         elevator.elevatorLift(-0.05); // Moves down
-    //     } 
-    //     else {
-    //         elevator.elevatorLift(0); // Stops elevator
-    //     }
-    // }
+    public void liftElevatorFromBumper(XboxController xbox1) {
+        if (xbox1.getRightTriggerAxis() > 0.2) {
+            elevator.elevatorLift(0.35); // Moves up
+        } 
+        else if (xbox1.getLeftTriggerAxis() > 0.2) {
+            elevator.elevatorLift(-0.35); // Moves down
+        } 
+        else {
+            elevator.elevatorLift(0); // Stops elevator
+        }
+    }
 
     private int currentLevel = 1;  // Start at L1
     private boolean rtPressed = false;

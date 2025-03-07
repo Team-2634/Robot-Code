@@ -36,11 +36,11 @@ public class Teleop {
 
     public void elevatorControl() {
 
-        teleopHelper.elevatorControl(
-            xboxElevator.getRightTriggerAxis(),
-            xboxElevator.getLeftTriggerAxis()
-        );
-
+        // teleopHelper.elevatorControl(
+        //     xboxElevator.getRightTriggerAxis(),
+        //     xboxElevator.getLeftTriggerAxis()
+        // );
+        teleopHelper.liftElevatorFromBumper(xboxDrive);
         teleopHelper.moveArm(xboxDrive);
     }
 }
