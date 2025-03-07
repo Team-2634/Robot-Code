@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Compressor;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -18,6 +19,7 @@ public class Elevator{
     private Encoder armEncoder;
     private Encoder elevatorEncoder;
     
+    private final Compressor compressor1 = new Compressor(PneumaticsModuleType.CTREPCM);
     Solenoid solenoid1 = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
 
     public Elevator() {
@@ -28,8 +30,7 @@ public class Elevator{
     public void elevatorInitiallize(){
         elevatorMotor.setNeutralMode(NeutralModeValue.Brake);
         armMotor.setNeutralMode(NeutralModeValue.Brake);
-
-
+        compressor1.enableDigital();
     }
     public void elevatorEncoderReset(){
         elevatorEncoder.reset();

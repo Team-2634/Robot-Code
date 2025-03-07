@@ -12,6 +12,7 @@ import frc.robot.systems.Elevator;
 public class Teleop {
 
     XboxController xboxDrive = new XboxController(0);
+    XboxController xboxElevator = new XboxController(1);
 
     TeleopHelper teleopHelper;
     public Teleop(Driver driver, Climber climber, AHRS navx, Elevator elevator) {
@@ -33,4 +34,13 @@ public class Teleop {
         xboxDrive.getXButton());
     }
 
+    public void elevatorControl() {
+
+        teleopHelper.elevatorControl(
+            xboxElevator.getRightTriggerAxis(),
+            xboxElevator.getLeftTriggerAxis()
+        );
+
+        teleopHelper.moveArm(xboxElevator);
+    }
 }
