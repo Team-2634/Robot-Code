@@ -15,7 +15,6 @@ import frc.robot.systems.Shooter;
 public class Robot extends TimedRobot {
 
     Driver driver = new Driver();
-    Shooter shooter = new Shooter();
     Climber climber = new Climber();
     Timer matchTimer = new Timer();
     
@@ -23,8 +22,8 @@ public class Robot extends TimedRobot {
 
     AHRS navx = new AHRS(AHRS.NavXComType.kMXP_SPI); 
 
-    Auto auto = new Auto(driver, shooter, climber, navx, matchTimer);
-    Teleop teleop = new Teleop(driver, shooter, climber, navx);
+    Auto auto = new Auto(driver, climber, navx, matchTimer);
+    Teleop teleop = new Teleop(driver, climber, navx);
 
     private static final String kDefaultAuto = "Default";
     private static final String kCustomAuto = "My Auto";

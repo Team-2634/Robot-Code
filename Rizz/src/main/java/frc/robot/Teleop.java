@@ -14,8 +14,8 @@ public class Teleop {
     XboxController xboxDrive = new XboxController(0);
 
     TeleopHelper teleopHelper;
-    public Teleop(Driver driver, Shooter shooter, Climber climber, AHRS navx) {
-        teleopHelper = new TeleopHelper(driver, shooter, climber, navx);
+    public Teleop(Driver driver, Climber climber, AHRS navx) {
+        teleopHelper = new TeleopHelper(driver, climber, navx);
     }
 
     public double removeDeadzone(double input) {

@@ -18,8 +18,8 @@ public class Auto {
     Timer timer;
 
     AutoHelper autoHelper;
-    public Auto(Driver driver, Shooter shooter, Climber climber, AHRS navx, Timer timer) {
-        this.autoHelper = new AutoHelper(driver, shooter, climber, navx, timer);
+    public Auto(Driver driver, Climber climber, AHRS navx, Timer timer) {
+        this.autoHelper = new AutoHelper(driver, climber, navx, timer);
         this.timer = timer;
     }
 

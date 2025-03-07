@@ -13,14 +13,12 @@ import frc.robot.systems.Shooter;
 public class AutoHelper {
 
     Driver driver;
-    Shooter shooter;
     Climber climber;
     AHRS navx;
     Timer timer;
 
-    public AutoHelper(Driver driver, Shooter shooter, Climber climber, AHRS navx, Timer timer) {
+    public AutoHelper(Driver driver, Climber climber, AHRS navx, Timer timer) {
         this.driver = driver;
-        this.shooter = shooter;
         this.climber = climber;
         this.navx = navx;
         this.timer = timer;
