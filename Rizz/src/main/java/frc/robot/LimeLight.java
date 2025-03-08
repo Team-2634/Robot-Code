@@ -36,4 +36,9 @@ public class LimeLight {
         return getDoubleEntry("ty");
     }
 
+    public double distanceFromLimelightAngle() {
+        double a1 = Math.toRadians(Yoffset());
+        
+        return ((Constants.aprilTagHeight - Constants.limeLightHeightFromGround) / Math.tan(a1 + Constants.limeLightAngleInRads));
+    }
 }
