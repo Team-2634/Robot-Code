@@ -125,17 +125,17 @@ public class TeleopHelper {
 
     public void moveArm(XboxController xbox) {
 
-        // if (xbox.getAButtonPressed() && arm.isHardStoppedHigh() && arm.isHardStoppedLow()) {
-        //     arm.moveArmPID(Constants.armLowPosition);
-        // } else if (xbox.getBButtonPressed() && arm.isHardStoppedHigh() && arm.isHardStoppedLow()) {
-        //     arm.moveArmPID(Constants.arm60);
-        // } else if (xbox.getXButtonPressed() && arm.isHardStoppedHigh() && arm.isHardStoppedLow()) {
-        //     arm.moveArmPID(Constants.arm35);
-        // } else if (xbox.getYButtonPressed() && arm.isHardStoppedHigh() && arm.isHardStoppedLow()) {
-        //     arm.moveArmPID(Constants.armIntake);
-        // } else {
-        //     arm.moveArm(0);
-        // }
+        if (xbox.getAButtonPressed() && arm.isHardStoppedHigh() && arm.isHardStoppedLow()) {
+            arm.moveArmPID(Constants.armLowPosition);
+        } else if (xbox.getBButtonPressed() && arm.isHardStoppedHigh() && arm.isHardStoppedLow()) {
+            arm.moveArmPID(Constants.arm60);
+        } else if (xbox.getXButtonPressed() && arm.isHardStoppedHigh() && arm.isHardStoppedLow()) {
+            arm.moveArmPID(Constants.arm35);
+        } else if (xbox.getYButtonPressed() && arm.isHardStoppedHigh() && arm.isHardStoppedLow()) {
+            arm.moveArmPID(Constants.armIntake);
+        } else {
+            arm.moveArm(0);
+        }
     }
 
     double speed = 0;

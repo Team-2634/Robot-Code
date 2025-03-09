@@ -28,7 +28,7 @@ public class Elevator{
     }
 
     public double getElevatorHeight() {
-        double rotations = elevatorEncoder.getDistance() / Constants.ENCODER_TICKS_PER_REV;
+        double rotations = elevatorEncoder.getDistance() / Constants.talonEncoder_TicksPerRev;
         return rotations * Constants.PULLEY_CIRCUMFERENCE;
     }
 
