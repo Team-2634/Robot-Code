@@ -9,7 +9,6 @@ import frc.robot.systems.Driver;
 import frc.robot.systems.Elevator;
 import frc.robot.systems.Arm;
 
-
 public class Teleop {
 
     XboxController xboxDrive = new XboxController(0);
@@ -36,23 +35,29 @@ public class Teleop {
     }
 
     public void elevator() {
-
-        // teleopHelper.elevatorControl(
-        //     xboxElevator.getRightTriggerAxis(),
-        //     xboxElevator.getLeftTriggerAxis()
-        // );
-        teleopHelper.moveElevator(xboxDrive);
+        teleopHelper.moveElevator(xboxElevator);
     }
 
-    public void arm() {
-        teleopHelper.moveArm(xboxDrive);
-    }
+    // public void arm() {
+    //     teleopHelper.moveArm(xboxDrive);
+    // }
 
     public void clamp() {
-        teleopHelper.moveClamp(xboxDrive);
+        teleopHelper.moveClamp(xboxElevator);
     }
 
     public void armTest() {
-        teleopHelper.armTestTest(xboxDrive);
+        teleopHelper.armTestTest(xboxElevator);
     }
+
+    // public void arm() {
+
+    //     teleopHelper.arm(
+    //         xboxElevator.getAButtonPressed(),
+    //         xboxElevator.getBButtonPressed(),
+    //         xboxElevator.getXButtonPressed(),
+    //         xboxElevator.getYButtonPressed()
+    //     );
+
+    // }
 }

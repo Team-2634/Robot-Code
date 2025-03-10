@@ -5,11 +5,16 @@ import com.studica.frc.AHRS;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import frc.robot.Constants;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radian;
+import static edu.wpi.first.units.Units.Radians;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -51,24 +56,25 @@ public class Arm {
 
     public double getArmAngleRad() {
         return (armMotor.getPosition().getValueAsDouble() / Constants.ARM_GEAR_RATIO) * Constants.DEGREES_PER_REV * 2 * Math.PI;  
+        
     }
 
-    // public void armAngle(double targetAngle) {
-    //     double currentAngle = getArmAngleRad(); 
-    //     double speed = 0.2;  //arm speed
+    public void armAngle(double targetAngle) {
+        double currentAngle = getArmAngleRad(); 
+        double speed = 0.2;  //arm speed
         
-    //     targetAngle = Constants.clamp(currentAngle, 0, Math.PI/2);
+        targetAngle = Constants.clamp(currentAngle, 0, Math.PI/2);
     
-    //     if (currentAngle < targetAngle - 2) { 
-    //         armMotor.set(speed);  
-    //     } 
-    //     else if (currentAngle > targetAngle + 2) { 
-    //         armMotor.set(-speed);  
-    //     } 
-    //     else {
-    //         armMotor.set(0); 
-    //     }
-    // }
+        if (currentAngle < targetAngle - 2) { 
+            armMotor.set(speed);  
+        } 
+        else if (currentAngle > targetAngle + 2) { 
+            armMotor.set(-speed);  
+        } 
+        else {
+            armMotor.set(0); 
+        }
+    }
 
     public boolean atPosition() {
         return armPID.atSetpoint();
@@ -76,17 +82,16 @@ public class Arm {
 
     public boolean isHardStoppedLow() {
         if (Constants.minArmRotationRads < getArmAngleRad()) {
-            return true;
-        } else {
-            return false;}
+            return false;
+        } else return true;
     }
 
     public boolean isHardStoppedHigh() {
         if (getArmAngleRad() < Constants.maxArmRotationRads) {
-            return true;
-        } else {
-            return false;}
+            return false;
+        } else return true;
     }
+
 
     public void openClaw() {
         solenoid1.set(Value.kForward);

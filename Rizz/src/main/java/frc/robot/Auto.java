@@ -27,30 +27,30 @@ public class Auto {
         timer.start();    
     }
     
-    public void autoTest(){
+    // public void autoTest(){
 
-        if (timer.get() < 8 ){
+    //     if (timer.get() < 8 ){
 
-            if (autoHelper.timerInterval_Auto(0, 1)){
-                autoHelper.resetDriveEncoders();
-                autoHelper.resetSteerEncoders();
-                autoHelper.autoResetPIDs();
-            }
-            else if (autoHelper.timerInterval_Auto(1,5)){
-                autoHelper.driver.swerveDrive(0.10, 0, 0); 
-            }
+    //         if (autoHelper.timerInterval_Auto(0, 1)){
+    //             autoHelper.resetDriveEncoders();
+    //             autoHelper.resetSteerEncoders();
+    //             autoHelper.autoResetPIDs();
+    //         }
+    //         else if (autoHelper.timerInterval_Auto(1,5)){
+    //             autoHelper.driver.swerveDrive(0.10, 0, 0); 
+    //         }
 
-            else if (autoHelper.timerInterval_Auto(5,8)){
-                autoHelper.driver.swerveDrive(-0.10, 0.05, 0); 
-            }
+    //         else if (autoHelper.timerInterval_Auto(5,8)){
+    //             autoHelper.driver.swerveDrive(-0.10, 0.05, 0); 
+    //         }
 
-        }
+    //     }
 
-        else {
-            autoHelper.driver.swerveDrive(0, 0, 0); //STOP
-        }
+    //     else {
+    //         autoHelper.driver.swerveDrive(0, 0, 0); //STOP
+    //     }
 
-    }
+    // }
 
     public void autoMiddle(){
          
@@ -67,7 +67,7 @@ public class Auto {
             else if (autoHelper.timerInterval_Auto(4.1, 10)){
                 autoHelper.driver.swerveDrive(0, 0, 0);
                 /* 
-                Arm Code here: Extend Arm, Release Coral into L4, Take off an Algae
+                Arm Code here: Set Arm @ Correct Angle, Release Coral into L3, Take off an Algae
                  */ 
             }
         }
