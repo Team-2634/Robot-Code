@@ -86,5 +86,6 @@ public class Robot extends TimedRobot {
         teleop.clamp();
         //teleop.arm();
         teleop.armTest();
+        teleop.limelightAlign();
     }
 }

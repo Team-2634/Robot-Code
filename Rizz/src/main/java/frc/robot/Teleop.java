@@ -51,6 +51,10 @@ public class Teleop {
         teleopHelper.armTestTest(xboxElevator);
     }
 
+    public void limelightAlign(){
+        teleopHelper.rotateAlignToAprilTag(xboxDrive);
+    }
+
     // public void arm() {
 
     //     teleopHelper.arm(
