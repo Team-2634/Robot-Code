@@ -2,11 +2,13 @@ package frc.robot.systems;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants;
+import frc.robot.AutoHelper;
 // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class LimeLight {
-
+    AutoHelper autohelper;
     private static NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
 
     public double getDoubleEntry(String entry) {
@@ -41,5 +43,11 @@ public class LimeLight {
         double a1 = Math.toRadians(Yoffset());
         
         return ((Constants.aprilTagHeight - Constants.limeLightHeightFromGround) / Math.tan(a1 + Constants.limeLightAngleInRads));
+    }
+
+    public void moveToAprilTag(XboxController controller) {
+        if(controller.getAButton()) {
+            autohelper.autoDriveByDistance(0,(distanceFromLimelightAngle() - 0.5));
+        }
     }
 }
