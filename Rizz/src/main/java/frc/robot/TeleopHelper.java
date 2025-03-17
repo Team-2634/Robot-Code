@@ -9,6 +9,7 @@ import frc.robot.systems.Driver;
 import frc.robot.systems.Elevator;
 import frc.robot.systems.Arm;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.systems.LimeLight;
 
 
 public class TeleopHelper {
@@ -18,12 +19,14 @@ public class TeleopHelper {
     AHRS navx;
     Elevator elevator;
     Arm arm;
-    public TeleopHelper(Driver driver, Climber climber, AHRS navx, Elevator elevator, Arm arm) {
+    LimeLight limelight;
+    public TeleopHelper(Driver driver, Climber climber, AHRS navx, Elevator elevator, Arm arm, LimeLight limelight) {
         this.driver = driver;
         this.climber = climber;
         this.navx = navx;
         this.elevator = elevator;
         this.arm = arm;
+        this.limelight = limelight;
     }
 
     /**

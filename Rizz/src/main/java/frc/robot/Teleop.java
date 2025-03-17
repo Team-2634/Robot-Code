@@ -8,6 +8,7 @@ import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Elevator;
 import frc.robot.systems.Arm;
+import frc.robot.systems.LimeLight;
 
 public class Teleop {
 
@@ -15,8 +16,8 @@ public class Teleop {
     XboxController xboxElevator = new XboxController(1);
 
     TeleopHelper teleopHelper;
-    public Teleop(Driver driver, Climber climber, AHRS navx, Elevator elevator, Arm arm) {
-        teleopHelper = new TeleopHelper(driver, climber, navx, elevator, arm);
+    public Teleop(Driver driver, Climber climber, AHRS navx, Elevator elevator, Arm arm, LimeLight limelight) {
+        teleopHelper = new TeleopHelper(driver, climber, navx, elevator, arm, limelight);
     }
 
     public double removeDeadzone(double input) {

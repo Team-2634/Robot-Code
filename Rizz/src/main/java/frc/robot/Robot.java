@@ -13,6 +13,7 @@ import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Elevator;
 import frc.robot.systems.Arm;
+import frc.robot.systems.LimeLight;
 //import edu.wpi.first.wpilibj.SPI;
 
 public class Robot extends TimedRobot {
@@ -27,7 +28,7 @@ public class Robot extends TimedRobot {
     AHRS navx = new AHRS(AHRS.NavXComType.kMXP_SPI); 
 
     Auto auto = new Auto(driver, climber, navx, matchTimer);
-    Teleop teleop = new Teleop(driver, climber, navx, elevator, arm);
+    Teleop teleop = new Teleop(driver, climber, navx, elevator, arm, limelight);
 
     private static final String kDefaultAuto = "Default";
     private static final String kCustomAuto = "My Auto";
