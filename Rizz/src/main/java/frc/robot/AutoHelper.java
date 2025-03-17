@@ -8,6 +8,9 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
+import frc.robot.systems.Elevator;
+import frc.robot.systems.Arm;
+import frc.robot.systems.LimeLight;
 
 public class AutoHelper {
 
@@ -15,12 +18,18 @@ public class AutoHelper {
     Climber climber;
     AHRS navx;
     Timer timer;
+    Elevator elevator;
+    Arm arm;
+    LimeLight limelight;
 
-    public AutoHelper(Driver driver, Climber climber, AHRS navx, Timer timer) {
+    public AutoHelper(Driver driver, Climber climber, AHRS navx, Timer timer, Elevator elevator, Arm arm, LimeLight limelight) {
         this.driver = driver;
         this.climber = climber;
         this.navx = navx;
         this.timer = timer;
+        this.elevator = elevator;
+        this.arm = arm;
+        this.limelight = limelight;
     }
 
     PIDController autoXPID = new PIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto);
@@ -106,6 +115,7 @@ public class AutoHelper {
     */
     public boolean autoDriveRotate(double targetYawRadians) {
         double currentYawRadians = Math.toRadians(navx.getYaw());
+        
 
         double tolerance = 0.2;
         double RotSpeed = 25; // rads per sec
@@ -125,7 +135,23 @@ public class AutoHelper {
     }
 
     public void autoDriveRotatePID(double targetYawRadians) {
-        driver.swerveDrive(0, 0, autoTurnPID.calculate(targetYawRadians, Math.toRadians(navx.getYaw())));
+        driver.swerveDrive(0, 0, autoTurnPID.calculate(Math.toRadians(navx.getYaw()), targetYawRadians));
+    }
+
+    public void autoElevatorLift(){
+        elevator.elevatorLift(0.45);
+    }
+
+    public void autoArmLift(){
+        arm.armAngle(35);
+    }
+
+    public void autoOpenClaw(){
+        arm.openClaw();
+    }
+
+    public void autoCloseClaw(){
+        arm.closeClaw();
     }
     
 }

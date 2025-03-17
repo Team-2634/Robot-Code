@@ -27,7 +27,7 @@ public class Robot extends TimedRobot {
 
     AHRS navx = new AHRS(AHRS.NavXComType.kMXP_SPI); 
 
-    Auto auto = new Auto(driver, climber, navx, matchTimer);
+    Auto auto = new Auto(driver, climber, navx, matchTimer, elevator, arm, limelight);
     Teleop teleop = new Teleop(driver, climber, navx, elevator, arm, limelight);
 
     private static final String kDefaultAuto = "Default";
@@ -70,7 +70,7 @@ public class Robot extends TimedRobot {
     
     @Override
     public void autonomousPeriodic() {
-        auto.autoLeft();
+        //auto.autoLeft();
         //Hi hans this is for testing
         }
 
