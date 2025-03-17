@@ -175,6 +175,10 @@ public class TeleopHelper {
         }
     }
     
+    public void moveToAprilTag(XboxController controller){
+        limelight.moveToAprilTag(controller);
+    }
+    
  }
 
 
