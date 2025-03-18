@@ -56,6 +56,14 @@ public class Teleop {
         teleopHelper.moveToAprilTag(xboxDrive);
     }
 
+    public void elevatorArm(){
+        teleopHelper.moveElevatorArm(xboxElevator);
+    }
+
+    public void climber(){
+        teleopHelper.moveClimber(xboxElevator);
+    }
+
     // public void arm() {
 
     //     teleopHelper.arm(

@@ -63,97 +63,140 @@ public class TeleopHelper {
 //  }
 
     public void moveElevator(XboxController xbox1) { 
-        if (xbox1.getRightTriggerAxis() > 0.2) {
-            elevator.elevatorLift(0.35); // Moves up
+        if (xbox1.getRightTriggerAxis() > 0.2 && elevator.getElevatorHeight() < Constants.elevatorHighHardstop) {
+            elevator.elevatorLift(Constants.elevatorSpeed); // Moves up
         } 
-        else if (xbox1.getLeftTriggerAxis() > 0.2) {
-            elevator.elevatorLift(-0.35); // Moves down
+        else if (xbox1.getLeftTriggerAxis() > 0.2 && elevator.getElevatorHeight() > Constants.elevatorLowHardstop) {
+            elevator.elevatorLift(-Constants.elevatorSpeed); // Moves down
         } 
         else {
             elevator.elevatorLift(0); // Stops elevator
         }
     }
 
-    private int currentLevel = 1;  // Start at L1
-    private boolean rtPressed = false;
-    private boolean ltPressed = false;
+    // private int currentLevel = 1;  // Start at L1
+    // private boolean rtPressed = false;
+    // private boolean ltPressed = false;
 
-    public void elevatorControl(double rightTrigger, double leftTrigger) {
-        double rtValue = rightTrigger;
-        double ltValue = leftTrigger;
+    // public void elevatorControl(double rightTrigger, double leftTrigger) {
+    //     double rtValue = rightTrigger;
+    //     double ltValue = leftTrigger;
     
         
-        if (rtValue > 0.5 && !rtPressed) { 
-            if (currentLevel < 4) { // Max level is L4
-                currentLevel++;
-                moveToCurrentLevel();
-            }
-            rtPressed = true; 
-        } else if (rtValue < 0.2) {
-            rtPressed = false; 
-        }
+    //     if (rtValue > 0.5 && !rtPressed) { 
+    //         if (currentLevel < 4) { // Max level is L4
+    //             currentLevel++;
+    //             moveToCurrentLevel();
+    //         }
+    //         rtPressed = true; 
+    //     } else if (rtValue < 0.2) {
+    //         rtPressed = false; 
+    //     }
     
-        if (ltValue > 0.5 && !ltPressed) {
-            if (currentLevel > 1) { // Min level is L1
-                currentLevel--;
-                moveToCurrentLevel();
-            }
-            ltPressed = true;
-        } else if (ltValue < 0.2) {
-            ltPressed = false;
-        }
-
-    }
-
-    // Moves elevator based on current level
-    private void moveToCurrentLevel() {
-        switch (currentLevel) {
-            case 1: elevator.moveToL1(); break;
-            case 2: elevator.moveToL2(); break;
-            case 3: elevator.moveToL3(); break;
-            case 4: elevator.moveToL4(); break;
-        }
-    }
-    
-    public void moveClamp(XboxController xbox) {
-    
-    //     if (xbox.getAButtonPressed()) { 
-    //         elevator.armAngle(35); // Moves arm to 35° downward
-    //     } 
-    //     else if (xbox.getBButtonPressed()) { 
-    //         elevator.armAngle(0);  // Moves arm back up to 0°
+    //     if (ltValue > 0.5 && !ltPressed) {
+    //         if (currentLevel > 1) { // Min level is L1
+    //             currentLevel--;
+    //             moveToCurrentLevel();
+    //         }
+    //         ltPressed = true;
+    //     } else if (ltValue < 0.2) {
+    //         ltPressed = false;
     //     }
 
-        if (xbox.getLeftBumperButtonPressed()) {
+    // }
+
+    // Moves elevator based on current level
+    // private void moveToCurrentLevel() {
+    //     switch (currentLevel) {
+    //         case 1: elevator.moveToL1(); break;
+    //         case 2: elevator.moveToL2(); break;
+    //         case 3: elevator.moveToL3(); break;
+    //         case 4: elevator.moveToL4(); break;
+    //     }
+    // }
+    
+    public void moveClamp(XboxController xbox) {
+
+        if (xbox.getRightBumperButtonPressed()) {
             arm.closeClaw();
         } 
 
-        if (xbox.getRightBumperButtonPressed()) {  
+        if (xbox.getLeftBumperButtonPressed()) {  
             arm.openClaw();
         
         }
     }
 
-    public void moveArm(XboxController xbox) {
-
-        if (xbox.getAButtonPressed() && arm.isHardStoppedHigh() && arm.isHardStoppedLow()) {
-            arm.moveArmPID(Constants.armLowPosition);
-        } else if (xbox.getBButtonPressed() && arm.isHardStoppedHigh() && arm.isHardStoppedLow()) {
-            arm.moveArmPID(Constants.arm60);
-        } else if (xbox.getXButtonPressed() && arm.isHardStoppedHigh() && arm.isHardStoppedLow()) {
-            arm.moveArmPID(Constants.arm35);
-        } else if (xbox.getYButtonPressed() && arm.isHardStoppedHigh() && arm.isHardStoppedLow()) {
-            arm.moveArmPID(Constants.armIntake);
+    public void moveClimber(XboxController xbox) {
+        if (xbox.getRawAxis(1) > 0.2 || xbox.getRawAxis(1) < -0.2) {
+            climber.moveClimb(-xbox.getRawAxis(1) * 0.2);
         } else {
-            arm.moveArm(0);
+            climber.moveClimb(0); // Stops elevator
         }
     }
+
+    public void moveElevatorArm(XboxController xbox) {
+
+        if (xbox.getAButton()) {
+            lowTrayPos();
+        } else if (xbox.getXButton()) {
+            firstReefPos();
+        } else if (xbox.getYButton()) {
+            secondReefPos();
+        } else if (xbox.getBButtonPressed()) {
+            thirdReefPos();
+        }
+    }
+
+    public void lowTrayPos() {
+
+        if (arm.getArmAngleRad() < Constants.arm35DegreeInRadians + 0.2 && arm.getArmAngleRad() > Constants.arm35DegreeInRadians - 0.2) {
+            arm.moveArmPID(Constants.arm35DegreeInRadians);
+        } else if (elevator.getElevatorHeight() < Constants.L1_HEIGHT + 0.03 && elevator.getElevatorHeight() > Constants.L1_HEIGHT - 0.03) {
+            elevator.elevatorPIDLift(Constants.L1_HEIGHT);
+        } else {
+            return;
+        }
+
+    }
+
+    public void firstReefPos() {
+
+        if (arm.getArmAngleRad() < Constants.arm35DegreeInRadians + 0.2 && arm.getArmAngleRad() > Constants.arm35DegreeInRadians - 0.2) {
+            arm.moveArmPID(Constants.arm35DegreeInRadians);
+        } else if (elevator.getElevatorHeight() < Constants.L2_HEIGHT + 0.03 && elevator.getElevatorHeight() > Constants.L2_HEIGHT - 0.03) {
+            elevator.elevatorPIDLift(Constants.L2_HEIGHT);
+        } else {
+            return;
+        }
+
+    }
+
+    public void secondReefPos() {
+
+        if (arm.getArmAngleRad() < Constants.arm35DegreeInRadians + 0.2 && arm.getArmAngleRad() > Constants.arm35DegreeInRadians - 0.2) {
+            arm.moveArmPID(Constants.arm35DegreeInRadians);
+        } else if (elevator.getElevatorHeight() < Constants.L3_HEIGHT + 0.03 && elevator.getElevatorHeight() > Constants.L3_HEIGHT - 0.03) {
+            elevator.elevatorPIDLift(Constants.L3_HEIGHT);
+        } else {
+            return;
+        }
+
+    }
+
+    public void thirdReefPos() {
+
+    }
+
+    
 
     double speed = 0;
 
     public void armTestTest(XboxController xbox) {
         if (xbox.getXButton()) {
-            speed = -0.1;
+            speed = -Constants.armSpeed;
+        } else if (xbox.getBButton()) {
+            speed = Constants.armSpeed;
         } else {
             speed = 0;
         }
@@ -168,7 +211,7 @@ public class TeleopHelper {
             if(limelight.Xoffset() >= 0.1) {
                 drive(0, 0, -0.1, false);
             }
-            else if(limelight.Xoffset() <= 0.1) {
+            else if(limelight.Xoffset() <= -0.1) {
                 drive(0, 0, 0.1, false);
 
             }
@@ -179,6 +222,9 @@ public class TeleopHelper {
         limelight.moveToAprilTag(controller);
     }
     
+
  }
+
+
 
 

@@ -46,9 +46,11 @@ public class Constants {
     public final static double kiAuto = 0;
     public final static double kdAuto = 0.0000075;
 
-    public final static double kpArm = 1.5;
+    public final static double kpArm = 1;
     public final static double kiArm = 0;
     public final static double kdArm = 0;
+
+
 
     public final static double kpAutoRotate = 1;
     public final static double kiAutoRotate = 0;
@@ -68,21 +70,24 @@ public class Constants {
     public static final double L3_HEIGHT = 1.0;
     public static final double L4_HEIGHT = 1.5;
 
-    public static final double PULLEY_DIAMETER_METERS = 0.05; // Measure this
-    public static final double PULLEY_CIRCUMFERENCE = Math.PI * PULLEY_DIAMETER_METERS;
+    public static final double elevatorHighHardstop = 0.003470; // hardstop for elevator
+    public static final double elevatorLowHardstop = -0.000001; // hardstop for elevator
 
-
+    public static final double elevatorSpeed = 0.7;
+    public static final double drumDiameter = 0.008;
     //arm properties
-    public final static double minArmRotationRads = 3.4; //remember to change these
-    public final static double maxArmRotationRads = -0.3;
+    public final static double minArmRotationRads = -3.4; //remember to change these
+    public final static double maxArmRotationRads = 0.3;
 
-    public final static double armLowPosition = 3.14;
+    public final static double armLowPosition = -3.14;
     public final static double armIntake = 0;
-    public final static double arm35 = 0.96;
-    public final static double arm60 = 0.52;
+    public final static double arm35DegreeInRadians = -0.96;
+    public final static double arm45DegreeInRadians = -(Math.PI / 4);
 
     public static final double ARM_GEAR_RATIO = 2.0; // If arm has a gearbox, adjust this
     public static final double DEGREES_PER_REV = 360.0;
+
+    public static final double armSpeed = 0.1;
     
 
     // limelight Constants

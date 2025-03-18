@@ -135,7 +135,7 @@ public class AutoHelper {
     }
 
     public void autoDriveRotatePID(double targetYawRadians) {
-        driver.swerveDrive(0, 0, autoTurnPID.calculate(Math.toRadians(navx.getYaw()), targetYawRadians));
+        driver.swerveDrive(0, 0, autoTurnPID.calculate(Math.toRadians(navx.getPitch()), targetYawRadians));
     }
 
     public void autoElevatorLift(){

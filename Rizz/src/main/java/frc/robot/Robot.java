@@ -51,6 +51,7 @@ public class Robot extends TimedRobot {
         driver.initialize();
         elevator.elevatorInitiallize();
         arm.armInitiallize();
+        climber.initializeClimb();
 
     }
     
@@ -72,6 +73,7 @@ public class Robot extends TimedRobot {
     public void autonomousPeriodic() {
         //auto.autoLeft();
         //Hi hans this is for testing
+        auto.autoLeftBlueAlliance();
         }
 
     
@@ -84,8 +86,12 @@ public class Robot extends TimedRobot {
         teleop.drive();
         teleop.elevator();
         teleop.clamp();
+        // teleop.elevatorArm();
+        teleop.climber();
         //teleop.arm();
         teleop.armTest();
+
         teleop.limelightFunctions();
+        SmartDashboard.putNumber("Elevator Height", elevator.getElevatorHeight());
     }
 }

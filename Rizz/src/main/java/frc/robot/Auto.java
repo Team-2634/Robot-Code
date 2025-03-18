@@ -66,20 +66,21 @@ public class Auto {
                     autoHelper.autoResetPIDs();
                 }
                 else if (autoHelper.timerInterval_Auto(1.1, 2)){  //ROTATE 45 degrees to the right
-                    autoHelper.autoDriveRotatePID(45);
-                    autoHelper.autoDriveByDistance(0,1);
+                    autoHelper.autoDriveByDistance(0, 0.50);
+                    // autoHelper.autoDriveRotate(-(Math.PI / 4));
+                    // autoHelper.driver.swerveDrive(0, 0, 0.25);
                 }
-                else if (autoHelper.timerInterval_Auto(3, 6)){
-                    autoHelper.autoDriveByDistance(0, 2.24);  //Move towards the reef
-                    autoHelper.autoElevatorLift();
+                else if (autoHelper.timerInterval_Auto(2.1, 5)){
+                    // autoHelper.autoDriveByDistance(0, 0.50);  //Move towards the reef
+                    // autoHelper.autoElevatorLift();
                 }
-                else if (autoHelper.timerInterval_Auto(6.1, 8)){
-                    autoHelper.driver.swerveDrive(0, 0, 0);
-                    autoHelper.autoArmLift();
-                }
-                else if (autoHelper.timerInterval_Auto(8.1, 9)){
-                    autoHelper.autoOpenClaw();
-                }
+                // else if (autoHelper.timerInterval_Auto(6.1, 8)){
+                //     autoHelper.driver.swerveDrive(0, 0, 0);
+                //     autoHelper.autoArmLift();
+                // }
+                // else if (autoHelper.timerInterval_Auto(8.1, 9)){
+                //     autoHelper.autoOpenClaw();
+                //}
 
             }
 
