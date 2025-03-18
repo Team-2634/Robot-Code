@@ -86,8 +86,8 @@ public class Robot extends TimedRobot {
         teleop.drive();
         teleop.elevator();
         teleop.clamp();
-        // teleop.elevatorArm();
-        teleop.climber();
+        teleop.elevatorArm();
+        // teleop.climber();
         //teleop.arm();
         teleop.armTest();
 

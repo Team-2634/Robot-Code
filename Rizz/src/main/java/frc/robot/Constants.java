@@ -65,15 +65,15 @@ public class Constants {
 
 
     //elevator properties
-    public static final double L1_HEIGHT = 0.2;  // Values needs to be measured (in meters)
-    public static final double L2_HEIGHT = 0.5;
-    public static final double L3_HEIGHT = 1.0;
-    public static final double L4_HEIGHT = 1.5;
+    public static final double L1_HEIGHT = 0;  
+    public static final double L2_HEIGHT = 0.000812;
+    public static final double L3_HEIGHT = 0.002012;
+    public static final double L4_HEIGHT = 0.003300;
 
     public static final double elevatorHighHardstop = 0.003470; // hardstop for elevator
     public static final double elevatorLowHardstop = -0.000001; // hardstop for elevator
 
-    public static final double elevatorSpeed = 0.8;
+    public static final double elevatorSpeed = 0.95;
     public static final double drumDiameter = 0.008;
     //arm properties
     public final static double minArmRotationRads = -3.4; //remember to change these
@@ -81,8 +81,8 @@ public class Constants {
 
     public final static double armLowPosition = -3.14;
     public final static double armIntake = 0;
-    public final static double arm35DegreeInRadians = -0.96;
-    public final static double arm45DegreeInRadians = -(Math.PI / 4);
+    public final static double armL0to3 = -7906.873292;
+    public final static double armL4 = -5359.974310;
 
     public static final double ARM_GEAR_RATIO = 2.0; // If arm has a gearbox, adjust this
     public static final double DEGREES_PER_REV = 360.0;
@@ -97,9 +97,9 @@ public class Constants {
 
 
     //controller settings
-    public final static double XdriveSensitivity = 1;
-    public final static double YdriveSensitivity = 1; 
-    public final static double turningSensitivity = 1;
+    public final static double XdriveSensitivity = 1.0;
+    public final static double YdriveSensitivity = 1.0; 
+    public final static double turningSensitivity = 1.0;
     public final static double maxSpeedMpS = 0.5; //robot speed
 
     public final static double controllerDeadzone = 0.1;

@@ -32,7 +32,8 @@ public class Teleop {
         -removeDeadzone(xboxDrive.getLeftY()), 
         -removeDeadzone(xboxDrive.getLeftX()), 
         -removeDeadzone(xboxDrive.getRightX()), 
-        xboxDrive.getXButton());
+        xboxDrive.getXButton(),
+        xboxDrive.getAButton());
     }
 
     public void elevator() {

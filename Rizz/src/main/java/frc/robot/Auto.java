@@ -58,21 +58,22 @@ public class Auto {
 
         public void autoLeftBlueAlliance(){
 
-            if (timer.get() < 15){
+            if (timer.get() < 4){ //change this back to a 15 if everything works
 
                 if (autoHelper.timerInterval_Auto(0, 1)){
                     autoHelper.resetDriveEncoders();
                     autoHelper.resetSteerEncoders();
                     autoHelper.autoResetPIDs();
                 }
-                else if (autoHelper.timerInterval_Auto(1.1, 3)){  //ROTATE 45 degrees to the right
-                    autoHelper.autoDriveByDistance(0, 1.5);
+                else if (autoHelper.timerInterval_Auto(1.1, 3)){  //move forward
+                    autoHelper.autoCloseClaw();
+                    autoHelper.autoDriveByDistance(1, 0);
                     // autoHelper.autoDriveRotate(-(Math.PI / 4));
                     // autoHelper.driver.swerveDrive(0, 0, 0.25);
                 }
-                else if (autoHelper.timerInterval_Auto(3.1, 5)){
+                else if (autoHelper.timerInterval_Auto(3.1, 4)){
+                    autoHelper.autoDriveByDistance(0, 0);
                     // autoHelper.autoDriveByDistance(0, 0.50);  //Move towards the reef
-                    //;
                 }
                 // else if (autoHelper.timerInterval_Auto(6.1, 8)){
                 //     autoHelper.driver.swerveDrive(0, 0, 0);

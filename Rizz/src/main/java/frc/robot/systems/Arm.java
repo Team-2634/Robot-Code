@@ -94,10 +94,10 @@ public class Arm {
 
 
     public void openClaw() {
-        solenoid1.set(Value.kForward);
+        solenoid1.set(Value.kReverse);
     }
 
     public void closeClaw() {
-        solenoid1.set(Value.kReverse);
+        solenoid1.set(Value.kForward);
     }
 }

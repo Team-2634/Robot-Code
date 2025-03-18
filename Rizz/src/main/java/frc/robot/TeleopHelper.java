@@ -20,6 +20,7 @@ public class TeleopHelper {
     Elevator elevator;
     Arm arm;
     LimeLight limelight;
+
     public TeleopHelper(Driver driver, Climber climber, AHRS navx, Elevator elevator, Arm arm, LimeLight limelight) {
         this.driver = driver;
         this.climber = climber;
@@ -37,9 +38,15 @@ public class TeleopHelper {
      * @param disableFieldOrient Boolean, toggle field oriented controls
      */
 
-    public void drive(double XSpeed, double YSpeed, double TurnSpeed, boolean disableFieldOrient) {
+    public void drive(double XSpeed, double YSpeed, double TurnSpeed, boolean disableFieldOrient, boolean restartFieldOrient) {
 
         if (!disableFieldOrient) {
+            double[] speedsFieldOriented = Driver.fieldOrient(XSpeed, YSpeed, navx);
+            XSpeed = speedsFieldOriented[0];
+            YSpeed = speedsFieldOriented[1];
+        }
+
+        if (restartFieldOrient) {
             double[] speedsFieldOriented = Driver.fieldOrient(XSpeed, YSpeed, navx);
             XSpeed = speedsFieldOriented[0];
             YSpeed = speedsFieldOriented[1];
@@ -118,11 +125,11 @@ public class TeleopHelper {
     public void moveClamp(XboxController xbox) {
 
         if (xbox.getRightBumperButtonPressed()) {
-            arm.closeClaw();
+            arm.openClaw();
         } 
 
         if (xbox.getLeftBumperButtonPressed()) {  
-            arm.openClaw();
+            arm.closeClaw();
         
         }
     }
@@ -150,9 +157,9 @@ public class TeleopHelper {
 
     public void lowTrayPos() {
 
-        if (arm.getArmAngleRad() < Constants.arm35DegreeInRadians + 0.2 && arm.getArmAngleRad() > Constants.arm35DegreeInRadians - 0.2) {
-            arm.moveArmPID(Constants.arm35DegreeInRadians);
-        } else if (elevator.getElevatorHeight() < Constants.L1_HEIGHT + 0.03 && elevator.getElevatorHeight() > Constants.L1_HEIGHT - 0.03) {
+        if (arm.getArmAngleRad() < Constants.armL0to3 + 20 && arm.getArmAngleRad() > Constants.armL0to3 - 20) {
+            arm.moveArmPID(Constants.armL0to3);
+        } else if (elevator.getElevatorHeight() < Constants.L1_HEIGHT + 0.0002 && elevator.getElevatorHeight() > Constants.L1_HEIGHT - 0.0002) {
             elevator.elevatorPIDLift(Constants.L1_HEIGHT);
         } else {
             return;
@@ -162,9 +169,9 @@ public class TeleopHelper {
 
     public void firstReefPos() {
 
-        if (arm.getArmAngleRad() < Constants.arm35DegreeInRadians + 0.2 && arm.getArmAngleRad() > Constants.arm35DegreeInRadians - 0.2) {
-            arm.moveArmPID(Constants.arm35DegreeInRadians);
-        } else if (elevator.getElevatorHeight() < Constants.L2_HEIGHT + 0.03 && elevator.getElevatorHeight() > Constants.L2_HEIGHT - 0.03) {
+        if (arm.getArmAngleRad() < Constants.armL0to3 + 20 && arm.getArmAngleRad() > Constants.armL0to3 - 20) {
+            arm.moveArmPID(Constants.armL0to3);
+        } else if (elevator.getElevatorHeight() < Constants.L2_HEIGHT + 0.0002 && elevator.getElevatorHeight() > Constants.L2_HEIGHT - 0.0002) {
             elevator.elevatorPIDLift(Constants.L2_HEIGHT);
         } else {
             return;
@@ -174,9 +181,9 @@ public class TeleopHelper {
 
     public void secondReefPos() {
 
-        if (arm.getArmAngleRad() < Constants.arm35DegreeInRadians + 0.2 && arm.getArmAngleRad() > Constants.arm35DegreeInRadians - 0.2) {
-            arm.moveArmPID(Constants.arm35DegreeInRadians);
-        } else if (elevator.getElevatorHeight() < Constants.L3_HEIGHT + 0.03 && elevator.getElevatorHeight() > Constants.L3_HEIGHT - 0.03) {
+        if (arm.getArmAngleRad() < Constants.armL0to3 + 20 && arm.getArmAngleRad() > Constants.armL0to3 - 20) {
+            arm.moveArmPID(Constants.armL0to3);
+        } else if (elevator.getElevatorHeight() < Constants.L3_HEIGHT + 0.0002 && elevator.getElevatorHeight() > Constants.L3_HEIGHT - 0.0002) {
             elevator.elevatorPIDLift(Constants.L3_HEIGHT);
         } else {
             return;
@@ -185,9 +192,9 @@ public class TeleopHelper {
     }
 
     public void thirdReefPos() {
-        if (arm.getArmAngleRad() < Constants.arm45DegreeInRadians + 0.2 && arm.getArmAngleRad() > Constants.arm45DegreeInRadians - 0.2) {
-            arm.moveArmPID(Constants.arm45DegreeInRadians);
-        } else if (elevator.getElevatorHeight() < Constants.L4_HEIGHT + 0.03 && elevator.getElevatorHeight() > Constants.L4_HEIGHT - 0.03) {
+        if (arm.getArmAngleRad() < Constants.armL4 + 20 && arm.getArmAngleRad() > Constants.armL4 - 20) {
+            arm.moveArmPID(Constants.armL4);
+        } else if (elevator.getElevatorHeight() < Constants.L4_HEIGHT + 0.0002 && elevator.getElevatorHeight() > Constants.L4_HEIGHT - 0.0002) {
             elevator.elevatorPIDLift(Constants.L4_HEIGHT);
         } else {
             return;
@@ -199,26 +206,23 @@ public class TeleopHelper {
     double speed = 0;
 
     public void armTestTest(XboxController xbox) {
-        if (xbox.getXButton()) {
-            speed = -Constants.armSpeed;
-        } else if (xbox.getBButton()) {
-            speed = Constants.armSpeed;
+
+        if (xbox.getRawAxis(5) > 0.2 || xbox.getRawAxis(5) < -0.2) {
+            arm.moveArm(-xbox.getRawAxis(5) * 0.4);
         } else {
-            speed = 0;
+            arm.moveArm(0); // Stops arm
         }
 
         SmartDashboard.putNumber("arm speed", speed);
-        arm.moveArm(speed);
-
     }
 
     public void rotateAlignToAprilTag(XboxController controller) {
         if(controller.getBButton()) {
             if(limelight.Xoffset() >= 0.1) {
-                drive(0, 0, -0.1, false);
+                drive(0, 0, -0.1, false, false);
             }
             else if(limelight.Xoffset() <= -0.1) {
-                drive(0, 0, 0.1, false);
+                drive(0, 0, 0.1, false, false);
 
             }
         }
