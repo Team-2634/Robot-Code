@@ -93,5 +93,6 @@ public class Robot extends TimedRobot {
 
         teleop.limelightFunctions();
         SmartDashboard.putNumber("Elevator Height", elevator.getElevatorHeight());
+        SmartDashboard.putNumber("Arm Angle in Rad", arm.getArmAngleRad());
     }
 }

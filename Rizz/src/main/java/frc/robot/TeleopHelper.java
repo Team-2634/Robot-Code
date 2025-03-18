@@ -185,7 +185,13 @@ public class TeleopHelper {
     }
 
     public void thirdReefPos() {
-
+        if (arm.getArmAngleRad() < Constants.arm45DegreeInRadians + 0.2 && arm.getArmAngleRad() > Constants.arm45DegreeInRadians - 0.2) {
+            arm.moveArmPID(Constants.arm45DegreeInRadians);
+        } else if (elevator.getElevatorHeight() < Constants.L4_HEIGHT + 0.03 && elevator.getElevatorHeight() > Constants.L4_HEIGHT - 0.03) {
+            elevator.elevatorPIDLift(Constants.L4_HEIGHT);
+        } else {
+            return;
+        }
     }
 
     

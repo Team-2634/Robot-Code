@@ -65,14 +65,14 @@ public class Auto {
                     autoHelper.resetSteerEncoders();
                     autoHelper.autoResetPIDs();
                 }
-                else if (autoHelper.timerInterval_Auto(1.1, 2)){  //ROTATE 45 degrees to the right
-                    autoHelper.autoDriveByDistance(0, 0.50);
+                else if (autoHelper.timerInterval_Auto(1.1, 3)){  //ROTATE 45 degrees to the right
+                    autoHelper.autoDriveByDistance(0, 1.5);
                     // autoHelper.autoDriveRotate(-(Math.PI / 4));
                     // autoHelper.driver.swerveDrive(0, 0, 0.25);
                 }
-                else if (autoHelper.timerInterval_Auto(2.1, 5)){
+                else if (autoHelper.timerInterval_Auto(3.1, 5)){
                     // autoHelper.autoDriveByDistance(0, 0.50);  //Move towards the reef
-                    // autoHelper.autoElevatorLift();
+                    //;
                 }
                 // else if (autoHelper.timerInterval_Auto(6.1, 8)){
                 //     autoHelper.driver.swerveDrive(0, 0, 0);

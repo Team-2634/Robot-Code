@@ -139,7 +139,8 @@ public class AutoHelper {
     }
 
     public void autoElevatorLift(){
-        elevator.elevatorLift(0.45);
+      //  elevator.elevatorLift(0.75);
+        elevator.moveToHeight(Constants.L1_HEIGHT);
     }
 
     public void autoArmLift(){

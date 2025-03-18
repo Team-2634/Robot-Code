@@ -73,7 +73,7 @@ public class Constants {
     public static final double elevatorHighHardstop = 0.003470; // hardstop for elevator
     public static final double elevatorLowHardstop = -0.000001; // hardstop for elevator
 
-    public static final double elevatorSpeed = 0.7;
+    public static final double elevatorSpeed = 0.8;
     public static final double drumDiameter = 0.008;
     //arm properties
     public final static double minArmRotationRads = -3.4; //remember to change these
@@ -92,7 +92,7 @@ public class Constants {
 
     // limelight Constants
     public final static double limeLightHeightFromGround = 0.1016; //assumed in meters, change when actual value is given
-    public final static double limeLightAngleInRads = (Math.PI / 18); //assuming the angle is 10 degrees
+    public final static double limeLightAngleInRads = (23 * (Math.PI / 180)); //23 degrees
     public final static double aprilTagHeight = 0.38; //assumed in meters, should be right.
 
 

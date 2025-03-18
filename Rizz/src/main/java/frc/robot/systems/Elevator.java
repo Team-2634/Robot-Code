@@ -60,9 +60,10 @@ public class Elevator{
     public void moveToL4() { moveToHeight(Constants.L4_HEIGHT); }
 
     public void moveToHeight(double targetHeight) {
-        double currentHeight = getElevatorHeight();
-        double speed = 0.1; // Adjust speed as needed
-
+        double currentHeight = getElevatorHeight(); 
+        //Backup function incase PID's don't work
+        double speed = 0.7; // Adjust speed as needed
+        
         if (currentHeight < targetHeight - 0.02) {
             elevatorMotor.set(speed); // Move up
         } else if (currentHeight > targetHeight + 0.02) {
