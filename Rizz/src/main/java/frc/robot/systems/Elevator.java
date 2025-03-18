@@ -39,7 +39,7 @@ public class Elevator{
 
     public void elevatorPIDLift(double height) {
 
-        double tolerance = 0.03;
+        double tolerance = 0.0002;
 
         double speedInput = elevatorPID.calculate(getElevatorHeight(), height);
         if (Math.abs(height - getElevatorHeight()) < tolerance) {

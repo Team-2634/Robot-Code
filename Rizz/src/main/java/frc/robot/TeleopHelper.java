@@ -38,19 +38,12 @@ public class TeleopHelper {
      * @param disableFieldOrient Boolean, toggle field oriented controls
      */
 
-    public void drive(double XSpeed, double YSpeed, double TurnSpeed, boolean disableFieldOrient, boolean restartFieldOrient) {
+    public void drive(double XSpeed, double YSpeed, double TurnSpeed, boolean disableFieldOrient, boolean resetNavx) {
 
-        if (!disableFieldOrient) {
-            double[] speedsFieldOriented = Driver.fieldOrient(XSpeed, YSpeed, navx);
-            XSpeed = speedsFieldOriented[0];
-            YSpeed = speedsFieldOriented[1];
-        }
-
-        if (restartFieldOrient) {
-            double[] speedsFieldOriented = Driver.fieldOrient(XSpeed, YSpeed, navx);
-            XSpeed = speedsFieldOriented[0];
-            YSpeed = speedsFieldOriented[1];
-        }
+        // double[] speedsFieldOriented = Driver.fieldOrient(XSpeed, YSpeed, navx);
+        // XSpeed = speedsFieldOriented[0];
+        // YSpeed = speedsFieldOriented[1];
+        
         
         XSpeed *= Constants.XdriveSensitivity;
         YSpeed *= Constants.YdriveSensitivity;
@@ -143,6 +136,7 @@ public class TeleopHelper {
     }
 
     public void moveElevatorArm(XboxController xbox) {
+        System.out.println("move elevator arm method from helper!!!!!!!!!!!!!!!!!!!");
 
         if (xbox.getAButton()) {
             lowTrayPos();
@@ -156,10 +150,11 @@ public class TeleopHelper {
     }
 
     public void lowTrayPos() {
+        System.out.println("low tray pos method");
 
-        if (arm.getArmAngleRad() < Constants.armL0to3 + 20 && arm.getArmAngleRad() > Constants.armL0to3 - 20) {
+        if (!(arm.getArmAngleRad() < Constants.armL0to3 + 20 && arm.getArmAngleRad() > Constants.armL0to3 - 20)) {
             arm.moveArmPID(Constants.armL0to3);
-        } else if (elevator.getElevatorHeight() < Constants.L1_HEIGHT + 0.0002 && elevator.getElevatorHeight() > Constants.L1_HEIGHT - 0.0002) {
+        } else if (!(elevator.getElevatorHeight() < Constants.L1_HEIGHT + 0.0002 && elevator.getElevatorHeight() > Constants.L1_HEIGHT - 0.0002)) {
             elevator.elevatorPIDLift(Constants.L1_HEIGHT);
         } else {
             return;
@@ -168,11 +163,15 @@ public class TeleopHelper {
     }
 
     public void firstReefPos() {
+        System.out.println("first reef pos method");
 
-        if (arm.getArmAngleRad() < Constants.armL0to3 + 20 && arm.getArmAngleRad() > Constants.armL0to3 - 20) {
+        if (!(arm.getArmAngleRad() < Constants.armL0to3 + 20 && arm.getArmAngleRad() > Constants.armL0to3 - 20)) {
             arm.moveArmPID(Constants.armL0to3);
-        } else if (elevator.getElevatorHeight() < Constants.L2_HEIGHT + 0.0002 && elevator.getElevatorHeight() > Constants.L2_HEIGHT - 0.0002) {
+            System.out.println("first reed move arm");
+
+        } else if (!(elevator.getElevatorHeight() < Constants.L2_HEIGHT + 0.0002 && elevator.getElevatorHeight() > Constants.L2_HEIGHT - 0.0002)) {
             elevator.elevatorPIDLift(Constants.L2_HEIGHT);
+            System.out.println("first reed move elevator");
         } else {
             return;
         }
@@ -181,9 +180,9 @@ public class TeleopHelper {
 
     public void secondReefPos() {
 
-        if (arm.getArmAngleRad() < Constants.armL0to3 + 20 && arm.getArmAngleRad() > Constants.armL0to3 - 20) {
+        if (!(arm.getArmAngleRad() < Constants.armL0to3 + 20 && arm.getArmAngleRad() > Constants.armL0to3 - 20)) {
             arm.moveArmPID(Constants.armL0to3);
-        } else if (elevator.getElevatorHeight() < Constants.L3_HEIGHT + 0.0002 && elevator.getElevatorHeight() > Constants.L3_HEIGHT - 0.0002) {
+        } else if (!(elevator.getElevatorHeight() < Constants.L3_HEIGHT + 0.0002 && elevator.getElevatorHeight() > Constants.L3_HEIGHT - 0.0002)) {
             elevator.elevatorPIDLift(Constants.L3_HEIGHT);
         } else {
             return;
@@ -192,9 +191,9 @@ public class TeleopHelper {
     }
 
     public void thirdReefPos() {
-        if (arm.getArmAngleRad() < Constants.armL4 + 20 && arm.getArmAngleRad() > Constants.armL4 - 20) {
+        if (!(arm.getArmAngleRad() < Constants.armL4 + 20 && arm.getArmAngleRad() > Constants.armL4 - 20)) {
             arm.moveArmPID(Constants.armL4);
-        } else if (elevator.getElevatorHeight() < Constants.L4_HEIGHT + 0.0002 && elevator.getElevatorHeight() > Constants.L4_HEIGHT - 0.0002) {
+        } else if (!(elevator.getElevatorHeight() < Constants.L4_HEIGHT + 0.0002 && elevator.getElevatorHeight() > Constants.L4_HEIGHT - 0.0002)) {
             elevator.elevatorPIDLift(Constants.L4_HEIGHT);
         } else {
             return;

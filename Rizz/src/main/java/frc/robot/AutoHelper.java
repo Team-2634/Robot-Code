@@ -135,16 +135,17 @@ public class AutoHelper {
     }
 
     public void autoDriveRotatePID(double targetYawRadians) {
-        driver.swerveDrive(0, 0, autoTurnPID.calculate(Math.toRadians(navx.getPitch()), targetYawRadians));
+        driver.swerveDrive(0, 0, autoTurnPID.calculate(Math.toRadians(navx.getYaw()), targetYawRadians));
     }
 
-    public void autoElevatorLift(){
-      //  elevator.elevatorLift(0.75);
-        elevator.moveToHeight(Constants.L1_HEIGHT);
+    public void autoElevatorLift(double speed){
+       elevator.elevatorLift(speed);
+        // elevator.moveToHeight(Constants.L1_HEIGHT);
     }
 
-    public void autoArmLift(){
-        arm.armAngle(35);
+    public void autoArmLift(double speed){
+       // arm.armAngle(35);
+        arm.armMotor.set(speed);
     }
 
     public void autoOpenClaw(){

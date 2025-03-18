@@ -33,8 +33,8 @@ public class Teleop {
         -removeDeadzone(xboxDrive.getLeftX()), 
         -removeDeadzone(xboxDrive.getRightX()), 
         xboxDrive.getXButton(),
-        xboxDrive.getAButton());
-    }
+        xboxDrive.getAButtonPressed());
+        }
 
     public void elevator() {
         teleopHelper.moveElevator(xboxElevator);
@@ -59,6 +59,7 @@ public class Teleop {
 
     public void elevatorArm(){
         teleopHelper.moveElevatorArm(xboxElevator);
+        System.out.println("elevatorArm from teleop.java");
     }
 
     public void climber(){

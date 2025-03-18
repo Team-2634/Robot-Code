@@ -210,7 +210,7 @@ public class Driver {
 
     
     public final static double[] fieldOrient(double XSpeed, double YSpeed, AHRS navx) {
-        double currentYawRadians = Math.toRadians(-navx.getYaw());
+        double currentYawRadians = Math.toRadians(navx.getYaw());
         double XSpeedField = XSpeed * Math.cos(currentYawRadians) - YSpeed * Math.sin(currentYawRadians);
         double YSpeedField = XSpeed * Math.sin(currentYawRadians) + YSpeed * Math.cos(currentYawRadians);
         double[] speeds = {XSpeedField, YSpeedField};
@@ -242,7 +242,7 @@ public class Driver {
         return poseEstimator.getEstimatedPosition();
     }
 
-    public void panicReset() {
+    public void panicReset() { // never used
         navx.reset();
         navx.zeroYaw();
         navx.setAngleAdjustment(0);

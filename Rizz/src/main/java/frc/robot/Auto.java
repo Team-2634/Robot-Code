@@ -58,40 +58,36 @@ public class Auto {
 
         public void autoLeftBlueAlliance(){
 
-            if (timer.get() < 4){ //change this back to a 15 if everything works
+            if (timer.get() < 15){ 
 
-                if (autoHelper.timerInterval_Auto(0, 1)){
+                if (autoHelper.timerInterval_Auto(0, 0.25)){
                     autoHelper.resetDriveEncoders();
                     autoHelper.resetSteerEncoders();
                     autoHelper.autoResetPIDs();
                 }
-                else if (autoHelper.timerInterval_Auto(1.1, 3)){  //move forward
+                else if (autoHelper.timerInterval_Auto(0.26, 1.26)){  //move forward
                     autoHelper.autoCloseClaw();
-                    autoHelper.autoDriveByDistance(1, 0);
-                    // autoHelper.autoDriveRotate(-(Math.PI / 4));
-                    // autoHelper.driver.swerveDrive(0, 0, 0.25);
+                  
+                    autoHelper.driver.swerveDrive(0, 0, 0);
+                    autoHelper.autoArmLift(-0.25);
                 }
-                else if (autoHelper.timerInterval_Auto(3.1, 4)){
-                    autoHelper.autoDriveByDistance(0, 0);
-                    // autoHelper.autoDriveByDistance(0, 0.50);  //Move towards the reef
+                else if (autoHelper.timerInterval_Auto(1.27, 4.27)){
+                    autoHelper.autoArmLift(0);
+                    autoHelper.autoElevatorLift(0.50);
+                    autoHelper.driver.swerveDrive(0.25, 0, 0);
+
                 }
-                // else if (autoHelper.timerInterval_Auto(6.1, 8)){
-                //     autoHelper.driver.swerveDrive(0, 0, 0);
-                //     autoHelper.autoArmLift();
-                // }
-                // else if (autoHelper.timerInterval_Auto(8.1, 9)){
-                //     autoHelper.autoOpenClaw();
-                //}
+                else if (autoHelper.timerInterval_Auto(4.28, 5.28)){
+                    autoHelper.autoElevatorLift(0);
+                    autoHelper.driver.swerveDrive(0, 0, 0);
 
-            }
-
-          
-    
-            
-           
-            
-        
-
+                }
+                else if (autoHelper.timerInterval_Auto(5.29, 6.29)){
+                    autoHelper.autoOpenClaw();
+                }
+               
+             
+            }   
         }
    
 }

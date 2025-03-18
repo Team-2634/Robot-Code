@@ -48,7 +48,7 @@ public class Robot extends TimedRobot {
         matchTimer.reset();
         matchTimer.start();
         navx.reset();
-        driver.initialize();
+        driver.initialize(); // navx also reset after pose
         elevator.elevatorInitiallize();
         arm.armInitiallize();
         climber.initializeClimb();
@@ -94,5 +94,6 @@ public class Robot extends TimedRobot {
         teleop.limelightFunctions();
         SmartDashboard.putNumber("Elevator Height", elevator.getElevatorHeight());
         SmartDashboard.putNumber("Arm Angle in Rad", arm.getArmAngleRad());
+        SmartDashboard.putNumber("get Yaw", navx.getYaw());
     }
 }

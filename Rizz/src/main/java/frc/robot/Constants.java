@@ -73,7 +73,7 @@ public class Constants {
     public static final double elevatorHighHardstop = 0.003470; // hardstop for elevator
     public static final double elevatorLowHardstop = -0.000001; // hardstop for elevator
 
-    public static final double elevatorSpeed = 0.95;
+    public static final double elevatorSpeed = 1.00;
     public static final double drumDiameter = 0.008;
     //arm properties
     public final static double minArmRotationRads = -3.4; //remember to change these
