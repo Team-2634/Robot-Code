@@ -65,16 +65,17 @@ public class Constants {
 
 
     //elevator properties
-    public static final double L1_HEIGHT = 0;  
+    public static final double L1_HEIGHT = 0.000500;  
     public static final double L2_HEIGHT = 0.000812;
     public static final double L3_HEIGHT = 0.002012;
     public static final double L4_HEIGHT = 0.003300;
 
-    public static final double elevatorHighHardstop = 0.003470; // hardstop for elevator
+    public static final double elevatorHighHardstop = 0.004107; // hardstop for elevator // updated for last qual
     public static final double elevatorLowHardstop = -0.000001; // hardstop for elevator
 
     public static final double elevatorSpeed = 1.00;
     public static final double drumDiameter = 0.008;
+
     //arm properties
     public final static double minArmRotationRads = -3.4; //remember to change these
     public final static double maxArmRotationRads = 0.3;
@@ -96,11 +97,11 @@ public class Constants {
     public final static double aprilTagHeight = 0.38; //assumed in meters, should be right.
 
 
-    //controller settings
-    public final static double XdriveSensitivity = 1.0;
-    public final static double YdriveSensitivity = 1.0; 
+    //controller settings (robot speed)
+    public final static double XdriveSensitivity = 0.75;
+    public final static double YdriveSensitivity = 0.75; 
     public final static double turningSensitivity = 1.0;
-    public final static double maxSpeedMpS = 0.5; //robot speed
+    public final static double maxSpeedMpS = 0.5; 
 
     public final static double controllerDeadzone = 0.1;
 

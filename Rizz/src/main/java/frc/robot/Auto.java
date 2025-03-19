@@ -60,33 +60,39 @@ public class Auto {
 
             if (timer.get() < 15){ 
 
-                if (autoHelper.timerInterval_Auto(0, 0.25)){
+                if (autoHelper.timerInterval_Auto(0, 0.15)){
                     autoHelper.resetDriveEncoders();
                     autoHelper.resetSteerEncoders();
                     autoHelper.autoResetPIDs();
                 }
-                else if (autoHelper.timerInterval_Auto(0.26, 1.26)){  //move forward
+                else if (autoHelper.timerInterval_Auto(0.16, 1.16)){ 
                     autoHelper.autoCloseClaw();
-                  
                     autoHelper.driver.swerveDrive(0, 0, 0);
-                    autoHelper.autoArmLift(-0.25);
+                    autoHelper.autoArmLift(-0.255);
                 }
-                else if (autoHelper.timerInterval_Auto(1.27, 4.27)){
+                else if (autoHelper.timerInterval_Auto(1.17, 3.17)){
                     autoHelper.autoArmLift(0);
-                    autoHelper.autoElevatorLift(0.50);
-                    autoHelper.driver.swerveDrive(0.25, 0, 0);
-
+                    autoHelper.autoElevatorLift(0.45);
+                    autoHelper.driver.swerveDrive(0.24, 0, 0);
                 }
-                else if (autoHelper.timerInterval_Auto(4.28, 5.28)){
+                else if (autoHelper.timerInterval_Auto(3.18, 3.21)){
                     autoHelper.autoElevatorLift(0);
                     autoHelper.driver.swerveDrive(0, 0, 0);
-
                 }
-                else if (autoHelper.timerInterval_Auto(5.29, 6.29)){
+                else if (autoHelper.timerInterval_Auto(3.22, 3.9)){
                     autoHelper.autoOpenClaw();
                 }
-               
-             
+                else if (autoHelper.timerInterval_Auto(4, 5)){
+                    autoHelper.autoArmLift(0.25);
+                }
+                else if (autoHelper.timerInterval_Auto(5.1, 5.9)){
+                    autoHelper.autoArmLift(0);
+                    autoHelper.driver.swerveDrive(-0.10, 0, 0);
+                }
+                else if (autoHelper.timerInterval_Auto(6, 9)){
+                    autoHelper.driver.swerveDrive(0, 0, 0);
+                }
+                        
             }   
         }
    

@@ -1,7 +1,5 @@
 package frc.robot;
 
-import org.ejml.data.ElementLocation;
-
 //import com.kauailabs.navx.frc.AHRS;
 import com.studica.frc.AHRS;
 
@@ -91,9 +89,13 @@ public class Robot extends TimedRobot {
         //teleop.arm();
         teleop.armTest();
 
-        teleop.limelightFunctions();
+        //teleop.limelightFunctions();
         SmartDashboard.putNumber("Elevator Height", elevator.getElevatorHeight());
         SmartDashboard.putNumber("Arm Angle in Rad", arm.getArmAngleRad());
         SmartDashboard.putNumber("get Yaw", navx.getYaw());
+        SmartDashboard.putNumber("get Pitch", navx.getPitch());
+        SmartDashboard.putNumber("get Roll", navx.getRoll());
+        SmartDashboard.putNumber("get Roll", navx.getRotation2d().getRadians());
+
     }
 }
