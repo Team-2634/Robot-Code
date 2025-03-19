@@ -258,8 +258,17 @@ public class TeleopHelper {
     }
     
     public void moveToAprilTag(XboxController controller){
-        limelight.moveToAprilTag(controller);
-    }
+        if(controller.getAButton()) {
+            if (limelight.distanceFromLimelightAngle() > 0.51) {
+                driver.swerveDrive(0.3,0,0);
+            }
+            else if (limelight.distanceFromLimelightAngle() < 0.51) {
+                driver.swerveDrive(0.3,0,0);
+            }
+        }
+
+}
+
     
 
  }
