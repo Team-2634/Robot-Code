@@ -70,7 +70,7 @@ public class Constants {
     public static final double L3_HEIGHT = 0.002012;
     public static final double L4_HEIGHT = 0.003300;
 
-    public static final double elevatorHighHardstop = 0.004107; // hardstop for elevator // updated for last qual
+    public static final double elevatorHighHardstop = 0.003512; // hardstop for elevator // updated for last qual
     public static final double elevatorLowHardstop = -0.000001; // hardstop for elevator
 
     public static final double elevatorSpeed = 1.00;

@@ -64,7 +64,7 @@ public class AutoHelper {
         double fieldDistanceX = distanceFieldOriented[0];
         double fieldDistanceY = distanceFieldOriented[1]; 
 
-        double[] displacementFieldOriented = Driver.fieldOrient(navx.getDisplacementX(), navx.getDisplacementY(), navx);
+        double[] displacementFieldOriented = Driver.fieldOrient(navx.getDisplacementY(), navx.getDisplacementZ(), navx);
         double currentDisplacementX = displacementFieldOriented[0];
         double currentDisplacementY = displacementFieldOriented[1]; 
         

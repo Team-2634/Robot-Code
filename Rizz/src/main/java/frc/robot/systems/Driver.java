@@ -8,6 +8,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -210,7 +211,9 @@ public class Driver {
 
     
     public final static double[] fieldOrient(double XSpeed, double YSpeed, AHRS navx) {
-        double currentYawRadians = Math.toRadians(navx.getYaw());//-navx.getRotation2d().getRadians());
+        double currentYawRadians = Math.toRadians(navx.getYaw());//-navx.getRotation2d().getRadians()); 
+        //double currentYawRadians = MathUtil.angleModulus(-navx.getRotation2d().getRadians()); 
+        //double currentYawRadians = ______________________Math.toRadians(navx.getPitch());
         double XSpeedField = XSpeed * Math.cos(currentYawRadians) - YSpeed * Math.sin(currentYawRadians);
         double YSpeedField = XSpeed * Math.sin(currentYawRadians) + YSpeed * Math.cos(currentYawRadians);
         double[] speeds = {XSpeedField, YSpeedField};

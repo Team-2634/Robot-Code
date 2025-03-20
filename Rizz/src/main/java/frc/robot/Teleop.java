@@ -59,7 +59,6 @@ public class Teleop {
 
     public void elevatorArm(){
         teleopHelper.moveElevatorArm(xboxElevator);
-        System.out.println("elevatorArm from teleop.java");
     }
 
     public void climber(){
