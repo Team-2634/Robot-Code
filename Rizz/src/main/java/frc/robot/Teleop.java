@@ -54,7 +54,7 @@ public class Teleop {
 
     public void limelightFunctions(){
         teleopHelper.rotateAlignToAprilTag(xboxDrive);
-        teleopHelper.moveToAprilTag(xboxDrive);
+        //teleopHelper.moveToAprilTag(xboxDrive);
     }
 
     public void elevatorArm(){

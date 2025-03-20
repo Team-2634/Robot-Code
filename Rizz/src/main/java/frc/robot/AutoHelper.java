@@ -32,10 +32,6 @@ public class AutoHelper {
         this.limelight = limelight;
     }
 
-    PIDController autoXPID = new PIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto);
-    PIDController autoYPID = new PIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto);
-    PIDController autoTurnPID = new PIDController(Constants.kpAutoRotate, Constants.kiAutoRotate, Constants.kdAutoRotate);
-
 
     public boolean timerInterval_Auto(double min, double max) {
         if (timer.get() > min && timer.get() < max) {
@@ -59,23 +55,9 @@ public class AutoHelper {
         driver.backRightSteer.setPosition(0);
     }
 
-    public void autoDriveByDistance(double distanceX, double distanceY) {
-        double[] distanceFieldOriented = Driver.fieldOrient(distanceX, distanceY, navx);
-        double fieldDistanceX = distanceFieldOriented[0];
-        double fieldDistanceY = distanceFieldOriented[1]; 
-
-        double[] displacementFieldOriented = Driver.fieldOrient(navx.getDisplacementY(), navx.getDisplacementZ(), navx);
-        double currentDisplacementX = displacementFieldOriented[0];
-        double currentDisplacementY = displacementFieldOriented[1]; 
-        
-        double xSpeed = autoXPID.calculate(currentDisplacementX, fieldDistanceX);
-        double ySpeed = autoYPID.calculate(currentDisplacementY, fieldDistanceY);
-        driver.swerveDrive(xSpeed, ySpeed, 0);
-    }
 
     public void autoResetPIDs() {
-        autoXPID.reset();
-        autoYPID.reset();
+        driver.resetAutoPIDs();
     }
 
     /**
@@ -134,9 +116,6 @@ public class AutoHelper {
         }
     }
 
-    public void autoDriveRotatePID(double targetYawRadians) {
-        driver.swerveDrive(0, 0, autoTurnPID.calculate(Math.toRadians(navx.getYaw()), targetYawRadians));
-    }
 
     public void autoElevatorLift(double speed){
        elevator.elevatorLift(speed);

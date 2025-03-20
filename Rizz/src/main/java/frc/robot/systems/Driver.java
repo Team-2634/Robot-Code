@@ -32,6 +32,10 @@ public class Driver {
     PIDController pidBackRightTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
     PIDController[] pidArray = {pidFrontLeftTurn, pidFrontRightTurn, pidBackLeftTurn, pidBackRightTurn};
 
+    PIDController autoXPID = new PIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto);
+    PIDController autoYPID = new PIDController(Constants.kpAuto, Constants.kiAuto, Constants.kdAuto);
+    PIDController autoTurnPID = new PIDController(Constants.kpAutoRotate, Constants.kiAutoRotate, Constants.kdAutoRotate); //moved from autoHelper
+
     public final TalonFX frontLeftDrive = new TalonFX(Constants.frontLeftDriveID);
     public final TalonFX frontRightDrive = new TalonFX(Constants.frontRightDriveID);
     public final TalonFX backLeftDrive = new TalonFX(Constants.backLeftDriveID);
@@ -218,6 +222,29 @@ public class Driver {
         double YSpeedField = XSpeed * Math.sin(currentYawRadians) + YSpeed * Math.cos(currentYawRadians);
         double[] speeds = {XSpeedField, YSpeedField};
         return speeds;
+    }
+
+    public void autoDriveByDistance(double distanceX, double distanceY) {
+        double[] distanceFieldOriented = Driver.fieldOrient(distanceX, distanceY, navx);
+        double fieldDistanceX = distanceFieldOriented[0];
+        double fieldDistanceY = distanceFieldOriented[1]; 
+
+        double[] displacementFieldOriented = Driver.fieldOrient(navx.getDisplacementY(), navx.getDisplacementZ(), navx);
+        double currentDisplacementX = displacementFieldOriented[0];
+        double currentDisplacementY = displacementFieldOriented[1]; 
+        
+        double xSpeed = autoXPID.calculate(currentDisplacementX, fieldDistanceX);
+        double ySpeed = autoYPID.calculate(currentDisplacementY, fieldDistanceY);
+        swerveDrive(xSpeed, ySpeed, 0);
+    }
+
+    public void autoDriveRotatePID(double targetYawRadians) {
+        swerveDrive(0, 0, autoTurnPID.calculate(Math.toRadians(navx.getYaw()), targetYawRadians));
+    }
+
+    public void resetAutoPIDs() {
+        autoXPID.reset();
+        autoYPID.reset();
     }
 
     SwerveModulePosition getModulePosition(int module) {
