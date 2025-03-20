@@ -86,8 +86,7 @@ public class Robot extends TimedRobot {
         teleop.clamp();
         teleop.elevatorArm();
         // teleop.climber();
-        //teleop.arm();
-        teleop.armTest();
+        teleop.arm();
 
         //teleop.limelightFunctions();
         SmartDashboard.putNumber("Elevator Height", elevator.getElevatorHeight());

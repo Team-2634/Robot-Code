@@ -54,16 +54,6 @@ public class TeleopHelper {
         driver.swerveDrive(XSpeed, YSpeed, TurnSpeed);
     }
 
-        //  public void liftElevatorFromBumper(boolean input){
-//      if(input) {
-//          elevator.elevatorLiftUp(0.05);
-//      }
-//      else if(input != true) {
-//          elevator.elevatorLiftUp(0); //just incase it doesnt stop after you press Left bumper
-//      }
-
-//  }
-
     public void moveElevator(XboxController xbox1) { 
         if (xbox1.getRightTriggerAxis() > 0.2 && elevator.getElevatorHeight() < Constants.elevatorHighHardstop) {
             elevator.elevatorLift(Constants.elevatorSpeed); // Moves up
@@ -234,7 +224,7 @@ public class TeleopHelper {
 
     double speed = 0;
 
-    public void armTestTest(XboxController xbox) {
+    public void moveArm(XboxController xbox) {
 
         if (xbox.getRawAxis(5) > 0.2 || xbox.getRawAxis(5) < -0.2) {
             arm.moveArm(-xbox.getRawAxis(5) * 0.4);

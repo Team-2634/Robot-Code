@@ -40,16 +40,12 @@ public class Teleop {
         teleopHelper.moveElevator(xboxElevator);
     }
 
-    // public void arm() {
-    //     teleopHelper.moveArm(xboxDrive);
-    // }
-
     public void clamp() {
         teleopHelper.moveClamp(xboxElevator);
     }
 
-    public void armTest() {
-        teleopHelper.armTestTest(xboxElevator);
+    public void arm() {
+        teleopHelper.moveArm(xboxElevator);
     }
 
     public void limelightFunctions(){
@@ -64,15 +60,4 @@ public class Teleop {
     public void climber(){
         teleopHelper.moveClimber(xboxElevator);
     }
-
-    // public void arm() {
-
-    //     teleopHelper.arm(
-    //         xboxElevator.getAButtonPressed(),
-    //         xboxElevator.getBButtonPressed(),
-    //         xboxElevator.getXButtonPressed(),
-    //         xboxElevator.getYButtonPressed()
-    //     );
-
-    // }
 }
