@@ -29,71 +29,46 @@ public class Auto {
         timer.reset();
         timer.start();    
     }
+
+    public void autoMiddle(){ // 1-coral Auto (on L1) without Limelight
+
+        if (timer.get() < 15){ 
+
+            if (autoHelper.timerInterval_Auto(0, 0.15)){
+                autoHelper.resetDriveEncoders();
+                autoHelper.resetSteerEncoders();
+                autoHelper.autoResetPIDs();
+            }
+            else if (autoHelper.timerInterval_Auto(0.16, 1.16)){ 
+                autoHelper.autoCloseClaw();
+                autoHelper.driver.swerveDrive(0, 0, 0);
+                autoHelper.autoArmLift(-0.255);
+            }
+            else if (autoHelper.timerInterval_Auto(1.17, 3.17)){
+                autoHelper.autoArmLift(0);
+                autoHelper.autoElevatorLift(0.45);
+                autoHelper.driver.swerveDrive(0.24, 0, 0);
+            }
+            else if (autoHelper.timerInterval_Auto(3.18, 3.21)){
+                autoHelper.autoElevatorLift(0);
+                autoHelper.driver.swerveDrive(0, 0, 0);
+            }
+            else if (autoHelper.timerInterval_Auto(3.22, 3.9)){
+                autoHelper.autoOpenClaw();
+            }
+            else if (autoHelper.timerInterval_Auto(4, 5)){
+                autoHelper.autoArmLift(0.25);
+            }
+            else if (autoHelper.timerInterval_Auto(5.1, 5.9)){
+                autoHelper.autoArmLift(0);
+                autoHelper.driver.swerveDrive(-0.10, 0, 0);
+            }
+            else if (autoHelper.timerInterval_Auto(6, 9)){
+                autoHelper.driver.swerveDrive(0, 0, 0);
+            }
+                    
+        }   
+
+    }
     
-    // public void autoMiddle(){
-         
-    //     if (timer.get() < 15 ){
-
-    //         if (autoHelper.timerInterval_Auto(0, 1)){
-    //             autoHelper.resetDriveEncoders();
-    //             autoHelper.resetSteerEncoders();
-    //             autoHelper.autoResetPIDs();
-    //         }
-    //         else if (autoHelper.timerInterval_Auto(1, 3)){
-    //             autoHelper.driver.swerveDrive(0.25, 0, 0); //moves forward to the reef
-    //         }
-    //         else if (autoHelper.timerInterval_Auto(4.1, 10)){
-    //             autoHelper.driver.swerveDrive(0, 0, 0);
-    //             /* 
-    //             Arm Code here: Set Arm @ Correct Angle, Release Coral into L3, Take off an Algae
-    //              */ 
-    //         }
-    //     }
-            
-    //     else {
-    //         autoHelper.driver.swerveDrive(0, 0, 0); //STOP
-    //     }
-
-    // }
-
-        public void autoLeftBlueAlliance(){
-
-            if (timer.get() < 15){ 
-
-                if (autoHelper.timerInterval_Auto(0, 0.15)){
-                    autoHelper.resetDriveEncoders();
-                    autoHelper.resetSteerEncoders();
-                    autoHelper.autoResetPIDs();
-                }
-                else if (autoHelper.timerInterval_Auto(0.16, 1.16)){ 
-                    autoHelper.autoCloseClaw();
-                    autoHelper.driver.swerveDrive(0, 0, 0);
-                    autoHelper.autoArmLift(-0.255);
-                }
-                else if (autoHelper.timerInterval_Auto(1.17, 3.17)){
-                    autoHelper.autoArmLift(0);
-                    autoHelper.autoElevatorLift(0.45);
-                    autoHelper.driver.swerveDrive(0.24, 0, 0);
-                }
-                else if (autoHelper.timerInterval_Auto(3.18, 3.21)){
-                    autoHelper.autoElevatorLift(0);
-                    autoHelper.driver.swerveDrive(0, 0, 0);
-                }
-                else if (autoHelper.timerInterval_Auto(3.22, 3.9)){
-                    autoHelper.autoOpenClaw();
-                }
-                else if (autoHelper.timerInterval_Auto(4, 5)){
-                    autoHelper.autoArmLift(0.25);
-                }
-                else if (autoHelper.timerInterval_Auto(5.1, 5.9)){
-                    autoHelper.autoArmLift(0);
-                    autoHelper.driver.swerveDrive(-0.10, 0, 0);
-                }
-                else if (autoHelper.timerInterval_Auto(6, 9)){
-                    autoHelper.driver.swerveDrive(0, 0, 0);
-                }
-                        
-            }   
-        }
-   
 }
