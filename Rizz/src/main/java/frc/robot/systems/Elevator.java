@@ -29,8 +29,15 @@ public class Elevator{
     //     return rotations * Constants.PULLEY_CIRCUMFERENCE;
     // }
 
-    public void elevatorLift(double speedInput) {
-        elevatorMotor.set(speedInput);
+    public void elevatorLift(double speed) {
+
+        if (getElevatorHeight() > Constants.elevatorHighHardstop) {
+            Constants.clamp(speed, -1.0, 0.0);
+        } else if (getElevatorHeight() < Constants.elevatorLowHardstop) {
+            Constants.clamp(speed, 0.0, 1.0);
+        }
+
+        elevatorMotor.set(speed);
     }
 
     public void elevatorPIDLift(double height) {
@@ -41,7 +48,8 @@ public class Elevator{
         if (Math.abs(height - getElevatorHeight()) < tolerance) {
             speedInput = 0;
         }
-        elevatorMotor.set(speedInput);
+        
+        elevatorLift(speedInput);
     }
 
 

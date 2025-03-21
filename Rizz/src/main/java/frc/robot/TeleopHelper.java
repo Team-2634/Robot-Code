@@ -55,10 +55,10 @@ public class TeleopHelper {
     }
 
     public void moveElevator(XboxController xbox1) { 
-        if (xbox1.getRightTriggerAxis() > 0.2 && elevator.getElevatorHeight() < Constants.elevatorHighHardstop) {
+        if (xbox1.getRightTriggerAxis() > 0.2) {
             elevator.elevatorLift(Constants.elevatorSpeed); // Moves up
         } 
-        else if (xbox1.getLeftTriggerAxis() > 0.2 && elevator.getElevatorHeight() > Constants.elevatorLowHardstop) {
+        else if (xbox1.getLeftTriggerAxis() > 0.2) {
             elevator.elevatorLift(-Constants.elevatorSpeed); // Moves down
         } 
         else {
