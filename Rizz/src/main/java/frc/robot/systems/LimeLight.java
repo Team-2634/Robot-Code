@@ -2,7 +2,6 @@ package frc.robot.systems;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants;
 // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 

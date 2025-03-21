@@ -232,9 +232,11 @@ public class Driver {
         double[] displacementFieldOriented = Driver.fieldOrient(navx.getDisplacementY(), navx.getDisplacementZ(), navx);
         double currentDisplacementX = displacementFieldOriented[0];
         double currentDisplacementY = displacementFieldOriented[1]; 
+
+        double speedScale = 0.5;  //Adjust this between 0.0 (stop) and 1.0 (full speed)
         
-        double xSpeed = autoXPID.calculate(currentDisplacementX, fieldDistanceX);
-        double ySpeed = autoYPID.calculate(currentDisplacementY, fieldDistanceY);
+        double xSpeed = autoXPID.calculate(currentDisplacementX, fieldDistanceX) * speedScale;
+        double ySpeed = autoYPID.calculate(currentDisplacementY, fieldDistanceY) * speedScale;
         swerveDrive(xSpeed, ySpeed, 0);
     }
 

@@ -220,8 +220,6 @@ public class TeleopHelper {
         }
     }
 
-    
-
     double speed = 0;
 
     public void moveArm(XboxController xbox) {
@@ -260,10 +258,4 @@ public class TeleopHelper {
 
 //     }
 
-    
-
  }
-
-
-
-

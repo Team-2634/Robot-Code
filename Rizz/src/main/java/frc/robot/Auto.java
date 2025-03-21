@@ -70,5 +70,24 @@ public class Auto {
         }   
 
     }
+
+    public void autoDriveByDistanceTest(){ 
+
+        if (timer.get() < 15){
+
+            if (autoHelper.timerInterval_Auto(0, 0.10)){
+                autoHelper.resetDriveEncoders();
+                autoHelper.resetSteerEncoders();
+                autoHelper.autoResetPIDs();
+            }
+            else if (autoHelper.timerInterval_Auto(0.11, 1.11)){
+
+                autoHelper.driver.autoDriveByDistance(1,1);
+                
+            }
+
+        }
+
+    }
     
 }

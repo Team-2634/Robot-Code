@@ -116,7 +116,6 @@ public class AutoHelper {
         }
     }
 
-
     public void autoElevatorLift(double speed){
        elevator.elevatorLift(speed);
         // elevator.moveToHeight(Constants.L1_HEIGHT);
@@ -133,6 +132,10 @@ public class AutoHelper {
 
     public void autoCloseClaw(){
         arm.closeClaw();
+    }
+
+    public void autoLimelightAlign(){
+
     }
     
 }
