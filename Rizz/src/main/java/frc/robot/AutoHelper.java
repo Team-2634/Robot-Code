@@ -3,8 +3,17 @@ package frc.robot;
 //import com.kauailabs.navx.frc.AHRS;
 import com.studica.frc.AHRS;
 
-
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
@@ -31,7 +40,6 @@ public class AutoHelper {
         this.arm = arm;
         this.limelight = limelight;
     }
-
 
     public boolean timerInterval_Auto(double min, double max) {
         if (timer.get() > min && timer.get() < max) {

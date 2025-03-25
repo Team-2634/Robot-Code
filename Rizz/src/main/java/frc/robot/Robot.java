@@ -71,7 +71,7 @@ public class Robot extends TimedRobot {
     public void autonomousPeriodic() {
         //auto.autoLeft();
         //Hi hans this is for testing
-        auto.autoMiddle();
+        auto.autoDriveByDistanceTest();
         }
 
     
