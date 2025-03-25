@@ -40,11 +40,15 @@ public class TeleopHelper {
 
     public void drive(double XSpeed, double YSpeed, double TurnSpeed, boolean disableFieldOrient, boolean resetNavx) {
 
-        // if (!disableFieldOrient) {
-        // double[] speedsFieldOriented = Driver.fieldOrient(XSpeed, YSpeed, navx); //The Navx given to firledOrient is the teleophelper's Navx not the Driver's Navx
-        // XSpeed = speedsFieldOriented[0];
-        // YSpeed = speedsFieldOriented[1];
-        // }
+        if (!disableFieldOrient) {
+        double[] speedsFieldOriented = Driver.fieldOrient(XSpeed, YSpeed); //The Navx given to firledOrient is the teleophelper's Navx not the Driver's Navx
+        XSpeed = speedsFieldOriented[0];
+        YSpeed = speedsFieldOriented[1];
+        }
+
+        if (resetNavx) {
+            navx.zeroYaw();
+        }
         
         
         XSpeed *= Constants.XdriveSensitivity;
@@ -55,10 +59,10 @@ public class TeleopHelper {
     }
 
     public void moveElevator(XboxController xbox1) { 
-        if (xbox1.getRightTriggerAxis() > 0.2) {
+        if (xbox1.getLeftTriggerAxis() > 0.2) {
             elevator.elevatorLift(Constants.elevatorSpeed); // Moves up
         } 
-        else if (xbox1.getLeftTriggerAxis() > 0.2) {
+        else if (xbox1.getRightTriggerAxis() > 0.2) {
             elevator.elevatorLift(-Constants.elevatorSpeed); // Moves down
         } 
         else {
@@ -244,6 +248,13 @@ public class TeleopHelper {
             }
         }
     }
+
+    public void testAutoDrivebyDistance(XboxController controller){
+        if(controller.getBButton()) {
+            driver.driveToPosition(driver.setDesiredPose(1, 0, 0));
+        }
+    }
+
     
 //     public void moveToAprilTag(XboxController controller){
 //          This is a very basic function, replace with drive by distance later on.

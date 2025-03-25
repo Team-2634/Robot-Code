@@ -9,6 +9,7 @@ package frc.robot;
 
 import com.studica.frc.AHRS;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Elevator;
@@ -56,13 +57,10 @@ public class Auto {
                 break;
     
             case 1:
-                autoHelper.driver.autoDriveByDistance(1, 0); // Move forward 1 meter
-                autoHelper.autoElevatorLift(0.5); // Lift elevator at 50% speed
-                
-                if (autoHelper.navx.getDisplacementY() >= 1) { 
-                    autoHelper.autoElevatorLift(0); 
-                    counter++;
-                }
+
+                autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(1, 0, 0)); // Move forward 1 meter  
+                if (autoHelper.driver.atTargetPosition()) {driveFinished = true;} SmartDashboard.putBoolean("driveFinished", driveFinished);
+                if (driveFinished) {counter += 1; driveFinished = false;}
                 break;
     
             case 2:

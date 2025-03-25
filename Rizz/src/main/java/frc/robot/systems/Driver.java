@@ -24,7 +24,7 @@ import frc.robot.Constants;
 
 public class Driver {
 
-    AHRS navx = new AHRS(AHRS.NavXComType.kMXP_SPI);
+    static AHRS navx = new AHRS(AHRS.NavXComType.kMXP_SPI);
 
     PIDController pidFrontLeftTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
     PIDController pidFrontRightTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
@@ -214,9 +214,9 @@ public class Driver {
     }
 
     
-    public final static double[] fieldOrient(double XSpeed, double YSpeed, AHRS navx) {
-        double currentYawRadians = Math.toRadians(navx.getYaw());//-navx.getRotation2d().getRadians()); 
-        //double currentYawRadians = MathUtil.angleModulus(-navx.getRotation2d().getRadians()); 
+    public final static double[] fieldOrient(double XSpeed, double YSpeed) {
+        //double currentYawRadians = Math.toRadians(navx.getYaw());//-navx.getRotation2d().getRadians()); 
+        double currentYawRadians = MathUtil.angleModulus(navx.getRotation2d().getRadians());
         //double currentYawRadians = ______________________Math.toRadians(navx.getPitch());
         double XSpeedField = XSpeed * Math.cos(currentYawRadians) - YSpeed * Math.sin(currentYawRadians);
         double YSpeedField = XSpeed * Math.sin(currentYawRadians) + YSpeed * Math.cos(currentYawRadians);
@@ -224,25 +224,25 @@ public class Driver {
         return speeds;
     }
 
-    public void autoDriveByDistance(double distanceX, double distanceY) {
-        double[] distanceFieldOriented = Driver.fieldOrient(distanceX, distanceY, navx);
-        double fieldDistanceX = distanceFieldOriented[0];
-        double fieldDistanceY = distanceFieldOriented[1]; 
+    // public void autoDriveByDistance(double distanceX, double distanceY) {
+    //     double[] distanceFieldOriented = Driver.fieldOrient(distanceX, distanceY, navx);
+    //     double fieldDistanceX = distanceFieldOriented[0];
+    //     double fieldDistanceY = distanceFieldOriented[1]; 
 
-        double[] displacementFieldOriented = Driver.fieldOrient(navx.getDisplacementY(), navx.getDisplacementZ(), navx);
-        double currentDisplacementX = displacementFieldOriented[0];
-        double currentDisplacementY = displacementFieldOriented[1]; 
+    //     double[] displacementFieldOriented = Driver.fieldOrient(navx.getDisplacementX(), navx.getDisplacementY(), navx);
+    //     double currentDisplacementX = displacementFieldOriented[0];
+    //     double currentDisplacementY = displacementFieldOriented[1]; 
 
-        double speedScale = 0.5;  //Adjust this between 0.0 (stop) and 1.0 (full speed)
+    //     double speedScale = 0.1;  //Adjust this between 0.0 (stop) and 1.0 (full speed)
         
-        double xSpeed = autoXPID.calculate(currentDisplacementX, fieldDistanceX) * speedScale;
-        double ySpeed = autoYPID.calculate(currentDisplacementY, fieldDistanceY) * speedScale;
-        swerveDrive(xSpeed, ySpeed, 0);
-    }
+    //     double xSpeed = autoXPID.calculate(currentDisplacementX, fieldDistanceX) * speedScale;
+    //     double ySpeed = autoYPID.calculate(currentDisplacementY, fieldDistanceY) * speedScale;
+    //     swerveDrive(xSpeed, ySpeed, 0);
+    // }
 
-    public void autoDriveRotatePID(double targetYawRadians) {
-        swerveDrive(0, 0, autoTurnPID.calculate(Math.toRadians(navx.getYaw()), targetYawRadians));
-    }
+    // public void autoDriveRotatePID(double targetYawRadians) {
+    //     swerveDrive(0, 0, autoTurnPID.calculate(Math.toRadians(navx.getYaw()), targetYawRadians));
+    // }
 
     public void resetAutoPIDs() {
         autoXPID.reset();
@@ -278,6 +278,45 @@ public class Driver {
         navx.reset();
         navx.zeroYaw();
         navx.setAngleAdjustment(0);
+    }
+
+    public Pose2d setDesiredPose(double x, double y, double rot) {
+        return new Pose2d(x, y, new Rotation2d(rot));
+    }
+
+    public void driveToPosition(Pose2d endPose) {
+        Pose2d startPose = getPose();
+        SmartDashboard.putNumber("inputX", Units.metersToInches(startPose.getX()));//Units.metersToFeet(startPose.getX()));
+        SmartDashboard.putNumber("inputY", Units.metersToInches(startPose.getY()));//Units.metersToFeet(startPose.getY()));
+        SmartDashboard.putNumber("inputRot", startPose.getRotation().getRadians());
+        SmartDashboard.putNumber("outputX", Units.metersToInches(endPose.getX()));
+        SmartDashboard.putNumber("outputY", Units.metersToInches(endPose.getY()));
+        SmartDashboard.putNumber("outputRot", endPose.getRotation().getRadians());
+
+        double xSpeed = autoXPID.calculate(startPose.getX(), endPose.getX());
+        double ySpeed = autoYPID.calculate(startPose.getY(), endPose.getY()); 
+        double rotSpeed = autoTurnPID.calculate(MathUtil.angleModulus(startPose.getRotation().getRadians()), MathUtil.angleModulus(endPose.getRotation().getRadians()));
+        
+        SmartDashboard.putNumber("xSpeed", xSpeed);
+        SmartDashboard.putNumber("ySpeed", ySpeed);
+        SmartDashboard.putNumber("rotSpeed", rotSpeed);
+
+        double[] fieldOriented = fieldOrient(xSpeed, ySpeed);
+        swerveDrive(Constants.clamp(fieldOriented[0], -Constants.maxAutoVelocity, Constants.maxAutoVelocity), Constants.clamp(fieldOriented[1], -Constants.maxAutoVelocity, Constants.maxAutoVelocity), Constants.clamp(rotSpeed, -Constants.maxAutoVelocity, Constants.maxAutoVelocity));
+    }
+
+    public boolean atTargetPosition() {
+        boolean at = (autoXPID.atSetpoint() && autoYPID.atSetpoint() && autoTurnPID.atSetpoint()) ? true : false;
+        SmartDashboard.putBoolean("x good", autoXPID.atSetpoint());
+        SmartDashboard.putBoolean("y good", autoYPID.atSetpoint());
+        SmartDashboard.putBoolean("rot good", autoTurnPID.atSetpoint());
+        
+        if (at) {
+            autoXPID.reset();//driver.getPose().getX());
+            autoYPID.reset();//driver.getPose().getY());
+            autoTurnPID.reset();
+        }
+        return at;
     }
 
     // public void resetTurnEncoders() {

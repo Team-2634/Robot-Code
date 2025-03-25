@@ -32,9 +32,9 @@ public class Elevator{
     public void elevatorLift(double speed) {
 
         if (getElevatorHeight() > Constants.elevatorHighHardstop) {
-            Constants.clamp(speed, -1.0, 0.0);
+            speed = Constants.clamp(speed, 0.0, 1.0);
         } else if (getElevatorHeight() < Constants.elevatorLowHardstop) {
-            Constants.clamp(speed, 0.0, 1.0);
+            speed = Constants.clamp(speed, -1.0, 0.0);
         }
 
         elevatorMotor.set(speed);
@@ -55,7 +55,7 @@ public class Elevator{
 
 
     public double getElevatorHeight() {
-        return (elevatorMotor.getPosition().getValueAsDouble() / Constants.talonEncoder_TicksPerRev) * Constants.drumDiameter * Math.PI;
+        return (elevatorMotor.getPosition().getValueAsDouble() / Constants.talonEncoder_TicksPerRev) * Constants.drumDiameter * -Math.PI;
     }
 
     public void moveToL1() { moveToHeight(Constants.L1_HEIGHT); }

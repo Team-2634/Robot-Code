@@ -42,9 +42,9 @@ public class Constants {
     public final static double kiDrive = 0;
     public final static double kdDrive = 0;
 
-    public final static double kpAuto = 1;
+    public final static double kpAuto = 1; //original value is 1
     public final static double kiAuto = 0;
-    public final static double kdAuto = 0.0000075;
+    public final static double kdAuto = 0.0000075; //original value is 0.0000075
 
     public final static double kpArm = 1;
     public final static double kiArm = 0;
@@ -62,6 +62,7 @@ public class Constants {
     public final static double kDriveMotorGearRatio = 1 / 8.14;
     public final static double kTurningMotorGearRatio = 1.0 / (150.0 / 7.0);
     public final static double driveRotsToMeter = 0.055555555; //0.073286;
+    public final static double maxAutoVelocity = 0.5;
 
 
     //elevator properties
@@ -70,7 +71,7 @@ public class Constants {
     public static final double L3_HEIGHT = 0.002012;
     public static final double L4_HEIGHT = 0.003300;
 
-    public static final double elevatorHighHardstop = 0.003512; // hardstop for elevator // updated for last qual
+    public static final double elevatorHighHardstop = 0.002575; // hardstop for elevator // updated for last qual
     public static final double elevatorLowHardstop = -0.000001; // hardstop for elevator
 
     public static final double elevatorSpeed = 1.00;
