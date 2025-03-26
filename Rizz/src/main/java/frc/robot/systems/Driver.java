@@ -226,7 +226,7 @@ public class Driver {
     
     public final static double[] fieldOrient(double XSpeed, double YSpeed) {
         //double currentYawRadians = Math.toRadians(navx.getYaw());//-navx.getRotation2d().getRadians()); 
-        double currentYawRadians = MathUtil.angleModulus(navx.getRotation2d().getRadians());
+        double currentYawRadians = MathUtil.angleModulus(-navx.getRotation2d().getRadians());
         //double currentYawRadians = ______________________Math.toRadians(navx.getPitch());
         double XSpeedField = XSpeed * Math.cos(currentYawRadians) - YSpeed * Math.sin(currentYawRadians);
         double YSpeedField = XSpeed * Math.sin(currentYawRadians) + YSpeed * Math.cos(currentYawRadians);

@@ -3,6 +3,7 @@ package frc.robot;
 //import com.kauailabs.navx.frc.AHRS;
 import com.studica.frc.AHRS;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -96,7 +97,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("get Yaw", navx.getYaw());
         SmartDashboard.putNumber("get Pitch", navx.getPitch());
         SmartDashboard.putNumber("get Roll", navx.getRoll());
-        SmartDashboard.putNumber("get Rotation2D", navx.getRotation2d().getRadians());
+        SmartDashboard.putNumber("get Rotation2D", MathUtil.angleModulus(navx.getRotation2d().getRadians()));
 
     }
 }

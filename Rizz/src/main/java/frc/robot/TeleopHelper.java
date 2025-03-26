@@ -132,7 +132,7 @@ public class TeleopHelper {
     }
 
     public void moveElevatorArm(XboxController xbox) {
-        System.out.println("move elevator arm method from helper!!!!!!!!!!!!!!!!!!!");
+        //System.out.println("move elevator arm method from helper!!!!!!!!!!!!!!!!!!!");
 
         if (xbox.getAButton()) {
             lowTrayPos(); //optimize all these

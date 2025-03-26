@@ -8,6 +8,8 @@
 package frc.robot;
 
 import com.studica.frc.AHRS;
+
+import edu.wpi.first.hal.simulation.AnalogOutDataJNI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
@@ -57,13 +59,14 @@ public class Auto {
                 break;
     
             case 1:
-
-                autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(1, 0, 0)); // Move forward 1 meter  
+                System.out.println("Case 1");
+                autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(2, 0, 0)); // Move forward 1 meter  
                 if (autoHelper.driver.atTargetPosition()) {driveFinished = true;} SmartDashboard.putBoolean("driveFinished", driveFinished);
                 if (driveFinished) {counter += 1; driveFinished = false;}
                 break;
     
             case 2:
+                System.out.println("Case 2");
                 autoHelper.driver.swerveDrive(0, 0, 0); // Stop movement
                 break;
         }

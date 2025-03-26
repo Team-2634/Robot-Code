@@ -55,7 +55,7 @@ public class Arm {
     }
 
     public double getArmAngleRad() {
-        return (armMotor.getPosition().getValueAsDouble() / Constants.ARM_GEAR_RATIO) * Constants.DEGREES_PER_REV * 2 * Math.PI;  
+        return (armMotor.getPosition().getValueAsDouble() / Constants.ARM_GEAR_RATIO) * 2 * Math.PI * (1.621151549d);  
         
     }
 

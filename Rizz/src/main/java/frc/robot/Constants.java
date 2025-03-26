@@ -71,7 +71,7 @@ public class Constants {
     public static final double L3_HEIGHT = 0.002012;
     public static final double L4_HEIGHT = 0.003300;
 
-    public static final double elevatorHighHardstop = 0.002575; // hardstop for elevator // updated for last qual
+    public static final double elevatorHighHardstop = 0.00257; // hardstop for elevator // updated for last qual
     public static final double elevatorLowHardstop = -0.000001; // hardstop for elevator
 
     public static final double elevatorSpeed = 1.00;
@@ -86,7 +86,7 @@ public class Constants {
     public final static double armL0to3 = -7906.873292;
     public final static double armL4 = -5359.974310;
 
-    public static final double ARM_GEAR_RATIO = 2.0; // If arm has a gearbox, adjust this
+    public static final double ARM_GEAR_RATIO = 64.0; // If arm has a gearbox, adjust this
     public static final double DEGREES_PER_REV = 360.0;
 
     public static final double armSpeed = 0.1;
