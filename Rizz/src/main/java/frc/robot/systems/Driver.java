@@ -128,6 +128,16 @@ public class Driver {
         initializeModule(3);
         poseEstimator.resetPosition(navx.getRotation2d(), modulePositionArray, getPose());
         navx.reset();
+
+        autoXPID.setTolerance(Constants.autoPositionToleranceMeters);
+        autoXPID.reset();//driver.getPose().getX());
+        
+        autoYPID.setTolerance(Constants.autoPositionToleranceMeters);
+        autoYPID.reset();//driver.getPose().getY());
+
+        autoTurnPID.enableContinuousInput(-Math.PI, Math.PI);
+        autoTurnPID.setTolerance(Constants.autoRotationToleranceRadians);
+        autoTurnPID.reset();
     }
 
     public double readAbsEncoderRad(int module) {
@@ -284,6 +294,10 @@ public class Driver {
         return new Pose2d(x, y, new Rotation2d(rot));
     }
 
+    /**
+     * Drives to a position given meters from origin (starting position) and radians
+     * @param endPose
+     */
     public void driveToPosition(Pose2d endPose) {
         Pose2d startPose = getPose();
         SmartDashboard.putNumber("inputX", Units.metersToInches(startPose.getX()));//Units.metersToFeet(startPose.getX()));
