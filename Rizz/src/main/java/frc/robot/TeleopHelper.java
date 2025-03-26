@@ -239,13 +239,7 @@ public class TeleopHelper {
 
     public void rotateAlignToAprilTag(XboxController controller) {
         if(controller.getBButton()) {
-            if(limelight.Xoffset() >= 0.1) {
-                drive(0, 0, -0.1, false, false);
-            }
-            else if(limelight.Xoffset() <= -0.1) {
-                drive(0, 0, 0.1, false, false);
-
-            }
+            driver.rotateToAprilTag();
         }
     }
 

@@ -332,7 +332,11 @@ public class Driver {
     }
 
     public void driveToAprilTag(double distanceFromAprilTag) {
-        driveToPosition(setDesiredPose(limelight.yDistanceFromLimelightAngle() - distanceFromAprilTag, 0, 0));
+        driveToPosition(setDesiredPose(limelight.yDistanceFromLimelightAngle() - distanceFromAprilTag,0  , 0));
+    }
+
+    public void rotateToAprilTag() {
+        driveToPosition(setDesiredPose(0, 0, Math.toRadians(limelight.Zoffset())));
     }
 
     // public void resetTurnEncoders() {

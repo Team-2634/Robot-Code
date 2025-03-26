@@ -48,11 +48,21 @@ public class LimeLight {
         return getDoubleEntry("ty");
     }
 
+    public double Zoffset() {
+        double[] targetPositionArray = getTargetPosition(); 
+        return targetPositionArray[3];
+    }
+
     public double yDistanceFromLimelightAngle() {
         double[] targetPositionArray = getTargetPosition(); 
         double a1 = Math.toRadians(targetPositionArray[2]);
         //returns the y Distance from the Apriltag 
         return ((Constants.aprilTagHeight - Constants.limeLightHeightFromGround) / Math.tan(a1 + Constants.limeLightAngleInRads));
+    }
+
+    public double targetYaw() {
+        double[] targetPositionArray = getTargetPosition(); 
+        return targetPositionArray[5];
     }
 
     public double xDistanceFromLimelightAngle() {
