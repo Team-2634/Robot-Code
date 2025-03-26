@@ -35,9 +35,19 @@ public class Elevator{
         elevatorMotor.set(speed);
     }
 
-    public boolean atTargetElevatorPosition(){ //For Auto
+    public boolean atTargetElevatorPositionL4(){ //For Auto
 
         double targetHeight = Constants.L4_HEIGHT;
+        double currentHeight = getElevatorHeight(); // Get the current elevator height
+
+        double tolerance = 0.05;
+        return Math.abs(currentHeight - targetHeight) < tolerance;
+
+    }
+
+    public boolean atTargetElevatorPositionL0(){ //For Auto
+
+        double targetHeight = Constants.L1_HEIGHT;
         double currentHeight = getElevatorHeight(); // Get the current elevator height
 
         double tolerance = 0.05;

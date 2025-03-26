@@ -74,9 +74,17 @@ public class Auto {
 
     public void autoSidesBlueAlliance(){ 
 
-        //Auto Code: Plan
-
-        
+        /**
+         * Auto Pseudocode
+         * 
+         * Claw Closes
+         * Arm Down 
+         * Drive Forward (Align with Limelight), while elevator lifts to L4
+         * Align Arm to L4
+         * Claw Opens
+         * Drive back to Coral Station
+         * 
+         */
 
         switch(counter) {
             case 0: 
@@ -84,18 +92,27 @@ public class Auto {
                 autoHelper.resetSteerEncoders();
                 autoHelper.autoResetPIDs();
                 restartTimer();
+
+                autoHelper.autoCloseClaw();
+                autoHelper.autoArmLift(-0.255);
+
                 counter++;
                 break;
-    
+        
             case 1:
-                autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(1, 0, 0)); // Move forward 1m
-                autoHelper.autoElevatorLift(0.5); //elevator speed
-    
-                if (autoHelper.elevator.atTargetElevatorPosition()) {
-                    autoHelper.autoElevatorLift(0); // Stop motor
+                System.out.println("Case 1");
+                autoHelper.autoArmLift(0);
+                autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(2.54, 0, 0)); // Moved forward 1.35m
+
+                if (elevatorFinished) { 
+                    autoHelper.autoElevatorLift(0.5); 
+                }
+                
+                if (autoHelper.elevator.atTargetElevatorPositionL4()) {
+                    autoHelper.autoElevatorLift(0);
                     elevatorFinished = true;
                 }
-    
+                
                 if (autoHelper.driver.atTargetPosition()) {
                     driveFinished = true;
                 }
@@ -108,8 +125,39 @@ public class Auto {
                 break;
     
             case 2:
+                System.out.println("Case 2");
                 autoHelper.driver.swerveDrive(0, 0, 0); // Stop movement
+                autoHelper.autoArmLift(-0.5);
+                counter++;
                 break;
+            
+            case 3:
+                System.out.println("Case 3");
+                autoHelper.autoOpenClaw();
+
+                autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(-0.9, 0, 0));
+
+                if (autoHelper.driver.atTargetPosition()) {
+                    driveFinished = true;
+                }   
+
+                if (!elevatorFinished) { 
+                    autoHelper.autoElevatorLift(-0.5); 
+                }
+                
+                if (autoHelper.elevator.atTargetElevatorPositionL0()) {
+                    autoHelper.autoElevatorLift(0);
+                    elevatorFinished = true;
+                }
+
+                if (driveFinished && elevatorFinished) {
+                    counter++;
+                    driveFinished = false;
+                    elevatorFinished = false;
+                }
+                break;
+
+                
         }
     }
     

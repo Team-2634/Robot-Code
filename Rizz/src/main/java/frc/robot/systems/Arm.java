@@ -91,8 +91,7 @@ public class Arm {
             return false;
         } else return true;
     }
-
-
+    
     public void openClaw() {
         solenoid1.set(Value.kReverse);
     }
