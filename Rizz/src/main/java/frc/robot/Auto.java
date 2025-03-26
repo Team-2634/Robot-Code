@@ -72,6 +72,48 @@ public class Auto {
         }
     }
 
+    public void autoSidesBlueAlliance(){ 
+
+        //Auto Code: Plan
+
+        
+
+        switch(counter) {
+            case 0: 
+                autoHelper.resetDriveEncoders();
+                autoHelper.resetSteerEncoders();
+                autoHelper.autoResetPIDs();
+                restartTimer();
+                counter++;
+                break;
+    
+            case 1:
+                autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(1, 0, 0)); // Move forward 1m
+                autoHelper.autoElevatorLift(0.5); //elevator speed
+    
+                if (autoHelper.elevator.atTargetElevatorPosition()) {
+                    autoHelper.autoElevatorLift(0); // Stop motor
+                    elevatorFinished = true;
+                }
+    
+                if (autoHelper.driver.atTargetPosition()) {
+                    driveFinished = true;
+                }
+    
+                if (driveFinished && elevatorFinished) {
+                    counter++;
+                    driveFinished = false;
+                    elevatorFinished = false;
+                }
+                break;
+    
+            case 2:
+                autoHelper.driver.swerveDrive(0, 0, 0); // Stop movement
+                break;
+        }
+    }
+    
+
 }
     
 // public void autoMiddle(){ // 1-coral Auto (on L1) without Limelight

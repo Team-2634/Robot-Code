@@ -300,20 +300,16 @@ public class Driver {
      */
     public void driveToPosition(Pose2d endPose) {
         Pose2d startPose = getPose();
-        SmartDashboard.putNumber("inputX", Units.metersToInches(startPose.getX()));//Units.metersToFeet(startPose.getX()));
-        SmartDashboard.putNumber("inputY", Units.metersToInches(startPose.getY()));//Units.metersToFeet(startPose.getY()));
+        SmartDashboard.putNumber("inputX", (startPose.getX()));//Units.metersToFeet(startPose.getX()));
+        SmartDashboard.putNumber("inputY", (startPose.getY()));//Units.metersToFeet(startPose.getY()));
         SmartDashboard.putNumber("inputRot", startPose.getRotation().getRadians());
-        SmartDashboard.putNumber("outputX", Units.metersToInches(endPose.getX()));
-        SmartDashboard.putNumber("outputY", Units.metersToInches(endPose.getY()));
+        SmartDashboard.putNumber("outputX", (endPose.getX()));
+        SmartDashboard.putNumber("outputY", (endPose.getY()));
         SmartDashboard.putNumber("outputRot", endPose.getRotation().getRadians());
 
         double xSpeed = autoXPID.calculate(startPose.getX(), endPose.getX());
         double ySpeed = autoYPID.calculate(startPose.getY(), endPose.getY()); 
         double rotSpeed = autoTurnPID.calculate(MathUtil.angleModulus(startPose.getRotation().getRadians()), MathUtil.angleModulus(endPose.getRotation().getRadians()));
-        
-        SmartDashboard.putNumber("xSpeed", xSpeed);
-        SmartDashboard.putNumber("ySpeed", ySpeed);
-        SmartDashboard.putNumber("rotSpeed", rotSpeed);
 
         double[] fieldOriented = fieldOrient(xSpeed, ySpeed);
         swerveDrive(Constants.clamp(fieldOriented[0], -Constants.maxAutoVelocity, Constants.maxAutoVelocity), Constants.clamp(fieldOriented[1], -Constants.maxAutoVelocity, Constants.maxAutoVelocity), Constants.clamp(rotSpeed, -Constants.maxAutoVelocity, Constants.maxAutoVelocity));

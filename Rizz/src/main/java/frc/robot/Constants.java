@@ -66,10 +66,10 @@ public class Constants {
     public final static double driveRotsToMeter = 0.055555555; //0.073286;
 
     //elevator properties
-    public static final double L1_HEIGHT = 0.000500;  
-    public static final double L2_HEIGHT = 0.000812;
-    public static final double L3_HEIGHT = 0.002012;
-    public static final double L4_HEIGHT = 0.003300;
+    public static final double L1_HEIGHT = 0.000500/1.32; 
+    public static final double L2_HEIGHT = 0.000812/1.32;
+    public static final double L3_HEIGHT = 0.002012/1.32; 
+    public static final double L4_HEIGHT = 0.003300/1.32; //0.00250 New Height
 
     public static final double elevatorHighHardstop = 0.00257; // hardstop for elevator // updated for last qual
     public static final double elevatorLowHardstop = -0.000001; // hardstop for elevator

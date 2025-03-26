@@ -24,11 +24,6 @@ public class Elevator{
         armEncoder.reset();
     }
 
-    // public double getElevatorHeight() {
-    //     double rotations = elevatorEncoder.getDistance() / Constants.talonEncoder_TicksPerRev;
-    //     return rotations * Constants.PULLEY_CIRCUMFERENCE;
-    // }
-
     public void elevatorLift(double speed) {
 
         if (getElevatorHeight() > Constants.elevatorHighHardstop) {
@@ -38,6 +33,16 @@ public class Elevator{
         }
 
         elevatorMotor.set(speed);
+    }
+
+    public boolean atTargetElevatorPosition(){ //For Auto
+
+        double targetHeight = Constants.L4_HEIGHT;
+        double currentHeight = getElevatorHeight(); // Get the current elevator height
+
+        double tolerance = 0.05;
+        return Math.abs(currentHeight - targetHeight) < tolerance;
+
     }
 
     public void elevatorPIDLift(double height) {
@@ -51,8 +56,6 @@ public class Elevator{
         
         elevatorLift(speedInput);
     }
-
-
 
     public double getElevatorHeight() {
         return (elevatorMotor.getPosition().getValueAsDouble() / Constants.talonEncoder_TicksPerRev) * Constants.drumDiameter * -Math.PI;

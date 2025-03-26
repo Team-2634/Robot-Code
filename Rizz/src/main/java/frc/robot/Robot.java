@@ -92,12 +92,8 @@ public class Robot extends TimedRobot {
         teleop.arm();
 
         //teleop.limelightFunctions();
-        SmartDashboard.putNumber("Elevator Height", elevator.getElevatorHeight());
-        SmartDashboard.putNumber("Arm Angle in Rad", arm.getArmAngleRad());
-        SmartDashboard.putNumber("get Yaw", navx.getYaw());
-        SmartDashboard.putNumber("get Pitch", navx.getPitch());
-        SmartDashboard.putNumber("get Roll", navx.getRoll());
-        SmartDashboard.putNumber("get Rotation2D", MathUtil.angleModulus(navx.getRotation2d().getRadians()));
+        SmartDashboard.putNumber("Pose x-value", driver.getPose().getX());
+        SmartDashboard.putNumber("Pose x-value", driver.getPose().getY());
 
     }
 }
