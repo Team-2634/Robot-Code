@@ -93,8 +93,8 @@ public class Constants {
     
 
     // limelight Constants
-    public final static double limeLightHeightFromGround = 0.1016; //assumed in meters, change when actual value is given
-    public final static double limeLightAngleInRads = (23 * (Math.PI / 180)); //23 degrees
+    public final static double limeLightHeightFromGround = 0.20; //assumed in meters, change when actual value is given
+    public final static double limeLightAngleInRads = (75 * (Math.PI / 180)); //15
     public final static double aprilTagHeight = 0.38; //assumed in meters, should be right.
 
 

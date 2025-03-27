@@ -256,17 +256,11 @@ public class TeleopHelper {
     }
 
     
-//     public void moveToAprilTag(XboxController controller){
-//          This is a very basic function, replace with drive by distance later on.
-//         if(controller.getAButton()) {
-//             if (limelight.yDistanceFromLimelightAngle() > 0.51) {
-//                 driver.swerveDrive(0.3,0,0);
-//             }
-//             else if (limelight.yDistanceFromLimelightAngle()< 0.51) {
-//                 driver.swerveDrive(0.3,0,0);
-//             }
-//         }
+    public void moveToAprilTag(XboxController controller){
+        if(controller.getBButton()) {
+            driver.driveToAprilTag(0.5);
+        }
 
-//     }
+    }
 
  }

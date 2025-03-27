@@ -21,10 +21,12 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.systems.LimeLight;
 
 public class Driver {
 
     static AHRS navx = new AHRS(AHRS.NavXComType.kMXP_SPI);
+    LimeLight limelight = new LimeLight();
 
     PIDController pidFrontLeftTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
     PIDController pidFrontRightTurn = new PIDController(Constants.kpDrive, Constants.kiDrive, Constants.kdDrive);
@@ -327,6 +329,10 @@ public class Driver {
             autoTurnPID.reset();
         }
         return at;
+    }
+
+    public void driveToAprilTag(double distanceFromAprilTag) {
+        driveToPosition(setDesiredPose(limelight.yDistanceFromLimelightAngle() - distanceFromAprilTag, 0, 0));
     }
 
     // public void resetTurnEncoders() {

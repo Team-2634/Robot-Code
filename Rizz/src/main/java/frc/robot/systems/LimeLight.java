@@ -16,6 +16,18 @@ public class LimeLight {
         return limelightTable.getEntry(entry).getDoubleArray(new double[6]);
     }
 
+    public double[] getTargetPosition() {
+        return getArrayEntry("targetpose_cameraspace");
+        /** Array Positions
+         * 1 = tx
+         * 2 = ty
+         * 3 = tz
+         * 4 = pitch
+         * 5 = yaw
+         * 6 = roll
+         */
+
+    }
     public double getID() {
         return getDoubleEntry("tid");
     }
@@ -37,7 +49,8 @@ public class LimeLight {
     }
 
     public double yDistanceFromLimelightAngle() {
-        double a1 = Math.toRadians(Yoffset());
+        double[] targetPositionArray = getTargetPosition(); 
+        double a1 = Math.toRadians(targetPositionArray[2]);
         //returns the y Distance from the Apriltag 
         return ((Constants.aprilTagHeight - Constants.limeLightHeightFromGround) / Math.tan(a1 + Constants.limeLightAngleInRads));
     }
