@@ -11,7 +11,7 @@ public class Elevator{
     public final TalonFX elevatorMotor = new TalonFX(Constants.elevatorMotorID);
     private Encoder armEncoder;
     private Encoder elevatorEncoder;
-    PIDController elevatorPID = new PIDController(0.2, 0 ,0);
+    PIDController elevatorPID = new PIDController(Constants.kpElevator, Constants.kiElevator ,Constants.kdElevator);
     
 
     public void elevatorInitiallize(){
@@ -57,9 +57,9 @@ public class Elevator{
 
     public void elevatorPIDLift(double height) {
 
-        double tolerance = 0.0002;
+        double tolerance = 0.2;
 
-        double speedInput = elevatorPID.calculate(getElevatorHeight(), height);
+        double speedInput = -elevatorPID.calculate(getElevatorHeight(), height);
         if (Math.abs(height - getElevatorHeight()) < tolerance) {
             speedInput = 0;
         }
@@ -68,7 +68,7 @@ public class Elevator{
     }
 
     public double getElevatorHeight() {
-        return (elevatorMotor.getPosition().getValueAsDouble() / Constants.talonEncoder_TicksPerRev) * Constants.drumDiameter * -Math.PI;
+        return (elevatorMotor.getPosition().getValueAsDouble() / Constants.talonEncoder_TicksPerRev) * Constants.drumDiameter * -Math.PI * 2256.809339;
     }
 
     public void moveToL1() { moveToHeight(Constants.L1_HEIGHT); }

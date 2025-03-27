@@ -50,9 +50,13 @@ public class Constants {
     public final static double autoRotationToleranceRadians = 0.2;
     public final static double maxAutoVelocity = 0.5;
 
-    public final static double kpArm = 1;
-    public final static double kiArm = 0;
-    public final static double kdArm = 0;
+    public final static double kpArm = 0.15;
+    public final static double kiArm = 0.000025;
+    public final static double kdArm = 0;    
+    
+    public final static double kpElevator = 0.1;
+    public final static double kiElevator = 0.000025;
+    public final static double kdElevator = 0;
 
     public final static double kpAutoRotate = 0.5; //original value is 0.2
     public final static double kiAutoRotate = 0.05; //original value is 0.2
@@ -66,13 +70,13 @@ public class Constants {
     public final static double driveRotsToMeter = 0.055555555; //0.073286;
 
     //elevator properties
-    public static final double L1_HEIGHT = 0.000500/1.32; 
-    public static final double L2_HEIGHT = 0.000812/1.32;
-    public static final double L3_HEIGHT = 0.002012/1.32; 
-    public static final double L4_HEIGHT = 0.003300/1.32; //0.00250 New Height
+    public static final double L1_HEIGHT = (0.000500/1.32) * 2256.809339;
+    public static final double L2_HEIGHT = (0.000812/1.32) * 2256.809339;
+    public static final double L3_HEIGHT = (0.002012/1.32) * 2256.809339;
+    public static final double L4_HEIGHT = (0.003300/1.32) * 2256.809339; //0.00250 New Height
 
-    public static final double elevatorHighHardstop = 0.00257; // hardstop for elevator // updated for last qual
-    public static final double elevatorLowHardstop = -0.000001; // hardstop for elevator
+    public static final double elevatorHighHardstop = 5.8; // hardstop for elevator // updated for last qual
+    public static final double elevatorLowHardstop = -0.001; // hardstop for elevator
 
     public static final double elevatorSpeed = 1.00;
     public static final double drumDiameter = 0.008;
@@ -81,10 +85,10 @@ public class Constants {
     public final static double minArmRotationRads = -3.4; //remember to change these
     public final static double maxArmRotationRads = 0.3;
 
-    public final static double armLowPosition = -3.14;
+    public final static double armLowPosition = -5;
     public final static double armIntake = 0;
-    public final static double armL0to3 = -7906.873292;
-    public final static double armL4 = -5359.974310;
+    public final static double armL0to3 = -2.226943;
+    public final static double armL4 = -1.828820;
 
     public static final double ARM_GEAR_RATIO = 64.0; // If arm has a gearbox, adjust this
     public static final double DEGREES_PER_REV = 360.0;

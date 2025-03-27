@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Compressor;
@@ -37,6 +38,7 @@ public class Arm {
      * @param armSpeed double, From -1 to 1
      */
     public void moveArm(double speed) {
+        SmartDashboard.putNumber("arm speed", speed);
         armMotor.set(speed);
     } 
 
@@ -45,18 +47,19 @@ public class Arm {
      * @param position target angle in radians from start position
      */
     public void moveArmPID(double position) {
+        System.out.println("arm pid move");
         double armAngleTolerance = 0.2;
         
         double power = armPID.calculate(getArmAngleRad(), position); // + armFF.calculate(getArmRadians() - Constants.armOffset, position - Constants.armOffset);
         if (getArmAngleRad() < Constants.armLowPosition && Math.abs(position - getArmAngleRad()) < armAngleTolerance) {
             power = 0;
         }
+        SmartDashboard.putNumber("ARM PID VALUE", power);
         armMotor.set(power);
     }
 
     public double getArmAngleRad() {
-        return (armMotor.getPosition().getValueAsDouble() / Constants.ARM_GEAR_RATIO) * 2 * Math.PI * (1.621151549d);  
-        
+        return (armMotor.getPosition().getValueAsDouble() / Constants.ARM_GEAR_RATIO) * 2 * Math.PI * (1.621151549d);
     }
 
     public void armAngle(double targetAngle) {
