@@ -40,7 +40,6 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("Auto choices", m_chooser);
     }
 
- 
     @Override
     public void robotInit() {
 
@@ -72,8 +71,6 @@ public class Robot extends TimedRobot {
     
     @Override
     public void autonomousPeriodic() {
-        //auto.autoLeft();
-        //Hi hans this is for testing
         auto.autoDriveByDistanceTest();
         }
 

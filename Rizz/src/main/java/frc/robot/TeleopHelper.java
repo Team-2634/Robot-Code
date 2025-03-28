@@ -249,7 +249,6 @@ public class TeleopHelper {
         }
     }
 
-    
     public void moveToAprilTag(XboxController controller){
         if(controller.getBButton()) {
             driver.driveToAprilTag(0.5);

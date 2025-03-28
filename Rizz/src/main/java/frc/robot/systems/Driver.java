@@ -332,7 +332,9 @@ public class Driver {
     }
 
     public void driveToAprilTag(double distanceFromAprilTag) {
-        driveToPosition(setDesiredPose(limelight.yDistanceFromLimelightAngle() - distanceFromAprilTag,0  , 0));
+        double yDistance = limelight.yDistanceFromLimelightAngle();
+        double adjustedDistance = Math.max(yDistance - distanceFromAprilTag, 0); // prevents negative distance
+        driveToPosition(setDesiredPose(adjustedDistance, 0, 0));
     }
 
     public void rotateToAprilTag() {
@@ -459,8 +461,5 @@ public class Driver {
     //     backLeftDrive.set(backLeftOptimized.speedMetersPerSecond / maxSpeedMpS);
     //     backRightDrive.set(backRightOptimized.speedMetersPerSecond / maxSpeedMpS);
     // }
-
-
-
-
+    
 }

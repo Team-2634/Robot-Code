@@ -9,7 +9,6 @@ package frc.robot;
 
 import com.studica.frc.AHRS;
 
-import edu.wpi.first.hal.simulation.AnalogOutDataJNI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.Climber;
@@ -72,49 +71,97 @@ public class Auto {
         }
     }
 
-    public void autoSidesBlueAlliance(){ 
+    public void autoLimelightTest(){
+
+        switch(counter){
+            case 0:
+                autoHelper.resetDriveEncoders();
+                autoHelper.resetSteerEncoders();
+                autoHelper.autoResetPIDs();
+                restartTimer();
+                counter++;
+                break;
+            
+            case 1: 
+                System.out.println("Case 1");
+                
+                autoHelper.driver.rotateToAprilTag(); // Align with AprilTag before driving
+
+                autoHelper.driver.driveToAprilTag(0.5); 
+
+                if (autoHelper.driver.atTargetPosition()) {
+                    autoHelper.driver.swerveDrive(0, 0, 0); 
+                    driveFinished = true;
+                }
+
+                if(driveFinished){
+                    counter++;
+                    driveFinished = false;
+                    System.out.println("Auto Finished");
+                    break;
+                }
+
+        }
+
+    }
+
+    public void autoSidesBlueAlliance(){ //One Piece Auto on L4
 
         /**
-         * Auto Pseudocode
+         * Auto Pseudocode //still need to implement Limelight into the driveToPosition function
          * 
          * Claw Closes
          * Arm Down 
          * Drive Forward (Align with Limelight), while elevator lifts to L4
          * Align Arm to L4
          * Claw Opens
-         * Drive back to Coral Station
-         * 
+         * Drive to Coral Station
          */
 
         switch(counter) {
-            case 0: 
+            case 0: //First Step of Auto: Claw Closes and Arm Lifts Down
                 autoHelper.resetDriveEncoders();
                 autoHelper.resetSteerEncoders();
                 autoHelper.autoResetPIDs();
                 restartTimer();
 
-                autoHelper.autoCloseClaw();
-                autoHelper.autoArmLift(-0.255);
+                if (clawFinished = false){
+                    autoHelper.autoCloseClaw();
+                    clawFinished = true;
+                }
+                
+                if (armFinished = false){
+                    autoHelper.autoArmLift(-0.255);
+                }
 
-                counter++;
+                if (autoHelper.arm.atTargetArmPositionL0()){
+                    autoHelper.autoArmLift(0);
+                    armFinished = true;
+                }
+
+                if (clawFinished && armFinished){
+                    counter++;
+                    clawFinished = false;
+                    armFinished = false;
+                }
                 break;
         
-            case 1:
+            case 1: //Second Step of Auto: Drives towards the reef, while elevator lifts to L4 Height
                 System.out.println("Case 1");
-                autoHelper.autoArmLift(0);
                 autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(2.54, 0, 0)); // Moved forward 1.35m
 
-                if (elevatorFinished) { 
+                if (autoHelper.driver.atTargetPosition()) {
+                    autoHelper.driver.swerveDrive(0, 0, 0);
+                    driveFinished = true;
+                }
+
+                if (elevatorFinished = false) { 
                     autoHelper.autoElevatorLift(0.5); 
                 }
                 
                 if (autoHelper.elevator.atTargetElevatorPositionL4()) {
                     autoHelper.autoElevatorLift(0);
                     elevatorFinished = true;
-                }
-                
-                if (autoHelper.driver.atTargetPosition()) {
-                    driveFinished = true;
                 }
     
                 if (driveFinished && elevatorFinished) {
@@ -124,24 +171,42 @@ public class Auto {
                 }
                 break;
     
-            case 2:
+            case 2: //Third step of Auto: Arm Lifts Up to L4
                 System.out.println("Case 2");
-                autoHelper.driver.swerveDrive(0, 0, 0); // Stop movement
-                autoHelper.autoArmLift(-0.5);
-                counter++;
+
+                if (armFinished = false){
+                    autoHelper.autoArmLift(0.5);
+                }
+
+                if (autoHelper.arm.atTargetArmPositionL4()){
+                    autoHelper.autoArmLift(0);
+                    armFinished = true;
+                }
+
+                if (armFinished){
+                    counter++;
+                    armFinished = false;
+                }
                 break;
             
-            case 3:
-                System.out.println("Case 3");
-                autoHelper.autoOpenClaw();
+            case 3: //Fourth Step of Auto: Coral Drops Into L4, drives back "0.9 m"
+                System.out.println("Case 3"); 
 
-                autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(-0.9, 0, 0));
+                if (clawFinished = false){
+                    autoHelper.autoOpenClaw();
+                    clawFinished = true;
+                }
+
+                if (clawFinished = true){
+                    autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(-0.9, 0, 0));
+                }
 
                 if (autoHelper.driver.atTargetPosition()) {
+                    autoHelper.driver.swerveDrive(0, 0, 0);
                     driveFinished = true;
                 }   
 
-                if (!elevatorFinished) { 
+                if (elevatorFinished = false) { 
                     autoHelper.autoElevatorLift(-0.5); 
                 }
                 
@@ -150,14 +215,33 @@ public class Auto {
                     elevatorFinished = true;
                 }
 
-                if (driveFinished && elevatorFinished) {
+
+                if (driveFinished && elevatorFinished && clawFinished) {
                     counter++;
                     driveFinished = false;
                     elevatorFinished = false;
+                    clawFinished = false;
                 }
                 break;
+            
+            case 4: //Fifth Step of Auto: Arm Returns to its Intake Position
+                System.out.println("Case 4");
+                if (armFinished = false){
+                    autoHelper.autoArmLift(0.5);
+                }
 
-                
+                if (autoHelper.arm.atTargetArmPositionIntake()){
+                    autoHelper.autoArmLift(0);
+                    armFinished = true;
+                }
+
+                break;
+
+            default:
+                autoHelper.driver.swerveDrive(0, 0, 0);
+                autoHelper.autoArmLift(0);
+                autoHelper.autoElevatorLift(0);
+                break;
         }
     }
     

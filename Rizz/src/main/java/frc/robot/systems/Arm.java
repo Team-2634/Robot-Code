@@ -1,23 +1,13 @@
 package frc.robot.systems;
 
-import com.studica.frc.AHRS;
-
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import frc.robot.Constants;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Radian;
-import static edu.wpi.first.units.Units.Radians;
-
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -58,8 +48,38 @@ public class Arm {
         armMotor.set(power);
     }
 
-    public double getArmAngleRad() {
+    public double getArmAngleRad() { //use for auto
         return (armMotor.getPosition().getValueAsDouble() / Constants.ARM_GEAR_RATIO) * 2 * Math.PI * (1.621151549d);
+    }
+    
+    public boolean atTargetArmPositionIntake(){ //For Auto
+
+        double targetPosition = Constants.armIntake;
+        double currentPosition = getArmAngleRad(); // Get the current arm angle
+
+        double tolerance = 0.05;
+        return Math.abs(currentPosition - targetPosition) < tolerance;
+
+    }
+
+    public boolean atTargetArmPositionL0(){ //For Auto
+
+        double targetPosition = Constants.armLowPosition;
+        double currentPosition = getArmAngleRad(); // Get the current arm angle
+
+        double tolerance = 0.05;
+        return Math.abs(currentPosition - targetPosition) < tolerance;
+
+    }
+
+    public boolean atTargetArmPositionL4(){ //For Auto
+
+        double targetPosition = Constants.armL4;
+        double currentPosition = getArmAngleRad(); // Get the current arm angle
+
+        double tolerance = 0.05;
+        return Math.abs(currentPosition - targetPosition) < tolerance;
+
     }
 
     public void armAngle(double targetAngle) {
@@ -102,4 +122,6 @@ public class Arm {
     public void closeClaw() {
         solenoid1.set(Value.kForward);
     }
+
+    
 }
