@@ -249,7 +249,7 @@ public class TeleopHelper {
 
     public void moveToAprilTag(XboxController controller){
         if(controller.getBButton()) {
-            driver.driveToAprilTag(Constants.distanceOffset, Constants.horizontalOffset, true);
+            driver.driveToAprilTag(true);
         }
 
     }

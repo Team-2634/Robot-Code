@@ -57,11 +57,22 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         SmartDashboard.putNumber("X-offset", limelight.Xoffset());
         SmartDashboard.putNumber("Y-offset", limelight.Yoffset());
-        SmartDashboard.putNumber("AprilTag Yaw",limelight.targetYaw());
-        SmartDashboard.putNumber("AprilTag tx",limelight.limelightTestValues(1));
-        SmartDashboard.putNumber("AprilTag ty",limelight.limelightTestValues(2));
-        SmartDashboard.putNumber("AprilTag tz",limelight.limelightTestValues(3));
-
+        // SmartDashboard.putNumber("AprilTag Yaw",limelight.targetYaw());
+        // SmartDashboard.putNumber("AprilTag tx",limelight.limelightTestValues(1));
+        // SmartDashboard.putNumber("AprilTag ty",limelight.limelightTestValues(2));
+        // SmartDashboard.putNumber("AprilTag tz",limelight.limelightTestValues(3));
+        
+        String outputLimelight = 
+        "(x: " + limelight.limelightTestValues(1) +
+        ", y: " + limelight.limelightTestValues(2) + 
+        ", z: " + limelight.limelightTestValues(3) +
+        // ", pitch: " + limelight.limelightTestValues(4) +
+        // ", yaw: " + limelight.limelightTestValues(5) + 
+        // ", roll: " + limelight.limelightTestValues(6) + 
+        ")";
+        
+        SmartDashboard.putString("AprilTag",outputLimelight);
+        
         driver.updatePose();
     }
     
@@ -104,7 +115,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("Test test", 69); //add the box to smart dashboard
         testnum = SmartDashboard.getNumber("Test test", 0);
         //Testing Changing of PID values
-        System.out.println(testnum); //if prints out 69 we can change out values
+        //System.out.println(testnum); //this prints out the number at test test
 
     }
 

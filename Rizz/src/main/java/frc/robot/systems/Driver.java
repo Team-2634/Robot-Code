@@ -343,21 +343,16 @@ public class Driver {
         return at;
     }
 
-    public void driveToAprilTag(double distanceFromAprilTag, double horizontalOffset, boolean direction) {
+    public void driveToAprilTag(boolean direction) {
+        double h = (Constants.horizontalOffset + Constants.limelightToArmOffset);
+        if (!direction) {h *= -1;}
+
         if (!atTargetPosition()) {
-            driveToPosition(setDesiredPose(limelight.yDistanceFromLimelightAngle() - distanceFromAprilTag, limelight.xDistanceFromLimelightAngle() + horizontalOffset, Math.toRadians(limelight.targetYaw())));
-        } 
-        //Testing for driving to the poles to score, when we are aligned to april tag we set Pose to 0 and then move right by a constant distance by PID's
-        else if (atTargetPosition()) 
-        {
-        //direction determines if the robot moves left or right, true is right, false is left
-            poseEstimator.resetPosition(navx.getRotation2d(), modulePositionArray, getPose());
-            if (direction) {
-                driveToPosition(0, Constants.distanceFromAprilTagToPole, 0);
-            }
-            else {
-                driveToPosition(setDesiredPose(0, -Constants.distanceFromAprilTagToPole, 0));
-            }
+            driveToPosition(setDesiredPose(
+                limelight.yDistanceFromLimelightAngle() - Constants.distanceOffset, 
+                (limelight.xDistanceFromLimelightAngle() - h) , 
+                Math.toRadians(limelight.targetYaw())
+                ));
         } 
     }
 
