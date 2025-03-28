@@ -115,7 +115,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("Test test", 69); //add the box to smart dashboard
         testnum = SmartDashboard.getNumber("Test test", 0);
         //Testing Changing of PID values
-        //System.out.println(testnum); //this prints out the number at test test
+        // System.out.println(testnum); //if prints out 69 we can change out values
 
     }
 

@@ -45,7 +45,17 @@ public class Elevator{
 
     }
 
-    public boolean atTargetElevatorPositionL0(){ //For Auto
+    public boolean atTargetElevatorPositionInTake(){ //For Auto
+
+        double targetHeight = Constants.L0_HEIGHT;
+        double currentHeight = getElevatorHeight(); // Get the current elevator height
+
+        double tolerance = 0.05;
+        return Math.abs(currentHeight - targetHeight) < tolerance;
+
+    }
+
+    public boolean atTargetElevatorPositionL1(){ //For Auto
 
         double targetHeight = Constants.L1_HEIGHT;
         double currentHeight = getElevatorHeight(); // Get the current elevator height

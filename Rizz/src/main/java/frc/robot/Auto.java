@@ -62,7 +62,7 @@ public class Auto {
     
             case 1:
                 System.out.println("Case 1");
-                autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(2, 0, 0)); // Move forward 1 meter  
+                autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(2.2, 0, 0)); // Move forward 1 meter  
                 if (autoHelper.driver.atTargetPosition()) {driveFinished = true;} SmartDashboard.putBoolean("driveFinished", driveFinished);
                 if (driveFinished) {counter += 1; driveFinished = false;}
                 break;
@@ -213,7 +213,7 @@ public class Auto {
                     autoHelper.autoElevatorLift(-0.5); 
                 }
                 
-                if (autoHelper.elevator.atTargetElevatorPositionL0()) {
+                if (autoHelper.elevator.atTargetElevatorPositionInTake()) {
                     autoHelper.autoElevatorLift(0);
                     elevatorFinished = true;
                 }
@@ -353,7 +353,7 @@ public class Auto {
                 if (elevatorFinished == false) { 
                     autoHelper.autoElevatorLift(-0.5); 
                 }                
-                if (autoHelper.elevator.atTargetElevatorPositionL0()) {
+                if (autoHelper.elevator.atTargetElevatorPositionInTake()) {
                     autoHelper.autoElevatorLift(0);
                     elevatorFinished = true;
                 }
@@ -500,7 +500,7 @@ public class Auto {
                     driveFinished = true;
                 }
 
-                if (autoHelper.elevator.atTargetElevatorPositionL0()) {
+                if (autoHelper.elevator.atTargetElevatorPositionInTake()) {
                     autoHelper.autoElevatorLift(0);
                     elevatorFinished = true;
                 }
@@ -607,7 +607,7 @@ public class Auto {
                 if (elevatorFinished == false) { 
                     autoHelper.autoElevatorLift(-0.5); 
                 }            
-                if (autoHelper.elevator.atTargetElevatorPositionL0()) {
+                if (autoHelper.elevator.atTargetElevatorPositionInTake()) {
                     autoHelper.autoElevatorLift(0);
                     elevatorFinished = true;
                 }
@@ -664,48 +664,222 @@ public class Auto {
             firstTime = true;
     
     }
-
-}
-    
-
     
 // public void autoMiddle(){ // 1-coral Auto (on L1) without Limelight
 
-//     if (timer.get() < 15){ 
+    //     if (timer.get() < 15){ 
+    
+    //         if (autoHelper.timerInterval_Auto(0, 0.15)){
+    //             autoHelper.resetDriveEncoders();
+    //             autoHelper.resetSteerEncoders();
+    //             autoHelper.autoResetPIDs();
+    //         }
+    //         else if (autoHelper.timerInterval_Auto(0.16, 1.16)){ 
+    //             autoHelper.autoCloseClaw();
+    //             autoHelper.driver.swerveDrive(0, 0, 0);
+    //             autoHelper.autoArmLift(-0.26);
+    //         }
+    //         else if (autoHelper.timerInterval_Auto(1.17, 3.17)){
+    //             autoHelper.autoArmLift(0);
+    //             autoHelper.autoElevatorLift(-0.50);
+    //             autoHelper.driver.swerveDrive(0.302, 0, 0);
+    //         }
+    //         else if (autoHelper.timerInterval_Auto(3.18, 3.21)){
+    //             autoHelper.autoElevatorLift(0);
+    //             autoHelper.driver.swerveDrive(0, 0, 0);
+    //         }
+    //         else if (autoHelper.timerInterval_Auto(3.22, 3.9)){
+    //             autoHelper.autoOpenClaw();
+    //         }
+    //         else if (autoHelper.timerInterval_Auto(4, 5)){
+    //             autoHelper.autoArmLift(0.25);
+    //         }
+    //         else if (autoHelper.timerInterval_Auto(5.1, 5.9)){
+    //             autoHelper.autoArmLift(0);
+    //             autoHelper.driver.swerveDrive(-0.10, 0, 0);
+    //         }
+    //         else if (autoHelper.timerInterval_Auto(6, 9)){
+    //             autoHelper.driver.swerveDrive(0, 0, 0);
+    //         }
+                    
+    //     }   
+    
+    // }
 
-//         if (autoHelper.timerInterval_Auto(0, 0.15)){
-//             autoHelper.resetDriveEncoders();
-//             autoHelper.resetSteerEncoders();
-//             autoHelper.autoResetPIDs();
-//         }
-//         else if (autoHelper.timerInterval_Auto(0.16, 1.16)){ 
-//             autoHelper.autoCloseClaw();
-//             autoHelper.driver.swerveDrive(0, 0, 0);
-//             autoHelper.autoArmLift(-0.255);
-//         }
-//         else if (autoHelper.timerInterval_Auto(1.17, 3.17)){
-//             autoHelper.autoArmLift(0);
-//             autoHelper.autoElevatorLift(0.45);
-//             autoHelper.driver.swerveDrive(0.24, 0, 0);
-//         }
-//         else if (autoHelper.timerInterval_Auto(3.18, 3.21)){
-//             autoHelper.autoElevatorLift(0);
-//             autoHelper.driver.swerveDrive(0, 0, 0);
-//         }
-//         else if (autoHelper.timerInterval_Auto(3.22, 3.9)){
-//             autoHelper.autoOpenClaw();
-//         }
-//         else if (autoHelper.timerInterval_Auto(4, 5)){
-//             autoHelper.autoArmLift(0.25);
-//         }
-//         else if (autoHelper.timerInterval_Auto(5.1, 5.9)){
-//             autoHelper.autoArmLift(0);
-//             autoHelper.driver.swerveDrive(-0.10, 0, 0);
-//         }
-//         else if (autoHelper.timerInterval_Auto(6, 9)){
-//             autoHelper.driver.swerveDrive(0, 0, 0);
-//         }
+    public void autoMiddleDriveByPosition(){
+
+        switch(counter){
+
+            case 0: 
+                autoHelper.resetDriveEncoders();
+                autoHelper.resetSteerEncoders();
+                autoHelper.autoResetPIDs();
+                restartTimer();
+
+                if (clawFinished = false){
+                    autoHelper.autoCloseClaw();
+                    clawFinished = true;
+                }
                 
-//     }   
+                if (armFinished = false){
+                    autoHelper.autoArmLift(-0.3);
+                }
 
-// }
+                if (autoHelper.arm.atTargetArmPositionL0()){
+                    autoHelper.autoArmLift(0);
+                    armFinished = true;
+                }
+
+                if (clawFinished && armFinished){
+                    counter++;
+                    clawFinished = false;
+                    armFinished = false;
+                }
+                break;
+
+            case 1: 
+                System.out.println("Case 1");
+                autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(2.54, 0, 0)); // Moved forward 1.35m
+
+                if (autoHelper.driver.atTargetPosition()) {
+                    autoHelper.driver.swerveDrive(0, 0, 0);
+                    driveFinished = true;
+                }
+
+                if (elevatorFinished = false) { 
+                    autoHelper.autoElevatorLift(-0.5); 
+                }
+                
+                if (autoHelper.elevator.atTargetElevatorPositionL1()) {
+                    autoHelper.autoElevatorLift(0);
+                    elevatorFinished = true;
+                }
+    
+                if (driveFinished && elevatorFinished) {
+                    counter++;
+                    driveFinished = false;
+                    elevatorFinished = false;
+                }
+                break;
+
+            case 2: 
+                System.out.println("Case 2");
+                if (clawFinished = false){
+                    autoHelper.autoOpenClaw();
+                    clawFinished = true;
+                }
+
+                if (clawFinished = true){
+                    autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(-0.9, 0, 0));
+                }
+
+                if (autoHelper.driver.atTargetPosition()) {
+                    autoHelper.driver.swerveDrive(0, 0, 0);
+                    driveFinished = true;
+                }   
+
+                if (clawFinished) {
+                    counter++;
+                    clawFinished = false;
+                }
+                break;
+
+            default:
+                autoHelper.driver.swerveDrive(0, 0, 0);
+                autoHelper.autoArmLift(0);
+                autoHelper.autoElevatorLift(0);
+                break;
+            
+            }
+        }
+
+        public void autoSidesDriveByPosition(){
+
+            switch(counter){
+    
+                case 0: 
+                    autoHelper.resetDriveEncoders();
+                    autoHelper.resetSteerEncoders();
+                    autoHelper.autoResetPIDs();
+                    restartTimer();
+    
+                    if (clawFinished = false){
+                        autoHelper.autoCloseClaw();
+                        clawFinished = true;
+                    }
+                    
+                    if (armFinished = false){
+                        autoHelper.autoArmLift(-0.3);
+                    }
+    
+                    if (autoHelper.arm.atTargetArmPositionL0()){
+                        autoHelper.autoArmLift(0);
+                        armFinished = true;
+                    }
+    
+                    if (clawFinished && armFinished){
+                        counter++;
+                        clawFinished = false;
+                        armFinished = false;
+                    }
+                    break;
+    
+                case 1: 
+                    System.out.println("Case 1");
+                    autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(3.54, 0, 0)); // Moved forward 1.35m
+    
+                    if (autoHelper.driver.atTargetPosition()) {
+                        autoHelper.driver.swerveDrive(0, 0, 0);
+                        driveFinished = true;
+                    }
+    
+                    if (elevatorFinished = false) { 
+                        autoHelper.autoElevatorLift(-0.5); 
+                    }
+                    
+                    if (autoHelper.elevator.atTargetElevatorPositionL1()) {
+                        autoHelper.autoElevatorLift(0);
+                        elevatorFinished = true;
+                    }
+        
+                    if (driveFinished && elevatorFinished) {
+                        counter++;
+                        driveFinished = false;
+                        elevatorFinished = false;
+                    }
+                    break;
+    
+                case 2: 
+                    System.out.println("Case 2");
+                    if (clawFinished = false){
+                        autoHelper.autoOpenClaw();
+                        clawFinished = true;
+                    }
+    
+                    if (clawFinished = true){
+                        autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(-0.9, 0, 0));
+                    }
+    
+                    if (autoHelper.driver.atTargetPosition()) {
+                        autoHelper.driver.swerveDrive(0, 0, 0);
+                        driveFinished = true;
+                    }   
+    
+                    if (clawFinished) {
+                        counter++;
+                        clawFinished = false;
+                    }
+                    break;
+    
+                default:
+                    autoHelper.driver.swerveDrive(0, 0, 0);
+                    autoHelper.autoArmLift(0);
+                    autoHelper.autoElevatorLift(0);
+                    break;
+                
+                }
+            }
+        
+        
+        }
+        

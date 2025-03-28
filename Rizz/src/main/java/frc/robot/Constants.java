@@ -64,12 +64,13 @@ public class Constants {
 
 
     //drivetrain properties
-    public final static double kWheelDiameterInches = 3.75;
-    public final static double kDriveMotorGearRatio = 1 / 8.14;
+    public final static double kWheelDiameterInches = 4;
+    public final static double kDriveMotorGearRatio = 1 / 6.12;
     public final static double kTurningMotorGearRatio = 1.0 / (150.0 / 7.0);
     public final static double driveRotsToMeter = 0.055555555; //0.073286;
 
     //elevator properties
+    public static final double L0_HEIGHT = 0;
     public static final double L1_HEIGHT = (0.000500/1.32) * 2256.809339;
     public static final double L2_HEIGHT = (0.000812/1.32) * 2256.809339;
     public static final double L3_HEIGHT = (0.002012/1.32) * 2256.809339;
