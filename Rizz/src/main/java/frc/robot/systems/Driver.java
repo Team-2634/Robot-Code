@@ -302,12 +302,13 @@ public class Driver {
      */
     public void driveToPosition(Pose2d endPose) {
         Pose2d startPose = getPose();
-        SmartDashboard.putNumber("inputX", (startPose.getX()));//Units.metersToFeet(startPose.getX()));
-        SmartDashboard.putNumber("inputY", (startPose.getY()));//Units.metersToFeet(startPose.getY()));
-        SmartDashboard.putNumber("inputRot", startPose.getRotation().getRadians());
-        SmartDashboard.putNumber("outputX", (endPose.getX()));
-        SmartDashboard.putNumber("outputY", (endPose.getY()));
-        SmartDashboard.putNumber("outputRot", endPose.getRotation().getRadians());
+    
+        SmartDashboard.putNumber("DBD starting x", (startPose.getX()));//Units.metersToFeet(startPose.getX()));
+        SmartDashboard.putNumber("DBD starting Y", (startPose.getY()));//Units.metersToFeet(startPose.getY()));
+        SmartDashboard.putNumber("DBD starting rot", startPose.getRotation().getRadians());
+        SmartDashboard.putNumber("DBD output x", (endPose.getX()));
+        SmartDashboard.putNumber("DBD output y", (endPose.getY()));
+        SmartDashboard.putNumber("DBD output rot", endPose.getRotation().getRadians());
 
         double xSpeed = autoXPID.calculate(startPose.getX(), endPose.getX());
         double ySpeed = autoYPID.calculate(startPose.getY(), endPose.getY()); 
@@ -331,17 +332,24 @@ public class Driver {
         return at;
     }
 
-    public void driveToAprilTag(double distanceFromAprilTag) {
+    public void driveToAprilTag(double distanceFromAprilTag, double horizontalOffset, boolean direction) {
         if (!atTargetPosition()) {
-            driveToPosition(setDesiredPose(limelight.yDistanceFromLimelightAngle() - distanceFromAprilTag, limelight.xDistanceFromLimelightAngle(), Math.toRadians(limelight.Zoffset())));
+            driveToPosition(setDesiredPose(limelight.yDistanceFromLimelightAngle() - distanceFromAprilTag, limelight.xDistanceFromLimelightAngle() + horizontalOffset, Math.toRadians(limelight.targetYaw())));
         } 
-            //Testing for driving to the poles to score, when we are aligned to april tag we set Pose to 0 and then move right by a constant distance by PID's
-        // else if (atTargetPosition()) 
-        // {
-        //     poseEstimator.resetPosition(navx.getRotation2d(), modulePositionArray, getPose());
-        //     driveToPosition(setDesiredPose(0, Constants.distanceFromAprilTagToPole,0));
-        // }
+        //Testing for driving to the poles to score, when we are aligned to april tag we set Pose to 0 and then move right by a constant distance by PID's
+        else if (atTargetPosition()) 
+        {
+        //direction determines if the robot moves left or right, true is right, false is left
+            poseEstimator.resetPosition(navx.getRotation2d(), modulePositionArray, getPose());
+            if (direction) {
+                driveToPosition(setDesiredPose(0, Constants.distanceFromAprilTagToPole, 0));
+            }
+            else {
+                driveToPosition(setDesiredPose(0, -Constants.distanceFromAprilTagToPole, 0));
+            }
+        } 
     }
+
 
 
     // public void resetTurnEncoders() {

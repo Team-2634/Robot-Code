@@ -57,7 +57,8 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         SmartDashboard.putNumber("X-offset", limelight.Xoffset());
         SmartDashboard.putNumber("Y-offset", limelight.Yoffset());
-
+        SmartDashboard.putNumber("Z-offset", limelight.Zoffset());
+        SmartDashboard.putNumber("AprilTag Yaw",limelight.targetYaw());
         driver.updatePose();
     }
     
@@ -94,7 +95,16 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("Pose x-value", driver.getPose().getY());
         SmartDashboard.putNumber("arm angle in rad", arm.getArmAngleRad());
         SmartDashboard.putNumber("elevator height", elevator.getElevatorHeight());
-
+        SmartDashboard.putNumber("KP", Constants.kpAuto);
+        SmartDashboard.putNumber("KI", Constants.kiAuto);
+        SmartDashboard.putNumber("KD", Constants.kdAuto);
+        SmartDashboard.putNumber("Test test", 69); //add the box to smart dashboard
+        testnum = SmartDashboard.getNumber("Test test", 0);
+        //Testing Changing of PID values
+        System.out.println(testnum); //if prints out 69 we can change out values
 
     }
+
+    double testnum;
+
 }

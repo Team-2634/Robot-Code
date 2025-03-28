@@ -100,7 +100,9 @@ public class Constants {
     public final static double limeLightHeightFromGround = 0.20; //assumed in meters, change when actual value is given
     public final static double limeLightAngleInRads = (75 * (Math.PI / 180)); //15
     public final static double aprilTagHeight = 0.38; //assumed in meters, should be right.
-    public final static double distanceFromAprilTagToPole = 69420; //in meters, measure field tmr
+    public final static double distanceFromAprilTagToPole = 0.2; //in meters, measure field tmr
+    public final static double horizontalOffset = 0.1; //calibrate later, this is the offset from the limelight to the arm
+    public final static double distanceOffset = 0.5; //how far the limelight should be offsetted distance wise from the april tag
 
     //controller settings (robot speed)
     public final static double XdriveSensitivity = 0.75;

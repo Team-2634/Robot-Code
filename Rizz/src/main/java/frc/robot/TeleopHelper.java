@@ -243,14 +243,13 @@ public class TeleopHelper {
 
     public void testAutoDrivebyDistance(XboxController controller){
         if(controller.getBButton()) {
-            driver.driveToPosition(driver.setDesiredPose(driver.getPose().getX() + 1, 0, 0));
-            // in theory it should move the bot forwards alot
+            driver.driveToPosition(driver.setDesiredPose(0, 0, Math.PI / 2));
         }
     }
 
     public void moveToAprilTag(XboxController controller){
         if(controller.getBButton()) {
-            driver.driveToAprilTag(0.5);
+            driver.driveToAprilTag(Constants.distanceOffset, Constants.horizontalOffset, true);
         }
 
     }

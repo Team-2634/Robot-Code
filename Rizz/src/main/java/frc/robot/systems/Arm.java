@@ -37,7 +37,6 @@ public class Arm {
      * @param position target angle in radians from start position
      */
     public void moveArmPID(double position) {
-        System.out.println("arm pid move");
         double armAngleTolerance = 0.2;
         
         double power = armPID.calculate(getArmAngleRad(), position); // + armFF.calculate(getArmRadians() - Constants.armOffset, position - Constants.armOffset);

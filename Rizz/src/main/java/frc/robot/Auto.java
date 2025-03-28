@@ -87,7 +87,7 @@ public class Auto {
                 
                 //autoHelper.driver.rotateToAprilTag(); // Align with AprilTag before driving - Irrelevant since drive to april tag should fully align now
 
-                autoHelper.driver.driveToAprilTag(0.5); 
+                autoHelper.driver.driveToAprilTag(Constants.distanceOffset, Constants.horizontalOffset, true); 
 
                 if (autoHelper.driver.atTargetPosition()) {
                     autoHelper.driver.swerveDrive(0, 0, 0); 
