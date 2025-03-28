@@ -57,8 +57,11 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         SmartDashboard.putNumber("X-offset", limelight.Xoffset());
         SmartDashboard.putNumber("Y-offset", limelight.Yoffset());
-        SmartDashboard.putNumber("Z-offset", limelight.Zoffset());
         SmartDashboard.putNumber("AprilTag Yaw",limelight.targetYaw());
+        SmartDashboard.putNumber("AprilTag tx",limelight.limelightTestValues(1));
+        SmartDashboard.putNumber("AprilTag ty",limelight.limelightTestValues(2));
+        SmartDashboard.putNumber("AprilTag tz",limelight.limelightTestValues(3));
+
         driver.updatePose();
     }
     

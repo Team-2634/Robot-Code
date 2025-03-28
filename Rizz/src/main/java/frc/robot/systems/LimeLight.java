@@ -53,6 +53,11 @@ public class LimeLight {
         return targetPositionArray[3];
     }
 
+    public double limelightTestValues(int valueEntry) {
+        double[] targetPositionArray = getTargetPosition(); 
+        return targetPositionArray[valueEntry];
+    }
+
     public double yDistanceFromLimelightAngle() {
         double[] targetPositionArray = getTargetPosition(); 
         double a1 = Math.toRadians(targetPositionArray[2]);

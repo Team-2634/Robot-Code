@@ -298,17 +298,17 @@ public class Driver {
 
     /**
      * Drives to a position given meters from origin (starting position) and radians
-     * @param endPose
+     * @param endPose Target position (field coords relative to starting position)
      */
     public void driveToPosition(Pose2d endPose) {
         Pose2d startPose = getPose();
     
         SmartDashboard.putNumber("DBD starting x", (startPose.getX()));//Units.metersToFeet(startPose.getX()));
         SmartDashboard.putNumber("DBD starting Y", (startPose.getY()));//Units.metersToFeet(startPose.getY()));
-        SmartDashboard.putNumber("DBD starting rot", startPose.getRotation().getRadians());
-        SmartDashboard.putNumber("DBD output x", (endPose.getX()));
-        SmartDashboard.putNumber("DBD output y", (endPose.getY()));
-        SmartDashboard.putNumber("DBD output rot", endPose.getRotation().getRadians());
+        SmartDashboard.putNumber("DBD starting r", startPose.getRotation().getRadians());
+        SmartDashboard.putNumber("DBD   output x", (endPose.getX()));
+        SmartDashboard.putNumber("DBD   output y", (endPose.getY()));
+        SmartDashboard.putNumber("DBD   output r", endPose.getRotation().getRadians());
 
         double xSpeed = autoXPID.calculate(startPose.getX(), endPose.getX());
         double ySpeed = autoYPID.calculate(startPose.getY(), endPose.getY()); 
@@ -316,6 +316,17 @@ public class Driver {
 
         double[] fieldOriented = fieldOrient(xSpeed, ySpeed);
         swerveDrive(Constants.clamp(fieldOriented[0], -Constants.maxAutoVelocity, Constants.maxAutoVelocity), Constants.clamp(fieldOriented[1], -Constants.maxAutoVelocity, Constants.maxAutoVelocity), Constants.clamp(rotSpeed, -Constants.maxAutoVelocity, Constants.maxAutoVelocity));
+    }
+
+    /**
+     * Drives to a position given meters from origin (starting position) and radians
+     * -Same as above pose2d function, but allows for x,y,rot inputs 
+     * @param x Target position x in m (field coords relative to starting position)
+     * @param y Target position y in m (field coords relative to starting position)
+     * @param rot Target position rot in rads (field coords relative to starting position)
+     */
+    public void driveToPosition(double x, double y, double rot) {
+        driveToPosition(setDesiredPose(x, y, rot));
     }
 
     public boolean atTargetPosition() {
@@ -342,7 +353,7 @@ public class Driver {
         //direction determines if the robot moves left or right, true is right, false is left
             poseEstimator.resetPosition(navx.getRotation2d(), modulePositionArray, getPose());
             if (direction) {
-                driveToPosition(setDesiredPose(0, Constants.distanceFromAprilTagToPole, 0));
+                driveToPosition(0, Constants.distanceFromAprilTagToPole, 0);
             }
             else {
                 driveToPosition(setDesiredPose(0, -Constants.distanceFromAprilTagToPole, 0));
