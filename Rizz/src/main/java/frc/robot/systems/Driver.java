@@ -333,7 +333,7 @@ public class Driver {
 
     public void driveToAprilTag(double distanceFromAprilTag) {
         if (!atTargetPosition()) {
-            driveToPosition(setDesiredPose(Math.max(limelight.yDistanceFromLimelightAngle() - distanceFromAprilTag, 0), limelight.xDistanceFromLimelightAngle(), Math.toRadians(limelight.Zoffset())));
+            driveToPosition(setDesiredPose(limelight.yDistanceFromLimelightAngle() - distanceFromAprilTag, limelight.xDistanceFromLimelightAngle(), Math.toRadians(limelight.Zoffset())));
         } 
             //Testing for driving to the poles to score, when we are aligned to april tag we set Pose to 0 and then move right by a constant distance by PID's
         // else if (atTargetPosition()) 
