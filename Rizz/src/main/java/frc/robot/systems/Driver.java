@@ -332,14 +332,17 @@ public class Driver {
     }
 
     public void driveToAprilTag(double distanceFromAprilTag) {
-        double yDistance = limelight.yDistanceFromLimelightAngle();
-        double adjustedDistance = Math.max(yDistance - distanceFromAprilTag, 0); // prevents negative distance
-        driveToPosition(setDesiredPose(adjustedDistance, 0, 0));
+        if (!atTargetPosition()) {
+            driveToPosition(setDesiredPose(Math.max(limelight.yDistanceFromLimelightAngle() - distanceFromAprilTag, 0), limelight.xDistanceFromLimelightAngle(), Math.toRadians(limelight.Zoffset())));
+        } 
+            //Testing for driving to the poles to score, when we are aligned to april tag we set Pose to 0 and then move right by a constant distance by PID's
+        // else if (atTargetPosition()) 
+        // {
+        //     poseEstimator.resetPosition(navx.getRotation2d(), modulePositionArray, getPose());
+        //     driveToPosition(setDesiredPose(0, Constants.distanceFromAprilTagToPole,0));
+        // }
     }
 
-    public void rotateToAprilTag() {
-        driveToPosition(setDesiredPose(0, 0, Math.toRadians(limelight.Zoffset())));
-    }
 
     // public void resetTurnEncoders() {
     //     frontLeftSteer.setPosition(0);

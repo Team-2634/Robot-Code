@@ -46,13 +46,15 @@ public class Teleop {
 
     public void arm() {
         teleopHelper.moveArm(xboxElevator);
-        // teleopHelper.testAutoDrivebyDistance(xboxDrive);
     }
 
     public void limelightFunctions(){
-        // teleopHelper.rotateAlignToAprilTag(xboxDrive);
         teleopHelper.moveToAprilTag(xboxDrive);
 
+    }
+
+    public void driveByDistanceTest() {
+        // teleopHelper.testAutoDrivebyDistance(xboxDrive);
     }
 
     public void elevatorArm(){

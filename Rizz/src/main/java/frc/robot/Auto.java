@@ -85,7 +85,7 @@ public class Auto {
             case 1: 
                 System.out.println("Case 1");
                 
-                autoHelper.driver.rotateToAprilTag(); // Align with AprilTag before driving
+                //autoHelper.driver.rotateToAprilTag(); // Align with AprilTag before driving - Irrelevant since drive to april tag should fully align now
 
                 autoHelper.driver.driveToAprilTag(0.5); 
 

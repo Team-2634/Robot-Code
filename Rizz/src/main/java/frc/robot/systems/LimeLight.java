@@ -66,7 +66,9 @@ public class LimeLight {
     }
 
     public double xDistanceFromLimelightAngle() {
-        return (yDistanceFromLimelightAngle() / Math.tan(Math.toRadians(Xoffset())));
+        double[] targetPositionArray = getTargetPosition(); 
+        double tx = Math.toRadians(targetPositionArray[1]);
+        return (yDistanceFromLimelightAngle() / Math.tan(tx));
     }
 
 }

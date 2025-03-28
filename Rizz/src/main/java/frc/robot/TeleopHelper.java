@@ -237,15 +237,14 @@ public class TeleopHelper {
         SmartDashboard.putNumber("arm speed", speed);
     }
 
-    public void rotateAlignToAprilTag(XboxController controller) {
-        if(controller.getBButton()) {
-            driver.rotateToAprilTag();
-        }
-    }
+
+    // The B Button is a testing button for now, controls will be changed later
+    // Only one of these functions should be called at any time
 
     public void testAutoDrivebyDistance(XboxController controller){
         if(controller.getBButton()) {
-            driver.driveToPosition(driver.setDesiredPose(1, 0, 0));
+            driver.driveToPosition(driver.setDesiredPose(driver.getPose().getX() + 1, 0, 0));
+            // in theory it should move the bot forwards alot
         }
     }
 
