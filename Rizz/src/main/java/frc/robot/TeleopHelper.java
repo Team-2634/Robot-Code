@@ -243,7 +243,7 @@ public class TeleopHelper {
 
     public void testAutoDrivebyDistance(XboxController controller){
         if(controller.getBButton()) {
-            driver.driveToPosition(driver.setDesiredPose(0, 0, Math.PI / 2));
+            driver.driveToPosition(driver.setDesiredPose(0, 1, 0));
         }
     }
 

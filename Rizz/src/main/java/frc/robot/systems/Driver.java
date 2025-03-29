@@ -346,17 +346,46 @@ public class Driver {
     public void driveToAprilTag(boolean direction) {
         double h = (Constants.horizontalOffset + Constants.limelightToArmOffset);
         if (!direction) {h *= -1;}
+        double[] orientedXandY = orientPosByYaw(
+                getPose().getX(), 
+                getPose().getY(),
+                limelight.targetYaw()
+            );
 
         if (!atTargetPosition()) {
             driveToPosition(setDesiredPose(
-                limelight.yDistanceFromLimelightAngle() - Constants.distanceOffset, 
-                (limelight.xDistanceFromLimelightAngle() - h) , 
+                limelight.yDistanceFromLimelightAngle() - Constants.distanceOffset + orientedXandY[0], 
+                limelight.xDistanceFromLimelightAngle() - h + orientedXandY[1], 
                 Math.toRadians(limelight.targetYaw())
                 ));
         } 
     }
 
+    public double[] orientPosByYaw(double x, double y, double limelightYaw) {
+        double[] XY = {0,0};
+        double yaw = navx.getYaw() + limelightYaw;
+        if(yaw >= 0 && yaw < 90 ) {
+            XY[0] = x;
+            XY[1] = y; //-
+        }
+        else if (yaw >= 90 && yaw < 180) {
+            XY[0] = x; //-
+            XY[1] = -y;  
+        }
+        else if (yaw >= -90  && yaw < 0) {
+            XY[0] = -x; //+
+            XY[1] = y;  
+        }
+        else if (yaw >= -180 && yaw < -90) {
+            XY[0] = -x;
+            XY[1] = -y; //+  
+        } else {
+            //math broke
+        }
 
+
+        return XY;
+    }
 
     // public void resetTurnEncoders() {
     //     frontLeftSteer.setPosition(0);
