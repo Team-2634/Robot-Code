@@ -77,7 +77,7 @@ public class Constants {
     public static final double L4_HEIGHT = (0.003300/1.32) * 2256.809339; //0.00250 New Height
 
     public static final double elevatorHighHardstop = 5.8; // hardstop for elevator // updated for last qual
-    public static final double elevatorLowHardstop = -0.001; // hardstop for elevator
+    public static final double elevatorLowHardstop = -0.000001; // hardstop for elevator
 
     public static final double elevatorSpeed = 1.00;
     public static final double drumDiameter = 0.008;

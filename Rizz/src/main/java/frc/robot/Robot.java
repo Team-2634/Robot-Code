@@ -61,17 +61,16 @@ public class Robot extends TimedRobot {
         // SmartDashboard.putNumber("AprilTag tx",limelight.limelightTestValues(1));
         // SmartDashboard.putNumber("AprilTag ty",limelight.limelightTestValues(2));
         // SmartDashboard.putNumber("AprilTag tz",limelight.limelightTestValues(3));
+        // String outputLimelight = 
+        // "(x: " + limelight.limelightTestValues(1) +
+        // ", y: " + limelight.limelightTestValues(2) + 
+        // ", z: " + limelight.limelightTestValues(3) +
+        // // ", pitch: " + limelight.limelightTestValues(4) +
+        // // ", yaw: " + limelight.limelightTestValues(5) + 
+        // // ", roll: " + limelight.limelightTestValues(6) + 
+        // ")";
         
-        String outputLimelight = 
-        "(x: " + limelight.limelightTestValues(1) +
-        ", y: " + limelight.limelightTestValues(2) + 
-        ", z: " + limelight.limelightTestValues(3) +
-        // ", pitch: " + limelight.limelightTestValues(4) +
-        // ", yaw: " + limelight.limelightTestValues(5) + 
-        // ", roll: " + limelight.limelightTestValues(6) + 
-        ")";
-        
-        SmartDashboard.putString("AprilTag",outputLimelight);
+        // SmartDashboard.putString("AprilTag",outputLimelight);
         
         driver.updatePose();
     }
@@ -107,18 +106,19 @@ public class Robot extends TimedRobot {
         teleop.limelightFunctions();
         SmartDashboard.putNumber("Pose x-value", driver.getPose().getX());
         SmartDashboard.putNumber("Pose x-value", driver.getPose().getY());
+        SmartDashboard.putNumber("robot yaw valye", navx.getYaw());
+        SmartDashboard.putNumber("limelight tx", limelight.Xoffset());
+        SmartDashboard.putNumber("limelight ty", limelight.Yoffset());
+
+        
+
+
+
+
+
         SmartDashboard.putNumber("arm angle in rad", arm.getArmAngleRad());
         SmartDashboard.putNumber("elevator height", elevator.getElevatorHeight());
-        SmartDashboard.putNumber("KP", Constants.kpAuto);
-        SmartDashboard.putNumber("KI", Constants.kiAuto);
-        SmartDashboard.putNumber("KD", Constants.kdAuto);
-        SmartDashboard.putNumber("Test test", 69); //add the box to smart dashboard
-        testnum = SmartDashboard.getNumber("Test test", 0);
-        //Testing Changing of PID values
-        // System.out.println(testnum); //if prints out 69 we can change out values
+
 
     }
-
-    double testnum;
-
 }
