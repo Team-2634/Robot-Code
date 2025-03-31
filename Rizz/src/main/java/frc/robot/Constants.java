@@ -50,12 +50,12 @@ public class Constants {
     public final static double autoRotationToleranceRadians = 0.2;
     public final static double maxAutoVelocity = 0.5;
 
-    public final static double kpArm = 0.15;
-    public final static double kiArm = 0.000025;
+    public final static double kpArm = 0.2;
+    public final static double kiArm = 0.0000075;
     public final static double kdArm = 0;    
     
-    public final static double kpElevator = 0.1;
-    public final static double kiElevator = 0.000025;
+    public final static double kpElevator = 0.5;
+    public final static double kiElevator = 0.0000075;
     public final static double kdElevator = 0;
 
     public final static double kpAutoRotate = 0.5; //original value is 0.2

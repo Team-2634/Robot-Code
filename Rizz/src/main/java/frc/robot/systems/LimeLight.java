@@ -19,12 +19,12 @@ public class LimeLight {
     public double[] getTargetPosition() {
         return getArrayEntry("targetpose_cameraspace");
         /** Array Positions
-         * 0 = tx
-         * 1 = ty
-         * 2 = tz
-         * 3 = pitch
-         * 4 = yaw
-         * 5 = roll
+         * 1 = tx
+         * 2 = ty
+         * 3 = tz
+         * 4 = pitch
+         * 5 = yaw
+         * 6 = roll
          */
 
     }
@@ -50,7 +50,7 @@ public class LimeLight {
 
     public double Zoffset() {
         double[] targetPositionArray = getTargetPosition(); 
-        return targetPositionArray[2];
+        return targetPositionArray[3];
     }
 
     public double limelightTestValues(int valueEntry) {
@@ -61,16 +61,16 @@ public class LimeLight {
     public double yDistanceFromLimelightAngle() {
         double[] targetPositionArray = getTargetPosition(); 
         double a1 = Math.toRadians(targetPositionArray[1]);
-        //returns the y Distance from the Apriltag 
+        //returns the y Distance from the Apriltag
         return ((Constants.aprilTagHeight - Constants.limeLightHeightFromGround) / Math.tan(a1 + Constants.limeLightAngleInRads));
     }
 
     public double targetYaw() {
         double[] targetPositionArray = getTargetPosition(); 
-        return targetPositionArray[4];
+        return targetPositionArray[5];
     }
 
-    public double xDistanceFromLimelightAngle() {
+ public double xDistanceFromLimelightAngle() {
         double[] targetPositionArray = getTargetPosition(); 
         double tx = Math.toRadians(targetPositionArray[0]);
         return (yDistanceFromLimelightAngle() / Math.tan(tx));

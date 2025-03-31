@@ -310,8 +310,8 @@ public class Driver {
         SmartDashboard.putNumber("DBD   output y", (endPose.getY()));
         SmartDashboard.putNumber("DBD   output r", endPose.getRotation().getRadians());
 
-        double xSpeed = autoXPID.calculate(startPose.getX(), endPose.getX());
-        double ySpeed = autoYPID.calculate(startPose.getY(), endPose.getY()); 
+        double xSpeed = autoXPID.calculate(startPose.getX(), endPose.getX()) / 2; //TODO limit for testing
+        double ySpeed = autoYPID.calculate(startPose.getY(), endPose.getY()) / 2; 
         double rotSpeed = autoTurnPID.calculate(MathUtil.angleModulus(startPose.getRotation().getRadians()), MathUtil.angleModulus(endPose.getRotation().getRadians()));
 
         double[] fieldOriented = fieldOrient(xSpeed, ySpeed);
@@ -359,6 +359,8 @@ public class Driver {
                 Math.toRadians(limelight.targetYaw())
                 ));
         } 
+        SmartDashboard.putNumber("Y Dist Calculated", limelight.yDistanceFromLimelightAngle() - Constants.distanceOffset + orientedXandY[0]);
+        SmartDashboard.putNumber("X Dist Calculated", limelight.xDistanceFromLimelightAngle() - h + orientedXandY[1]);
     }
 
     public double[] orientPosByYaw(double x, double y, double limelightYaw) {
@@ -366,19 +368,19 @@ public class Driver {
         double yaw = navx.getYaw() + limelightYaw;
         if(yaw >= 0 && yaw < 90 ) {
             XY[0] = x;
-            XY[1] = y; //-
+            XY[1] = -y;
         }
         else if (yaw >= 90 && yaw < 180) {
-            XY[0] = x; //-
+            XY[0] = -x;
             XY[1] = -y;  
         }
         else if (yaw >= -90  && yaw < 0) {
-            XY[0] = -x; //+
+            XY[0] = x;
             XY[1] = y;  
         }
         else if (yaw >= -180 && yaw < -90) {
-            XY[0] = -x;
-            XY[1] = -y; //+  
+            XY[0] = x;
+            XY[1] = -y;
         } else {
             //math broke
         }
