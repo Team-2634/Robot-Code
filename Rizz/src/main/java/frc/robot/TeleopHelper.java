@@ -38,21 +38,25 @@ public class TeleopHelper {
      * @param disableFieldOrient Boolean, toggle field oriented controls
      */
 
-    public void drive(double XSpeed, double YSpeed, double TurnSpeed, boolean disableFieldOrient, boolean resetNavx) {
+    public void drive(double XSpeed, double YSpeed, double TurnSpeed, boolean slowMode, boolean resetNavx) {
+        double slowAmount = 1.0;
 
-        if (!disableFieldOrient) {
+        if(slowMode) {
+            slowAmount = 0.7;
+        }
+
         double[] speedsFieldOriented = Driver.fieldOrient(XSpeed, YSpeed); //The Navx given to firledOrient is the teleophelper's Navx not the Driver's Navx
         XSpeed = speedsFieldOriented[0];
         YSpeed = speedsFieldOriented[1];
-        }
+
 
         if (resetNavx) {
             navx.zeroYaw();
         }
         
         
-        XSpeed *= Constants.XdriveSensitivity;
-        YSpeed *= Constants.YdriveSensitivity;
+        XSpeed *= (Constants.XdriveSensitivity * slowAmount);
+        YSpeed *= (Constants.YdriveSensitivity * slowAmount);
         TurnSpeed = TurnSpeed * Constants.turningSensitivity;
         
         driver.swerveDrive(XSpeed, YSpeed, TurnSpeed);

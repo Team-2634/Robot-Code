@@ -101,8 +101,8 @@ public class Constants {
 
     // limelight Constants
     public final static double limeLightHeightFromGround = 0.185; //assumed in meters
-    public final static double limeLightAngleInRads = (75 * (Math.PI / 180)); //15
-    public final static double aprilTagHeight = 0.38; //assumed in meters, should be right.
+    public final static double limeLightAngleInRads = (75 * (Math.PI / 180));
+    public final static double aprilTagHeight = 0.305; //In meters from floor to middle of tag
     public final static double horizontalOffset = 0.165; //In meters from apriltag to coral pole
     public final static double limelightToArmOffset = 0.25; //In meters from the lens to the middle of arm
     public final static double distanceOffset = 0.5 + 0.21; // 0.5 meters plus limelight to outside of front bumper
