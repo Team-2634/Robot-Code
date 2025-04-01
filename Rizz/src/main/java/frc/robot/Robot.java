@@ -52,25 +52,25 @@ public class Robot extends TimedRobot {
         climber.initializeClimb();
 
     }
+
+    double[] targetPositionArray;
     
     @Override
     public void robotPeriodic() {
+
+        targetPositionArray = limelight.getTargetPosition();
         SmartDashboard.putNumber("X-offset", limelight.Xoffset());
         SmartDashboard.putNumber("Y-offset", limelight.Yoffset());
         SmartDashboard.putNumber("AprilTag Yaw",limelight.targetYaw());
-        // SmartDashboard.putNumber("AprilTag tx",limelight.limelightTestValues(1));
-        // SmartDashboard.putNumber("AprilTag ty",limelight.limelightTestValues(2));
-        // SmartDashboard.putNumber("AprilTag tz",limelight.limelightTestValues(3));
-        // String outputLimelight = 
-        // "(x: " + limelight.limelightTestValues(1) +
-        // ", y: " + limelight.limelightTestValues(2) + 
-        // ", z: " + limelight.limelightTestValues(3) +
-        // // ", pitch: " + limelight.limelightTestValues(4) +
-        // // ", yaw: " + limelight.limelightTestValues(5) + 
-        // // ", roll: " + limelight.limelightTestValues(6) + 
-        // ")";
         
-        // SmartDashboard.putString("AprilTag",outputLimelight);
+        SmartDashboard.putNumber("X coordinate",targetPositionArray[0]);
+        SmartDashboard.putNumber("Y coordinate",targetPositionArray[1]);
+        SmartDashboard.putNumber("Z coordinate",targetPositionArray[2]);
+        SmartDashboard.putNumber("yaw",targetPositionArray[3]);
+        SmartDashboard.putNumber("pitch",targetPositionArray[4]);
+        SmartDashboard.putNumber("roll",targetPositionArray[5]);
+        
+        
         
         driver.updatePose();
     }
@@ -99,11 +99,11 @@ public class Robot extends TimedRobot {
         teleop.elevator();
         teleop.clamp();
         teleop.elevatorArm();
-        // teleop.climber();
+        teleop.climber();
         //teleop.driveByDistanceTest();
         teleop.arm();
 
-        teleop.limelightFunctions();
+        // teleop.limelightFunctions();
         SmartDashboard.putNumber("Pose x-value", driver.getPose().getX());
         SmartDashboard.putNumber("Pose y-value", driver.getPose().getY());
         SmartDashboard.putNumber("robot yaw value", navx.getYaw());
