@@ -32,7 +32,7 @@ public class Teleop {
         -removeDeadzone(xboxDrive.getLeftY()), 
         -removeDeadzone(xboxDrive.getLeftX()), 
         -removeDeadzone(xboxDrive.getRightX()), 
-        xboxDrive.getXButton(),
+        xboxDrive.getLeftTriggerAxis(),
         xboxDrive.getAButtonPressed());
         }
 

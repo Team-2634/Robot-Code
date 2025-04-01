@@ -73,6 +73,7 @@ public class Robot extends TimedRobot {
         
         
         driver.updatePose();
+        driver.activateFieldCoordinates();
     }
     
     @Override

@@ -35,13 +35,15 @@ public class TeleopHelper {
      * @param XSpeed double, From -1 to 1 
      * @param YSpeed double, From -1 to 1
      * @param TurnSpeed double, From -1 to 1
-     * @param disableFieldOrient Boolean, toggle field oriented controls
+     * @param slowAmount double, slows down drive for more control
+     * @param resetNavx boolean, zero's navx to reset field orient
      */
+    
 
-    public void drive(double XSpeed, double YSpeed, double TurnSpeed, boolean slowMode, boolean resetNavx) {
+    public void drive(double XSpeed, double YSpeed, double TurnSpeed, double slowMode, boolean resetNavx) {
         double slowAmount = 1.0;
 
-        if(slowMode) {
+        if(Math.abs(slowMode) < 0.2) {
             slowAmount = 0.7;
         }
 

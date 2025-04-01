@@ -10,6 +10,7 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -69,10 +70,10 @@ public class Driver {
     public final CANcoderConfigurator backRightEncoderConfig = absEncoderArray[3].getConfigurator();
     public final CANcoderConfigurator[] encoderConfigArray = {frontLeftEncoderConfig, frontRightEncoderConfig, backLeftEncoderConfig, backRightEncoderConfig};
 
-    Translation2d m_frontLeftLocation = new Translation2d(0.340, 0.285);
-    Translation2d m_frontRightLocation = new Translation2d(0.340, -0.285);
-    Translation2d m_backLeftLocation = new Translation2d(-0.340, 0.285);
-    Translation2d m_backRightLocation = new Translation2d(-0.340, -0.285);
+    Translation2d m_frontLeftLocation = new Translation2d(0.3125, 0.3125);
+    Translation2d m_frontRightLocation = new Translation2d(0.3125, -0.3125);
+    Translation2d m_backLeftLocation = new Translation2d(-0.3125, 0.3125);
+    Translation2d m_backRightLocation = new Translation2d(-0.3125, -0.3125);
 
     final SwerveModulePosition frontLeftModulePosition = new SwerveModulePosition();
     final SwerveModulePosition frontRightModulePosition = new SwerveModulePosition();
@@ -236,6 +237,19 @@ public class Driver {
         return speeds;
     }
 
+    private static int firstTimeAprilTag = 0;
+
+    public static void activateFieldCoordinates() {
+
+        if (firstTimeAprilTag == 0) {
+            
+            
+
+            firstTimeAprilTag++;
+        }
+
+    }
+
     // public void autoDriveByDistance(double distanceX, double distanceY) {
     //     double[] distanceFieldOriented = Driver.fieldOrient(distanceX, distanceY, navx);
     //     double fieldDistanceX = distanceFieldOriented[0];
@@ -342,6 +356,11 @@ public class Driver {
         }
         return at;
     }
+
+
+
+
+
 
     public void driveToAprilTag(boolean direction) {
         double h = (Constants.horizontalOffset + Constants.limelightToArmOffset);

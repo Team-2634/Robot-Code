@@ -20,6 +20,14 @@ public class LimeLight {
         return getArrayEntry("botpose_wpiblue");
 
     }
+
+    double[] coordinateValues;
+
+    public double getCoordinateValues(int value) {
+        coordinateValues = getArrayEntry("botpose_wpiblue");
+        return coordinateValues[value];
+    }
+
     public double getID() {
         return getDoubleEntry("tid");
     }
