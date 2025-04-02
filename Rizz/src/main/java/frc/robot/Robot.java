@@ -14,6 +14,7 @@ import frc.robot.systems.Elevator;
 import frc.robot.systems.Arm;
 import frc.robot.systems.LimeLight;
 //import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.cameraserver.CameraServer;
 
 public class Robot extends TimedRobot {
 
@@ -50,6 +51,7 @@ public class Robot extends TimedRobot {
         elevator.elevatorInitiallize();
         arm.armInitiallize();
         climber.initializeClimb();
+        CameraServer.startAutomaticCapture();
 
     }
 
@@ -73,7 +75,7 @@ public class Robot extends TimedRobot {
         
         
         driver.updatePose();
-        driver.activateFieldCoordinates();
+        driver.updateVisionMeasurement();
     }
     
     @Override

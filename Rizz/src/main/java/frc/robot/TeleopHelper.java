@@ -161,11 +161,11 @@ public class TeleopHelper {
 
     public void lowTrayPos() {
 
-        if (!(arm.getArmAngleRad() < Constants.armL0to3 + 0.3 && arm.getArmAngleRad() > Constants.armL0to3 - 0.3)) {
+        if (!(arm.getArmAngleRad() < Constants.armL0to3 + 0.2 && arm.getArmAngleRad() > Constants.armL0to3 - 0.2)) {
             arm.moveArmPID(Constants.armL0to3);
             ArmPositionPresets = true;
             lastSetPositionArm = arm.getArmAngleRad();
-        } else if (!(elevator.getElevatorHeight() < Constants.L1_HEIGHT + 0.0002 && elevator.getElevatorHeight() > Constants.L1_HEIGHT - 0.0002)) {
+        } else if (!(elevator.getElevatorHeight() < Constants.L1_HEIGHT + 0.2 && elevator.getElevatorHeight() > Constants.L1_HEIGHT - 0.2)) {
             elevator.elevatorPIDLift(Constants.L1_HEIGHT);
             lastSetPositionElevator = elevator.getElevatorHeight();
             elevatorPositionPresets = true;
@@ -177,7 +177,7 @@ public class TeleopHelper {
 
     public void firstReefPos() {
 
-        if (!(arm.getArmAngleRad() < Constants.armL0to3 + 0.3 && arm.getArmAngleRad() > Constants.armL0to3 - 0.3)) {
+        if (!(arm.getArmAngleRad() < Constants.armL0to3 + 0.2 && arm.getArmAngleRad() > Constants.armL0to3 - 0.2)) {
         // if (false) {
             arm.moveArmPID(Constants.armL0to3);
             lastSetPositionArm = arm.getArmAngleRad();
@@ -195,11 +195,11 @@ public class TeleopHelper {
 
     public void secondReefPos() {
 
-        if (!(arm.getArmAngleRad() < Constants.armL0to3 + 0.3 && arm.getArmAngleRad() > Constants.armL0to3 - 0.3)) {
+        if (!(arm.getArmAngleRad() < Constants.armL0to3 + 0.2 && arm.getArmAngleRad() > Constants.armL0to3 - 0.2)) {
             arm.moveArmPID(Constants.armL0to3);
             lastSetPositionArm = arm.getArmAngleRad();
             ArmPositionPresets = true;
-        } else if (!(elevator.getElevatorHeight() < Constants.L3_HEIGHT + 0.0002 && elevator.getElevatorHeight() > Constants.L3_HEIGHT - 0.0002)) {
+        } else if (!(elevator.getElevatorHeight() < Constants.L3_HEIGHT + 0.2 && elevator.getElevatorHeight() > Constants.L3_HEIGHT - 0.2)) {
             elevator.elevatorPIDLift(Constants.L3_HEIGHT);
             lastSetPositionElevator = elevator.getElevatorHeight();
             elevatorPositionPresets = true;
@@ -210,11 +210,11 @@ public class TeleopHelper {
     }
 
     public void thirdReefPos() {
-        if (!(arm.getArmAngleRad() < Constants.armL4 + 0.3 && arm.getArmAngleRad() > Constants.armL4 - 0.3)) {
+        if (!(arm.getArmAngleRad() < Constants.armL4 + 0.2 && arm.getArmAngleRad() > Constants.armL4 - 0.2)) {
             arm.moveArmPID(Constants.armL4);
             lastSetPositionArm = arm.getArmAngleRad();
             ArmPositionPresets = true;
-        } else if (!(elevator.getElevatorHeight() < Constants.L4_HEIGHT + 0.0002 && elevator.getElevatorHeight() > Constants.L4_HEIGHT - 0.0002)) {
+        } else if (!(elevator.getElevatorHeight() < Constants.L4_HEIGHT + 0.2 && elevator.getElevatorHeight() > Constants.L4_HEIGHT - 0.2)) {
             elevator.elevatorPIDLift(Constants.L4_HEIGHT);
             lastSetPositionElevator = elevator.getElevatorHeight();
             elevatorPositionPresets = true;

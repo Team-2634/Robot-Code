@@ -23,6 +23,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.systems.LimeLight;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Driver {
 
@@ -237,17 +238,19 @@ public class Driver {
         return speeds;
     }
 
-    private static int firstTimeAprilTag = 0;
+    /*
+     * Fuses vision measurements with current odometry estimate
+     */
 
-    public static void activateFieldCoordinates() {
+    public void updateVisionMeasurement() {
 
-        if (firstTimeAprilTag == 0) {
-            
-            
+        Pose2d visionPose = limelight.getLimelightPose();
 
-            firstTimeAprilTag++;
+        if (visionPose != null) {
+            double time = Timer.getFPGATimestamp();
+
+            poseEstimator.addVisionMeasurement(visionPose, time);
         }
-
     }
 
     // public void autoDriveByDistance(double distanceX, double distanceY) {

@@ -3,7 +3,9 @@ package frc.robot.systems;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.Constants;
+import edu.wpi.first.math.geometry.Pose2d;
 // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 public class LimeLight {
     private static NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
@@ -16,9 +18,18 @@ public class LimeLight {
         return limelightTable.getEntry(entry).getDoubleArray(new double[6]);
     }
 
-    public double[] getTargetPosition() {
+    public double[] getBotPoseBlueAlliance() {
         return getArrayEntry("botpose_wpiblue");
+    }
 
+    public Pose2d getLimelightPose() { // gets bot position based on limelight reading
+        double[] botpose = getBotPoseBlueAlliance();
+
+        if (botpose.length >= 6) { // checks if network table has a valid vision pose
+            return new Pose2d(botpose[0], botpose[1], Rotation2d.fromDegrees(botpose[5]));
+        } else {
+            return null;
+        }
     }
 
     double[] coordinateValues;
@@ -46,6 +57,10 @@ public class LimeLight {
 
     public double Yoffset() {
         return getDoubleEntry("ty");
+    }
+
+    public double[] getTargetPosition() {
+        return getArrayEntry("camerapose_targetspace");
     }
 
     public double Zoffset() {
