@@ -253,9 +253,10 @@ public class TeleopHelper {
         }
     }
 
-    public void moveToAprilTag(XboxController controller){
+    public void testAprilTagFunctions(XboxController controller){
         if(controller.getBButton()) {
-            driver.driveToAprilTag(true);
+            // driver.driveToAprilTag(true);
+            driver.rotateAlignToAprilTag();
         }
 
     }
