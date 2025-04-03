@@ -88,7 +88,7 @@ public class Robot extends TimedRobot {
     
     @Override
     public void autonomousPeriodic() {
-        auto.autoDriveByDistanceTest();
+        auto.autoL4Test();
         }
 
     

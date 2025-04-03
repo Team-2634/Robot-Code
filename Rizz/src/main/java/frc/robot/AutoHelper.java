@@ -134,5 +134,26 @@ public class AutoHelper {
     public void autoLimelightAlign(){
 
     }
+
+
+    public void thirdReefPos() {
+        if (!(arm.getArmAngleRad() < Constants.armL4 + 0.3 && arm.getArmAngleRad() > Constants.armL4 - 0.3)) {
+            arm.moveArmPID(Constants.armL4);
+            lastSetPositionArm = arm.getArmAngleRad();
+            ArmPositionPresets = true;
+        } else if (!(elevator.getElevatorHeight() < Constants.L4_HEIGHT + 0.0002 && elevator.getElevatorHeight() > Constants.L4_HEIGHT - 0.0002)) {
+            elevator.elevatorPIDLift(Constants.L4_HEIGHT);
+            lastSetPositionElevator = elevator.getElevatorHeight();
+            elevatorPositionPresets = true;
+        } else {
+            return;
+        }
+    }
+
+    double speed = 0;
+    double lastSetPositionArm = 0;
+    double lastSetPositionElevator = 0;
+    boolean ArmPositionPresets = false;
+    boolean elevatorPositionPresets = false;
     
 }
