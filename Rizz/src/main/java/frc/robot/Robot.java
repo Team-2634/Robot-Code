@@ -51,7 +51,7 @@ public class Robot extends TimedRobot {
         elevator.elevatorInitiallize();
         arm.armInitiallize();
         climber.initializeClimb();
-        CameraServer.startAutomaticCapture();
+        CameraServer.startAutomaticCapture("Climb Camera", 0);
 
     }
 
@@ -72,10 +72,9 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("pitch",targetPositionArray[4]);
         SmartDashboard.putNumber("roll",targetPositionArray[5]);
         
-        
-        
+    
         driver.updatePose();
-        driver.updateVisionMeasurement();
+        // driver.updateVisionMeasurement();
     }
     
     @Override
@@ -88,7 +87,7 @@ public class Robot extends TimedRobot {
     
     @Override
     public void autonomousPeriodic() {
-        auto.autoL4Test();
+        auto.autoMiddle();
         }
 
     

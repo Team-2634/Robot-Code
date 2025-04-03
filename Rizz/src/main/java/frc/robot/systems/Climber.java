@@ -19,7 +19,7 @@ public class Climber {
 
        public void moveClimb(double speed) {
               climbMotor1.set(speed);
-              climbMotor2.set(speed);
+              climbMotor2.set(-speed);
 
        }
 

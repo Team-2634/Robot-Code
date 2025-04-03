@@ -851,7 +851,7 @@ public class Auto {
             }
 
             else if (autoHelper.timerInterval_Auto(0.25, 0.99)){
-                autoHelper.autoArmLift(-0.5);
+                autoHelper.autoArmLift(-0.1);
             }
 
             else if (autoHelper.timerInterval_Auto(1, 5.91)){
@@ -866,31 +866,55 @@ public class Auto {
                         driveFinished = true;
                     }
                 
-                    if (driveFinished){
-                        autoHelper.autoElevatorLift(-0.85); 
-                    }
                 }
 
             }
 
-            else if (autoHelper.timerInterval_Auto(5.92, 10.92)){
 
-                if (autoHelper.timerInterval_Auto(5.92, 7.92)){
-                    autoHelper.autoElevatorLift(-0.85);
-                    elevatorFinished = true;
+            else if (autoHelper.timerInterval_Auto(5.93, 15)){
+                // autoHelper.driver.swerveDrive(0, 0, 0);
+
+                if (autoHelper.timerInterval_Auto(5.94, 8.92)){
+                    System.out.println("Elevator is Lifting");
+                    autoHelper.autoElevatorLift(-Constants.elevatorSpeed);
+                    autoHelper.autoArmLift(0.05);
                 }
 
-                if (elevatorFinished){
-                    autoHelper.autoElevatorLift(0);
-                    autoHelper.autoArmLift(-0.5);
+
+                // if (autoHelper.timerInterval_Auto(8.93, 9.1)){
+                //     autoHelper.autoArmLift(0.1);
+                // }
+
+                if (autoHelper.timerInterval_Auto(9.1, 9.2)){
                     armFinished = true;
                 }
 
                 if (armFinished){
-                    autoHelper.autoOpenClaw();
-                    driveFinished = false;
-                    elevatorFinished = false;
-                    armFinished = false;
+                    if (autoHelper.timerInterval_Auto(9.3, 9.4)){
+                        autoHelper.autoArmLift(0);
+                    }
+
+                    if(autoHelper.timerInterval_Auto(9.5, 10.4)){
+                        autoHelper.autoArmLift(-0.1);
+                    }
+
+                    if (autoHelper.timerInterval_Auto(11.01, 12)){
+                        autoHelper.autoArmLift(0);
+                        autoHelper.autoOpenClaw();
+                    }
+
+                    // if(autoHelper.timerInterval_Auto(12.1, 13)){
+                    //     autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(-0.5, 0, 0));
+
+                    // if (autoHelper.driver.atTargetPosition()){
+                    //     autoHelper.driver.swerveDrive(0, 0, 0);
+                    //     driveFinished = true;
+                    // }
+
+                    // }
+
+                   
+                    
                 }
 
 
@@ -900,46 +924,53 @@ public class Auto {
            
     }
 
+    public void autoMiddle(){ // 1-coral Auto (on L1) without Limelight
+
+        if (timer.get() < 15){ 
+    
+            if (autoHelper.timerInterval_Auto(0, 0.15)){
+                autoHelper.resetDriveEncoders();
+                autoHelper.resetSteerEncoders();
+                autoHelper.autoResetPIDs();
+            }
+            else if (autoHelper.timerInterval_Auto(0.16, 1.16)){ 
+                autoHelper.autoCloseClaw();
+                autoHelper.driver.swerveDrive(0, 0, 0);
+                autoHelper.autoArmLift(-0.15);
+            }
+            else if (autoHelper.timerInterval_Auto(1.17, 3.17)){
+                autoHelper.autoArmLift(0);
+                autoHelper.autoElevatorLift(-0.42);
+                autoHelper.driver.swerveDrive(0.302, 0, 0);
+            }
+            else if (autoHelper.timerInterval_Auto(3.18, 3.3)){
+                autoHelper.autoElevatorLift(0);
+                autoHelper.driver.swerveDrive(0, 0, 0);
+                autoHelper.autoArmLift(-0.52);
+            }
+            else if(autoHelper.timerInterval_Auto(3.31, 5.25)){
+                autoHelper.autoArmLift(0);
+            }
+            else if (autoHelper.timerInterval_Auto(5.26, 6)){
+                autoHelper.autoOpenClaw();
+            }
+            else if (autoHelper.timerInterval_Auto(6.1, 6.7)){
+                autoHelper.autoArmLift(0.2);
+            }
+            else if (autoHelper.timerInterval_Auto(7, 7.9)){
+                autoHelper.autoArmLift(0);
+                autoHelper.driver.swerveDrive(-0.10, 0, 0);
+            }
+            else if (autoHelper.timerInterval_Auto(8, 15)){
+                autoHelper.driver.swerveDrive(0, 0, 0);
+            }
+                    
+        }   
+    
+    }
+
 }
 
-// public void autoMiddle(){ // 1-coral Auto (on L1) without Limelight
 
-    //     if (timer.get() < 15){ 
-    
-    //         if (autoHelper.timerInterval_Auto(0, 0.15)){
-    //             autoHelper.resetDriveEncoders();
-    //             autoHelper.resetSteerEncoders();
-    //             autoHelper.autoResetPIDs();
-    //         }
-    //         else if (autoHelper.timerInterval_Auto(0.16, 1.16)){ 
-    //             autoHelper.autoCloseClaw();
-    //             autoHelper.driver.swerveDrive(0, 0, 0);
-    //             autoHelper.autoArmLift(-0.26);
-    //         }
-    //         else if (autoHelper.timerInterval_Auto(1.17, 3.17)){
-    //             autoHelper.autoArmLift(0);
-    //             autoHelper.autoElevatorLift(-0.50);
-    //             autoHelper.driver.swerveDrive(0.302, 0, 0);
-    //         }
-    //         else if (autoHelper.timerInterval_Auto(3.18, 3.21)){
-    //             autoHelper.autoElevatorLift(0);
-    //             autoHelper.driver.swerveDrive(0, 0, 0);
-    //         }
-    //         else if (autoHelper.timerInterval_Auto(3.22, 3.9)){
-    //             autoHelper.autoOpenClaw();
-    //         }
-    //         else if (autoHelper.timerInterval_Auto(4, 5)){
-    //             autoHelper.autoArmLift(0.25);
-    //         }
-    //         else if (autoHelper.timerInterval_Auto(5.1, 5.9)){
-    //             autoHelper.autoArmLift(0);
-    //             autoHelper.driver.swerveDrive(-0.10, 0, 0);
-    //         }
-    //         else if (autoHelper.timerInterval_Auto(6, 9)){
-    //             autoHelper.driver.swerveDrive(0, 0, 0);
-    //         }
-                    
-    //     }   
-    
-    // }
+
     

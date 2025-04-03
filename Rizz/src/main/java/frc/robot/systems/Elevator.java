@@ -27,11 +27,13 @@ public class Elevator{
     public void elevatorLift(double speed) {
 
         if (getElevatorHeight() > Constants.elevatorHighHardstop) {
+            System.out.println("Hard Stop High");
             speed = Constants.clamp(speed, 0.0, 1.0);
         } else if (getElevatorHeight() < Constants.elevatorLowHardstop) {
+            System.out.println("Hard Stop Low");
             speed = Constants.clamp(speed, -1.0, 0.0);
         }
-
+        System.out.println("Elevator is Lifting");
         elevatorMotor.set(speed);
     }
 
