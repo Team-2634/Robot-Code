@@ -376,13 +376,32 @@ public class Driver {
 
         if (!atTargetPosition()) {
             driveToPosition(setDesiredPose(
-                limelight.yDistanceFromLimelightAngle() - Constants.distanceOffset + orientedXandY[0], 
+                limelight.distanceToAprilTag() - Constants.distanceOffset + orientedXandY[0], 
                 limelight.xDistanceFromLimelightAngle() - h + orientedXandY[1], 
                 Math.toRadians(limelight.targetYaw())
                 ));
         } 
-        SmartDashboard.putNumber("Y Dist Calculated", limelight.yDistanceFromLimelightAngle() - Constants.distanceOffset + orientedXandY[0]);
-        SmartDashboard.putNumber("X Dist Calculated", limelight.xDistanceFromLimelightAngle() - h + orientedXandY[1]);
+    //     SmartDashboard.putNumber("Y Dist Calculated", limelight.distanceToAprilTag() - Constants.distanceOffset + orientedXandY[0]);
+    //     SmartDashboard.putNumber("X Dist Calculated", limelight.xDistanceFromLimelightAngle() - h + orientedXandY[1]);
+    }
+
+    public void rotateAlignToAprilTag(){
+        Pose2d limelightPos = limelight.getLimelightPose();
+        SmartDashboard.putNumber("Limelight Position Yaw Radians", limelightPos.getRotation().getRadians());
+        driveToPosition(0,0, -limelightPos.getRotation().getRadians());
+        // roate until limelight.getTargetPosition();[5] = 0
+    }
+
+    public void distanceDriveToAprilTag() {
+        Pose2d limelightPos = limelight.getLimelightPose();
+        SmartDashboard.putNumber("Limelight Position Distance", limelightPos.getY());
+        driveToPosition(limelightPos.getY(),0, 0);
+    }
+
+    public void sideToSideAlignToAprilTag() {
+        Pose2d limelightPos = limelight.getLimelightPose();
+        SmartDashboard.putNumber("Limelight Position Side to Side distance", limelightPos.getX());
+        driveToPosition(0,limelightPos.getX(), 0);
     }
 
     public double[] orientPosByYaw(double x, double y, double limelightYaw) {

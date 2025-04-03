@@ -73,11 +73,11 @@ public class LimeLight {
         return targetPositionArray[valueEntry];
     }
 
-    public double yDistanceFromLimelightAngle() {
-        double[] targetPositionArray = getTargetPosition(); 
+    public double distanceToAprilTag() {
+        // double[] targetPositionArray = getTargetPosition(); 
         double a1 = Math.toRadians(Yoffset());
         //returns the y Distance from the Apriltag
-        return ((Constants.aprilTagHeight - Constants.limeLightHeightFromGround) / Math.tan(a1 + Constants.limeLightAngleInRads));
+        return ((Constants.aprilTagHeight - Constants.limeLightHeightFromGround) / Math.tan(a1 + Constants.limeLightAngleInRads)); // field calibrate angle in rads
     }
 
     public double targetYaw() {
@@ -86,9 +86,9 @@ public class LimeLight {
     }
 
  public double xDistanceFromLimelightAngle() {
-        double[] targetPositionArray = getTargetPosition(); 
+        // double[] targetPositionArray = getTargetPosition(); 
         double tx = Math.toRadians(Xoffset());
-        return (yDistanceFromLimelightAngle() / Math.tan(tx));
+        return (distanceToAprilTag() / Math.tan(tx));
     }
 
 }
