@@ -941,7 +941,13 @@ public class Auto {
             else if (autoHelper.timerInterval_Auto(1.17, 3.17)){
                 autoHelper.autoArmLift(0);
                 autoHelper.autoElevatorLift(-0.42);
-                autoHelper.driver.swerveDrive(0.302, 0, 0);
+                // autoHelper.driver.swerveDrive(0.27, 0, 0);
+
+                autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(2.2, 0, 0));
+
+                if (autoHelper.driver.atTargetPosition()) {
+                    autoHelper.driver.swerveDrive(0, 0, 0);
+                }
             }
             else if (autoHelper.timerInterval_Auto(3.18, 3.3)){
                 autoHelper.autoElevatorLift(0);
@@ -955,7 +961,7 @@ public class Auto {
                 autoHelper.autoOpenClaw();
             }
             else if (autoHelper.timerInterval_Auto(6.1, 6.7)){
-                autoHelper.autoArmLift(0.2);
+                autoHelper.autoArmLift(0.30);
             }
             else if (autoHelper.timerInterval_Auto(7, 7.9)){
                 autoHelper.autoArmLift(0);

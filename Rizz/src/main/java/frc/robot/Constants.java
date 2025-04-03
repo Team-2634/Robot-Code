@@ -111,10 +111,10 @@ public class Constants {
     public final static double feederDistanceOffset1st = 2634; //In metres y distance from start to wall.
 
     //controller settings (robot speed)
-    public final static double XdriveSensitivity = 0.85;
-    public final static double YdriveSensitivity = 0.85; 
+    public final static double XdriveSensitivity = 1;
+    public final static double YdriveSensitivity = 1; 
     public final static double turningSensitivity = 1.0;
-    public final static double maxSpeedMpS = 0.5; 
+    public final static double maxSpeedMpS = 0.7; 
 
     public final static double controllerDeadzone = 0.1;
 
