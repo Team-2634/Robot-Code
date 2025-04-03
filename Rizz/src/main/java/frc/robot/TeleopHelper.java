@@ -57,8 +57,8 @@ public class TeleopHelper {
         }
         
         
-        XSpeed *= (Constants.XdriveSensitivity * slowAmount);
-        YSpeed *= (Constants.YdriveSensitivity * slowAmount);
+        XSpeed *= (Constants.XdriveSensitivity / slowAmount);
+        YSpeed *= (Constants.YdriveSensitivity / slowAmount);
         TurnSpeed = TurnSpeed * Constants.turningSensitivity;
         
         driver.swerveDrive(XSpeed, YSpeed, TurnSpeed);

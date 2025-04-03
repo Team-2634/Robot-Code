@@ -965,10 +965,12 @@ public class Auto {
             }
             else if (autoHelper.timerInterval_Auto(7, 7.9)){
                 autoHelper.autoArmLift(0);
-                autoHelper.driver.swerveDrive(-0.10, 0, 0);
+                autoHelper.driver.swerveDrive(-0.105, 0, 0);
             }
             else if (autoHelper.timerInterval_Auto(8, 15)){
                 autoHelper.driver.swerveDrive(0, 0, 0);
+
+
             }
                     
         }   
