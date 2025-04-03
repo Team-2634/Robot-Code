@@ -246,12 +246,35 @@ public class Driver {
 
         Pose2d visionPose = limelight.getLimelightPose();
 
-        if (visionPose != null) {
+        if (visionPose != null && hasReset) {
             double time = Timer.getFPGATimestamp();
 
             poseEstimator.addVisionMeasurement(visionPose, time);
         }
     }
+
+    int goodframes = 0;
+    boolean hasReset = false;
+
+    public void setGlobalPosition() {
+    
+    Pose2d visionPose = limelight.getLimelightPose();
+    
+        if (!hasReset) {
+            if (false) {
+                goodframes++;
+            } else {
+                goodframes = 0;
+            }
+    
+            if (goodframes == 5) {
+                poseEstimator.resetPose(visionPose);
+                hasReset = true;
+            }
+        }
+    }
+
+
 
     // public void autoDriveByDistance(double distanceX, double distanceY) {
     //     double[] distanceFieldOriented = Driver.fieldOrient(distanceX, distanceY, navx);
