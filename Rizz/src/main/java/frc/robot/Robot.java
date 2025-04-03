@@ -111,7 +111,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("robot yaw value", navx.getYaw());
         SmartDashboard.putNumber("limelight tx", limelight.Xoffset());
         SmartDashboard.putNumber("limelight ty", limelight.Yoffset());
-        SmartDashboard.putNumber("yDistanceFromAprilTag", limelight.yDistanceFromLimelightAngle());
+        SmartDashboard.putNumber("yDistanceFromAprilTag", limelight.distanceToAprilTag());
         SmartDashboard.putNumber("xDistanceFromAprilTag", limelight.xDistanceFromLimelightAngle());
     }
 }

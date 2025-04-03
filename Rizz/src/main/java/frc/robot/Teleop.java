@@ -49,12 +49,12 @@ public class Teleop {
     }
 
     public void limelightFunctions(){
-        teleopHelper.moveToAprilTag(xboxDrive);
+        teleopHelper.testAprilTagFunctions(xboxDrive);
 
     }
 
     public void driveByDistanceTest() {
-        // teleopHelper.testAutoDrivebyDistance(xboxDrive);
+        teleopHelper.testAutoDrivebyDistance(xboxDrive);
     }
 
     public void elevatorArm(){
