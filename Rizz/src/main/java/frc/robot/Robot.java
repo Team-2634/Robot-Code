@@ -75,6 +75,7 @@ public class Robot extends TimedRobot {
     
         driver.updatePose();
         // driver.updateVisionMeasurement();
+        // driver.setGlobalPosition();
     }
     
     @Override
