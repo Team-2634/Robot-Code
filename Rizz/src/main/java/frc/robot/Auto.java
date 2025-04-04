@@ -752,93 +752,6 @@ public class Auto {
             }
         }
 
-        public void autoSidesDriveByPosition(){
-
-            switch(counter){
-    
-                case 0: 
-                    autoHelper.resetDriveEncoders();
-                    autoHelper.resetSteerEncoders();
-                    autoHelper.autoResetPIDs();
-                    restartTimer();
-    
-                    if (clawFinished = false){
-                        autoHelper.autoCloseClaw();
-                        clawFinished = true;
-                    }
-                    
-                    if (armFinished = false){
-                        autoHelper.autoArmLift(-0.3);
-                    }
-    
-                    if (autoHelper.arm.atTargetArmPositionL0()){
-                        autoHelper.autoArmLift(0);
-                        armFinished = true;
-                    }
-    
-                    if (clawFinished && armFinished){
-                        counter++;
-                        clawFinished = false;
-                        armFinished = false;
-                    }
-                    break;
-    
-                case 1: 
-                    System.out.println("Case 1");
-                    autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(3.54, 0, 0)); // Moved forward 1.35m
-    
-                    if (autoHelper.driver.atTargetPosition()) {
-                        autoHelper.driver.swerveDrive(0, 0, 0);
-                        driveFinished = true;
-                    }
-    
-                    if (elevatorFinished = false) { 
-                        autoHelper.autoElevatorLift(-0.5); 
-                    }
-                    
-                    if (autoHelper.elevator.atTargetElevatorPositionL1()) {
-                        autoHelper.autoElevatorLift(0);
-                        elevatorFinished = true;
-                    }
-        
-                    if (driveFinished && elevatorFinished) {
-                        counter++;
-                        driveFinished = false;
-                        elevatorFinished = false;
-                    }
-                    break;
-    
-                case 2: 
-                    System.out.println("Case 2");
-                    if (clawFinished = false){
-                        autoHelper.autoOpenClaw();
-                        clawFinished = true;
-                    }
-    
-                    if (clawFinished = true){
-                        autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(-0.9, 0, 0));
-                    }
-    
-                    if (autoHelper.driver.atTargetPosition()) {
-                        autoHelper.driver.swerveDrive(0, 0, 0);
-                        driveFinished = true;
-                    }   
-    
-                    if (clawFinished) {
-                        counter++;
-                        clawFinished = false;
-                    }
-                    break;
-    
-                default:
-                    autoHelper.driver.swerveDrive(0, 0, 0);
-                    autoHelper.autoArmLift(0);
-                    autoHelper.autoElevatorLift(0);
-                    break;
-                
-                }
-            }
-
     public void autoL4Test(){
 
         if (timer.get() < 15){
@@ -864,10 +777,8 @@ public class Auto {
                     if (autoHelper.driver.atTargetPosition()){
                         autoHelper.driver.swerveDrive(0, 0, 0);
                         driveFinished = true;
-                    }
-                
+                    }      
                 }
-
             }
 
 
@@ -879,7 +790,6 @@ public class Auto {
                     autoHelper.autoElevatorLift(-Constants.elevatorSpeed);
                     autoHelper.autoArmLift(0.05);
                 }
-
 
                 // if (autoHelper.timerInterval_Auto(8.93, 9.1)){
                 //     autoHelper.autoArmLift(0.1);
@@ -913,10 +823,7 @@ public class Auto {
 
                     // }
 
-                   
-                    
                 }
-
 
             }
             
@@ -924,7 +831,7 @@ public class Auto {
            
     }
 
-    public void autoMiddle(){ // 1-coral Auto (on L1) without Limelight
+    public void autoMiddle(){ // 1-coral Auto (on L1) without Limelight **MUST START 60-61 INCHES AWAY FROM REEF
 
         if (timer.get() < 15){ 
     
@@ -944,6 +851,57 @@ public class Auto {
                 // autoHelper.driver.swerveDrive(0.27, 0, 0);
 
                 autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(2.2, 0, 0));
+
+                if (autoHelper.driver.atTargetPosition()) {
+                    autoHelper.driver.swerveDrive(0, 0, 0);
+                }
+            }
+            else if (autoHelper.timerInterval_Auto(3.18, 3.3)){
+                autoHelper.autoElevatorLift(0);
+                autoHelper.driver.swerveDrive(0, 0, 0);
+                autoHelper.autoArmLift(-0.52);
+            }
+            else if(autoHelper.timerInterval_Auto(3.31, 5.25)){
+                autoHelper.autoArmLift(0);
+            }
+            else if (autoHelper.timerInterval_Auto(5.26, 6)){
+                autoHelper.autoOpenClaw();
+            }
+            else if (autoHelper.timerInterval_Auto(6.1, 6.7)){
+                autoHelper.autoArmLift(0.30);
+            }
+            else if (autoHelper.timerInterval_Auto(7, 7.9)){
+                autoHelper.autoArmLift(0);
+                autoHelper.driver.swerveDrive(-0.105, 0, 0);
+            }
+            else if (autoHelper.timerInterval_Auto(8, 15)){
+                autoHelper.driver.swerveDrive(0, 0, 0);
+            }
+                    
+        }   
+    
+    }
+
+    public void autoSide(){ // 1-coral Auto (on L1 Left or Right) without Limelight
+
+        if (timer.get() < 15){ 
+    
+            if (autoHelper.timerInterval_Auto(0, 0.15)){
+                autoHelper.resetDriveEncoders();
+                autoHelper.resetSteerEncoders();
+                autoHelper.autoResetPIDs();
+            }
+            else if (autoHelper.timerInterval_Auto(0.16, 1.16)){ 
+                autoHelper.autoCloseClaw();
+                autoHelper.driver.swerveDrive(0, 0, 0);
+                autoHelper.autoArmLift(-0.15);
+            }
+            else if (autoHelper.timerInterval_Auto(1.17, 3.17)){
+                autoHelper.autoArmLift(0);
+                autoHelper.autoElevatorLift(-0.42);
+                // autoHelper.driver.swerveDrive(0.27, 0, 0);
+
+                autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(2.3, 0, 0));
 
                 if (autoHelper.driver.atTargetPosition()) {
                     autoHelper.driver.swerveDrive(0, 0, 0);
