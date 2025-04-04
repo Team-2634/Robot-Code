@@ -752,7 +752,7 @@ public class Auto {
             }
         }
 
-    public void autoL4Test(){
+    public void autoL4TestMiddle(){
 
         if (timer.get() < 15){
 
@@ -767,12 +767,12 @@ public class Auto {
                 autoHelper.autoArmLift(-0.1);
             }
 
-            else if (autoHelper.timerInterval_Auto(1, 5.91)){
+            else if (autoHelper.timerInterval_Auto(1, 4.91)){
                 autoHelper.autoArmLift(0);
                 armFinished = true;
                           
                 if (armFinished){
-                    autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(2.2, 0, 0));
+                    autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(2.185, 0, 0));
 
                     if (autoHelper.driver.atTargetPosition()){
                         autoHelper.driver.swerveDrive(0, 0, 0);
@@ -782,33 +782,39 @@ public class Auto {
             }
 
 
-            else if (autoHelper.timerInterval_Auto(5.93, 15)){
+            else if (autoHelper.timerInterval_Auto(4.93, 15)){
                 // autoHelper.driver.swerveDrive(0, 0, 0);
 
-                if (autoHelper.timerInterval_Auto(5.94, 8.92)){
+                if (autoHelper.timerInterval_Auto(4.94, 7.92)){
                     System.out.println("Elevator is Lifting");
                     autoHelper.autoElevatorLift(-Constants.elevatorSpeed);
                     autoHelper.autoArmLift(0.05);
                 }
 
-                // if (autoHelper.timerInterval_Auto(8.93, 9.1)){
-                //     autoHelper.autoArmLift(0.1);
-                // }
+                if (autoHelper.timerInterval_Auto(7.93, 8.1)){
+                    autoHelper.autoArmLift(0.1);
+                    autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(2.12, 0, 0));
 
-                if (autoHelper.timerInterval_Auto(9.1, 9.2)){
+                    if (autoHelper.driver.atTargetPosition()){
+                        autoHelper.driver.swerveDrive(0, 0, 0);
+                        driveFinished = true;
+                    } 
+                }
+
+                if (autoHelper.timerInterval_Auto(8.1, 8.2)){
                     armFinished = true;
                 }
 
                 if (armFinished){
-                    if (autoHelper.timerInterval_Auto(9.3, 9.4)){
+                    if (autoHelper.timerInterval_Auto(8.3, 8.4)){
                         autoHelper.autoArmLift(0);
                     }
 
-                    if(autoHelper.timerInterval_Auto(9.5, 10.4)){
+                    if(autoHelper.timerInterval_Auto(8.5, 9.4)){
                         autoHelper.autoArmLift(-0.1);
                     }
 
-                    if (autoHelper.timerInterval_Auto(11.01, 12)){
+                    if (autoHelper.timerInterval_Auto(9.5, 12)){
                         autoHelper.autoArmLift(0);
                         autoHelper.autoOpenClaw();
                     }
@@ -901,7 +907,7 @@ public class Auto {
                 autoHelper.autoElevatorLift(-0.42);
                 // autoHelper.driver.swerveDrive(0.27, 0, 0);
 
-                autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(2.3, 0, 0));
+                autoHelper.driver.driveToPosition(autoHelper.driver.setDesiredPose(2.55, 0, 0));
 
                 if (autoHelper.driver.atTargetPosition()) {
                     autoHelper.driver.swerveDrive(0, 0, 0);
