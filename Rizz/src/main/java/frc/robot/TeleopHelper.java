@@ -256,7 +256,8 @@ public class TeleopHelper {
     public void testAprilTagFunctions(XboxController controller){
         if(controller.getBButton()) {
             // driver.driveToAprilTag(true);
-            driver.rotateAlignToAprilTag();
+            // driver.rotateAlignToAprilTag();
+            driver.basicDistanceDriveToAprilTag();
         }
 
     }

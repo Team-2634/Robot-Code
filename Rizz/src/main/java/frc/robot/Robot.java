@@ -63,6 +63,8 @@ public class Robot extends TimedRobot {
         targetPositionArray = limelight.getTargetPosition();
         SmartDashboard.putNumber("X-offset", limelight.Xoffset());
         SmartDashboard.putNumber("Y-offset", limelight.Yoffset());
+        SmartDashboard.putNumber("yDistanceFromAprilTag", limelight.distanceToAprilTag());
+        SmartDashboard.putNumber("xDistanceFromAprilTag", limelight.xDistanceFromLimelightAngle());
         SmartDashboard.putNumber("AprilTag Yaw",limelight.targetYaw());
         
         SmartDashboard.putNumber("X coordinate",targetPositionArray[0]);
@@ -107,12 +109,12 @@ public class Robot extends TimedRobot {
         teleop.arm();
 
         // teleop.limelightFunctions();
-        SmartDashboard.putNumber("Pose x-value", driver.getPose().getX());
-        SmartDashboard.putNumber("Pose y-value", driver.getPose().getY());
-        SmartDashboard.putNumber("robot yaw value", navx.getYaw());
-        SmartDashboard.putNumber("limelight tx", limelight.Xoffset());
+        // SmartDashboard.putNumber("Pose x-value", driver.getPose().getX());
+        // SmartDashboard.putNumber("Pose y-value", driver.getPose().getY());
+        // SmartDashboard.putNumber("robot yaw value", navx.getYaw());
+        // SmartDashboard.putNumber("limelight tx", limelight.Xoffset());
         SmartDashboard.putNumber("limelight ty", limelight.Yoffset());
         SmartDashboard.putNumber("yDistanceFromAprilTag", limelight.distanceToAprilTag());
-        SmartDashboard.putNumber("xDistanceFromAprilTag", limelight.xDistanceFromLimelightAngle());
+        // SmartDashboard.putNumber("xDistanceFromAprilTag", limelight.xDistanceFromLimelightAngle());
     }
 }

@@ -9,6 +9,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class LimeLight {
     private static NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
+    public double[] limelightSavedDistance; //array 0 is distanceToAprilTag, 1 is sideToSide
+    public boolean firstTimeAprilTagDetection = true;
 
     public double getDoubleEntry(String entry) {
         return limelightTable.getEntry(entry).getDouble(0.0);
@@ -73,9 +75,15 @@ public class LimeLight {
         return targetPositionArray[valueEntry];
     }
 
+    public void updateLimelightSavedDistances(){
+        limelightSavedDistance[0] = distanceToAprilTag() - Constants.bumperOffset;
+        limelightSavedDistance[1] = xDistanceFromLimelightAngle();
+
+    }
+
     public double distanceToAprilTag() {
         // double[] targetPositionArray = getTargetPosition(); 
-        double a1 = Math.toRadians(Yoffset());
+        double a1 = Math.toRadians(Math.abs(Yoffset()));
         //returns the y Distance from the Apriltag
         return ((Constants.aprilTagHeight - Constants.limeLightHeightFromGround) / Math.tan(a1 + Constants.limeLightAngleInRads)); // field calibrate angle in rads
     }
@@ -88,7 +96,7 @@ public class LimeLight {
  public double xDistanceFromLimelightAngle() {
         // double[] targetPositionArray = getTargetPosition(); 
         double tx = Math.toRadians(Xoffset());
-        return (distanceToAprilTag() / Math.tan(tx));
+        return (distanceToAprilTag() * Math.tan(tx));
     }
 
 }

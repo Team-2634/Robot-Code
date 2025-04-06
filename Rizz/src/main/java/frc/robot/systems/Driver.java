@@ -246,10 +246,13 @@ public class Driver {
 
         Pose2d visionPose = limelight.getLimelightPose();
 
-        if (visionPose != null && hasReset) {
+        if (visionPose != null) {
             double time = Timer.getFPGATimestamp();
 
             poseEstimator.addVisionMeasurement(visionPose, time);
+            SmartDashboard.putNumber("Pose X value", poseEstimator.getEstimatedPosition().getX());
+            SmartDashboard.putNumber("Pose Y value", poseEstimator.getEstimatedPosition().getY());
+            System.out.println("working");
         }
     }
 
@@ -399,7 +402,7 @@ public class Driver {
 
         if (!atTargetPosition()) {
             driveToPosition(setDesiredPose(
-                limelight.distanceToAprilTag() - Constants.distanceOffset + orientedXandY[0], 
+                limelight.distanceToAprilTag() - Constants.bumperOffset + orientedXandY[0], 
                 limelight.xDistanceFromLimelightAngle() - h + orientedXandY[1], 
                 Math.toRadians(limelight.targetYaw())
                 ));
@@ -415,17 +418,20 @@ public class Driver {
         // roate until limelight.getTargetPosition();[5] = 0
     }
 
-    public void distanceDriveToAprilTag() {
-        Pose2d limelightPos = limelight.getLimelightPose();
-        SmartDashboard.putNumber("Limelight Position Distance", limelightPos.getY());
-        driveToPosition(limelightPos.getY(),0, 0);
+    public void basicDistanceDriveToAprilTag() {
+        if(limelight.Yoffset() > 0) {
+            if(limelight.firstTimeAprilTagDetection) {
+                poseEstimator.resetPosition(navx.getRotation2d(), modulePositionArray, getPose());
+                limelight.updateLimelightSavedDistances();
+                limelight.firstTimeAprilTagDetection = false;
+            }
+        }
+        if(atTargetPosition()) {
+            limelight.firstTimeAprilTagDetection = true;
+        }
+        driveToPosition(limelight.limelightSavedDistance[0],limelight.limelightSavedDistance[1], 0);
     }
 
-    public void sideToSideAlignToAprilTag() {
-        Pose2d limelightPos = limelight.getLimelightPose();
-        SmartDashboard.putNumber("Limelight Position Side to Side distance", limelightPos.getX());
-        driveToPosition(0,limelightPos.getX(), 0);
-    }
 
     public double[] orientPosByYaw(double x, double y, double limelightYaw) {
         double[] XY = {0,0};
