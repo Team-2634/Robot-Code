@@ -114,9 +114,9 @@ public class Constants {
     public final static double XdriveSensitivity = 1;
     public final static double YdriveSensitivity = 1; 
     public final static double turningSensitivity = 1.0;
-    public final static double maxSpeedMpS = 0.7; 
+    public final static double maxSpeedMpS = 0.45; 
 
-    public final static double controllerDeadzone = 0.1;
+    public final static double controllerDeadzone = 0.2;
 
 
     //field oriented on/off
