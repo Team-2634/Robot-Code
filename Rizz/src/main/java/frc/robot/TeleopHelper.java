@@ -7,7 +7,7 @@ import frc.robot.systems.Arm;
 import frc.robot.systems.Climber;
 import frc.robot.systems.Driver;
 import frc.robot.systems.Elevator;
-import frc.robot.systems.Arm;
+import frc.robot.systems.Intake;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.systems.LimeLight;
 
@@ -147,7 +147,7 @@ public class TeleopHelper {
         if (xbox.getAButton()) {
             lowTrayPos(); //optimize all these
         } else if (xbox.getXButton()) {
-            firstReefPos();
+            intakeOn();
         } else if (xbox.getYButton()) {
             secondReefPos();
         } else if (xbox.getBButtonPressed()) {
@@ -175,23 +175,12 @@ public class TeleopHelper {
 
     }
 
-    public void firstReefPos() {
+    public void intakeOn() {
 
-        if (!(arm.getArmAngleRad() < Constants.armL0to3 + 0.2 && arm.getArmAngleRad() > Constants.armL0to3 - 0.2)) {
-        // if (false) {
-            arm.moveArmPID(Constants.armL0to3);
-            lastSetPositionArm = arm.getArmAngleRad();
-            ArmPositionPresets = true;
-        } else if (!(elevator.getElevatorHeight() < Constants.L2_HEIGHT + 0.2 && elevator.getElevatorHeight() > Constants.L2_HEIGHT - 0.2)) {
-            elevator.elevatorPIDLift(Constants.L2_HEIGHT);
-            lastSetPositionElevator = elevator.getElevatorHeight();
-            elevatorPositionPresets = true;
-            System.out.println("elevator is moving");
-        } else {
+            intakeMotor.set(1);
             return;
         }
 
-    }
 
     public void secondReefPos() {
 
