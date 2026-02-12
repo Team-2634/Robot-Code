@@ -3,13 +3,9 @@ package frc.robot;
 import com.studica.frc.AHRS; 
 
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.systems.Arm;
-import frc.robot.systems.Climber;
-import frc.robot.systems.Driver;
-import frc.robot.systems.Elevator;
-import frc.robot.systems.Intake;
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.systems.LimeLight;
+import frc.robot.systems.*;
 
 
 public class TeleopHelper {
@@ -124,7 +120,7 @@ public class TeleopHelper {
     public void moveClamp(XboxController xbox) {
 
         if (xbox.getRightBumperButtonPressed()) {
-            arm.openClaw();
+            shooter.shooterOn;
         } 
 
         if (xbox.getLeftBumperButtonPressed()) {  
@@ -176,11 +172,9 @@ public class TeleopHelper {
     }
 
     public void intakeOn() {
-
-            intakeMotor.set(1);
-            return;
+           Intake.spin();
+            
         }
-
 
     public void secondReefPos() {
 

@@ -83,6 +83,9 @@ public class Constants {
 
     public static final double elevatorSpeed = 1.00;
     public static final double drumDiameter = 0.008;
+    
+    //Intake Properties
+    public static final int intakeMotorSpeed = 1;
 
     //arm properties
     public final static double minArmRotationRads = -3.4; //remember to change these

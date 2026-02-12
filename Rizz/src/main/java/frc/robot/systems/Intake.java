@@ -1,14 +1,14 @@
-package frc.robot;
+package frc.robot.systems;
 
-import frc.robot.systems.*;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import frc.robot.Constants;
 
 public  class Intake {
 
-   public PWMSparkMax intakeMotor = new PWMSparkMax(1);
+   public static PWMSparkMax intakeMotor = new PWMSparkMax(1);
 
-    public void spin() {
-        intakeMotor.set(1);
+    public static void spin() {
+        intakeMotor.set(Constants.intakeMotorSpeed);
     }
 
     //example: intake.spin()
