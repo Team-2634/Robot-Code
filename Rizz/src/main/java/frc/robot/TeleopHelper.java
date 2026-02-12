@@ -120,7 +120,7 @@ public class TeleopHelper {
     public void moveClamp(XboxController xbox) {
 
         if (xbox.getRightBumperButtonPressed()) {
-            shooter.shooterOn;
+            shooterOn();
         } 
 
         if (xbox.getLeftBumperButtonPressed()) {  
@@ -175,6 +175,11 @@ public class TeleopHelper {
            Intake.spin();
             
         }
+    
+    public void shooterOn(){
+            shooterOn();
+
+    }
 
     public void secondReefPos() {
 

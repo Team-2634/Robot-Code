@@ -84,6 +84,10 @@ public class Constants {
     public static final double elevatorSpeed = 1.00;
     public static final double drumDiameter = 0.008;
     
+    //Shooter Properties
+    public static final double shooterMotor1Speed = 1;
+    public static final double shooterMotor2Speed = 1;
+
     //Intake Properties
     public static final int intakeMotorSpeed = 1;
 
