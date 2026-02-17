@@ -141,13 +141,13 @@ public class TeleopHelper {
         //System.out.println("move elevator arm method from helper!!!!!!!!!!!!!!!!!!!");
 
         if (xbox.getAButton()) {
-            lowTrayPos(); //optimize all these
+            intakeReverse();
         } else if (xbox.getXButton()) {
             intakeOn();
         } else if (xbox.getYButton()) {
-            secondReefPos();
+            moveIntakeDown();
         } else if (xbox.getBButtonPressed()) {
-            thirdReefPos();
+            moveIntakeUp();
         } else {
             elevatorPositionPresets = false;
             ArmPositionPresets = false;
@@ -176,39 +176,22 @@ public class TeleopHelper {
             
         }
     
+    public void intakeReverse(){
+        Intake.spinReverse();
+    }
+    
     public void shooterOn(){
             shooterOn();
 
     }
 
-    public void secondReefPos() {
-
-        if (!(arm.getArmAngleRad() < Constants.armL0to3 + 0.2 && arm.getArmAngleRad() > Constants.armL0to3 - 0.2)) {
-            arm.moveArmPID(Constants.armL0to3);
-            lastSetPositionArm = arm.getArmAngleRad();
-            ArmPositionPresets = true;
-        } else if (!(elevator.getElevatorHeight() < Constants.L3_HEIGHT + 0.2 && elevator.getElevatorHeight() > Constants.L3_HEIGHT - 0.2)) {
-            elevator.elevatorPIDLift(Constants.L3_HEIGHT);
-            lastSetPositionElevator = elevator.getElevatorHeight();
-            elevatorPositionPresets = true;
-        } else {
-            return;
-        }
+    public void moveIntakeUp() {
+        Intake.intakeUp();
 
     }
 
-    public void thirdReefPos() {
-        if (!(arm.getArmAngleRad() < Constants.armL4 + 0.2 && arm.getArmAngleRad() > Constants.armL4 - 0.2)) {
-            arm.moveArmPID(Constants.armL4);
-            lastSetPositionArm = arm.getArmAngleRad();
-            ArmPositionPresets = true;
-        } else if (!(elevator.getElevatorHeight() < Constants.L4_HEIGHT + 0.2 && elevator.getElevatorHeight() > Constants.L4_HEIGHT - 0.2)) {
-            elevator.elevatorPIDLift(Constants.L4_HEIGHT);
-            lastSetPositionElevator = elevator.getElevatorHeight();
-            elevatorPositionPresets = true;
-        } else {
-            return;
-        }
+    public void moveIntakeDown() {
+        Intake.intakeDown();
     }
 
     double speed = 0;
