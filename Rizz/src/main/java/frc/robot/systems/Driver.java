@@ -1,17 +1,19 @@
 package frc.robot.systems;
 
-import com.studica.frc.AHRS;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.studica.frc.AHRS;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -21,10 +23,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.systems.LimeLight;
-import edu.wpi.first.wpilibj.Timer;
 
 public class Driver {
 
@@ -47,6 +48,10 @@ public class Driver {
     public final TalonFX backRightDrive = new TalonFX(Constants.backRightDriveID);
     public final TalonFX[] driveMotorArray = {frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive};
 
+    final TalonFXConfiguration invertClock = new TalonFXConfiguration().withMotorOutput(new MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive));
+    final TalonFXConfiguration invertCounterClock = invertClock.clone().withMotorOutput(new MotorOutputConfigs().withInverted(InvertedValue.CounterClockwise_Positive));
+ 
+   
 
     public final TalonFX frontLeftSteer = new TalonFX(Constants.frontLeftSteerID);
     public final TalonFX frontRightSteer = new TalonFX(Constants.frontRightSteerID);
@@ -87,9 +92,6 @@ public class Driver {
 
     
 
-
-    
-
     public final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
         m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
@@ -107,15 +109,18 @@ public class Driver {
     //rotations counted by motor -> rotations output side -> rads turned
     public final double ticksToRadsTurning = Constants.kTurningMotorGearRatio * 2 * Math.PI;
 
+    
+
     private void initializeModule(int module){
     
     //Phenix make motor invert persistent (Must flash to motors manually)
-        steerMotorArray[module].setInverted(true);
+        steerMotorArray[module].invertMotors();
         steerMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
         steerMotorArray[module].setPosition(0);
         driveMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
         driveMotorArray[module].setPosition(0);
-
+        
+        
 
        if (module == 3) {
         driveMotorArray[module].setInverted(true);
