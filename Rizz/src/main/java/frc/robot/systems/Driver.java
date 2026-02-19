@@ -107,7 +107,7 @@ public class Driver {
     //rotations counted by motor -> rotations output side -> rads turned
     public final double ticksToRadsTurning = Constants.kTurningMotorGearRatio * 2 * Math.PI;
 
-    private 
+    private void initializeModule(int module){
     
     //Phenix make motor invert persistent (Must flash to motors manually)
         steerMotorArray[module].setInverted(true);
@@ -130,7 +130,7 @@ public class Driver {
         defaultEncoderConfig.MagnetSensor.MagnetOffset = absEncoderOffsetArray[module];
         defaultEncoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         encoderConfigArray[module].apply(defaultEncoderConfig);
-
+    }
 
     public void initialize() {
         initializeModule(0);
