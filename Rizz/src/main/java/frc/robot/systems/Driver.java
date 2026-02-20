@@ -3,6 +3,7 @@ package frc.robot.systems;
 import com.studica.frc.AHRS;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -84,6 +85,11 @@ public class Driver {
         frontLeftModulePosition, frontRightModulePosition, backLeftModulePosition, backRightModulePosition
     };
 
+    
+
+
+    
+
     public final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
         m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
@@ -101,15 +107,17 @@ public class Driver {
     //rotations counted by motor -> rotations output side -> rads turned
     public final double ticksToRadsTurning = Constants.kTurningMotorGearRatio * 2 * Math.PI;
 
-    private void initializeModule(int module) {
-
+    private 
+    
+    //Phenix make motor invert persistent (Must flash to motors manually)
         steerMotorArray[module].setInverted(true);
         steerMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
         steerMotorArray[module].setPosition(0);
         driveMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
         driveMotorArray[module].setPosition(0);
 
-        if (module == 3) {
+
+       if (module == 3) {
         driveMotorArray[module].setInverted(true);
         } else {
             driveMotorArray[module].setInverted(false);
@@ -123,7 +131,6 @@ public class Driver {
         defaultEncoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         encoderConfigArray[module].apply(defaultEncoderConfig);
 
-    }
 
     public void initialize() {
         initializeModule(0);

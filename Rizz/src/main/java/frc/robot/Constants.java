@@ -32,6 +32,8 @@ public class Constants {
     public final static int climbMotorID1 = 10;
     public final static int climbMotorID2 = 11;
 
+    
+
 
     public final static int frontLeftAbsEncoderID = 1;
     public final static int frontRightAbsEncoderID = 2;
@@ -83,6 +85,13 @@ public class Constants {
 
     public static final double elevatorSpeed = 1.00;
     public static final double drumDiameter = 0.008;
+    
+    //Shooter Properties
+    public static final double shooterMotor1Speed = 1;
+    public static final double shooterMotor2Speed = 1;
+
+    //Intake Properties
+    public static final int intakeMotorSpeed = 1;
 
     //arm properties
     public final static double minArmRotationRads = -3.4; //remember to change these
