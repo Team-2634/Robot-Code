@@ -72,6 +72,10 @@ public class Constants {
     public final static double kDriveMotorGearRatio = 1 / 6.12;
     public final static double kTurningMotorGearRatio = 1.0 / (150.0 / 7.0);
     public final static double driveRotsToMeter = 0.055555555; //0.073286;
+    public static boolean frontRightInverted;
+    public static boolean frontLeftInverted;
+    public static boolean backRightInverted;
+    public static boolean backLeftInverted;
 
     //elevator properties
     public static final double L0_HEIGHT = 0;

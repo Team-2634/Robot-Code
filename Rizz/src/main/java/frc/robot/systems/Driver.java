@@ -5,6 +5,7 @@ import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -48,9 +49,19 @@ public class Driver {
     public final TalonFX backRightDrive = new TalonFX(Constants.backRightDriveID);
     public final TalonFX[] driveMotorArray = {frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive};
 
-    final TalonFXConfiguration invertClock = new TalonFXConfiguration().withMotorOutput(new MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive));
-    final TalonFXConfiguration invertCounterClock = invertClock.clone().withMotorOutput(new MotorOutputConfigs().withInverted(InvertedValue.CounterClockwise_Positive));
+
+    // //New way to invert the motors.  Change motor invert settings for the motors
+    // final TalonFXConfiguration invertClock = new TalonFXConfiguration().
+    //     withMotorOutput(new MotorOutputConfigs().
+    //     withInverted(InvertedValue.Clockwise_Positive));
+
+    // final TalonFXConfiguration invertCounterClock = invertClock.clone().
+    //     withMotorOutput(new MotorOutputConfigs().
+    //     withInverted(InvertedValue.CounterClockwise_Positive));
  
+    // public static void InvertClock(){
+    //     ;
+    // }
    
 
     public final TalonFX frontLeftSteer = new TalonFX(Constants.frontLeftSteerID);
@@ -114,7 +125,7 @@ public class Driver {
     private void initializeModule(int module){
     
     //Phenix make motor invert persistent (Must flash to motors manually)
-        steerMotorArray[module].invertMotors();
+        //steerMotorArray[module].invertMotors();
         steerMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
         steerMotorArray[module].setPosition(0);
         driveMotorArray[module].setNeutralMode(NeutralModeValue.Brake);
@@ -122,11 +133,11 @@ public class Driver {
         
         
 
-       if (module == 3) {
-        driveMotorArray[module].setInverted(true);
-        } else {
-            driveMotorArray[module].setInverted(false);
-        }
+    //    if (module == 3) {
+    //     driveMotorArray[module].setInverted(true);
+    //     } else {
+    //         driveMotorArray[module].setInverted(false);
+    //     }
 
         pidArray[module].reset();
         pidArray[module].enableContinuousInput(-Math.PI, Math.PI);
