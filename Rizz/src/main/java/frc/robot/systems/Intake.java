@@ -8,7 +8,7 @@ import frc.robot.Constants;
 public  class Intake {
 
    public static PWMSparkMax intakeMotor = new PWMSparkMax(1);
-   public static TalonFX upDownIntakeMotor = new TalonFX(14);
+   public static TalonFX upDownIntakeMotor = new TalonFX(16);
 
     public static void spin() {
         intakeMotor.set(Constants.intakeMotorSpeed);
