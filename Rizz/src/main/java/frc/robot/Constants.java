@@ -12,8 +12,8 @@ public class Constants {
 
     public final static double maxDegree = 360;
 
-    public final static double maxVelocity_MetersPerSeconds = 6;
-    public final static double maxAccel_MetersPerSecondsSquared = 3;
+    public final static double maxVelocity_MetersPerSeconds = 0.01;// originaly 6
+    public final static double maxAccel_MetersPerSecondsSquared = 0.01;// originaly 3
 
 
     //configurable stuff
@@ -27,12 +27,10 @@ public class Constants {
     public final static int backLeftSteerID = 0;
     public final static int backRightSteerID = 6;
     
-    public final static int armMotorID = 9;  
-    public final static int elevatorMotorID = 8; 
-    public final static int climbMotorID1 = 10;
-    public final static int climbMotorID2 = 11;
-
-    
+    public final static int armMotorID = 21;  
+    public final static int elevatorMotorID = 22; 
+    public final static int climbMotorID1 = 23;
+    public final static int climbMotorID2 = 24;
 
 
     public final static int frontLeftAbsEncoderID = 1;
@@ -91,7 +89,7 @@ public class Constants {
     public static final double drumDiameter = 0.008;
     
     //Shooter Properties
-    public static final double shooterMotor1Speed = 1;
+    public static final double shooterMotor1Speed = -1;
     public static final double shooterMotor2Speed = 1;
 
     //Intake Properties
@@ -124,12 +122,12 @@ public class Constants {
     public final static double feederDistanceOffset1st = 2634; //In metres y distance from start to wall.
 
     //controller settings (robot speed)
-    public final static double XdriveSensitivity = 1;
-    public final static double YdriveSensitivity = 1; 
+    public final static double XdriveSensitivity = 0.5;//originaly 1
+    public final static double YdriveSensitivity = 0.5; //originally 1
     public final static double turningSensitivity = 1.0;
-    public final static double maxSpeedMpS = 0.7; 
+    public final static double maxSpeedMpS = 0.0001; 
 
-    public final static double controllerDeadzone = 0.1;
+    public final static double controllerDeadzone = 0.3;//originally 0.1
 
 
     //field oriented on/off
