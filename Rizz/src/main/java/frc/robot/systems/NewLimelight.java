@@ -1,5 +1,7 @@
 package frc.robot.systems;
 
+import frc.robot.LimelightHelpers;
+
 public class NewLimelight {
 
     // --- Variables (before the robot even moves) ---
@@ -22,8 +24,10 @@ public class NewLimelight {
     double cam_angle_yaw; // left and right - the angle of detected tag
     double cam_Zpos; // camera distance from tag in Z axis (depth)
 
+    double cam_pitch = LimelightHelpers.getTX(""); // Yaw
+    double cam_yaw = LimelightHelpers.getTY(""); // Pitch
 
-    public void detectedTagInfo(int id, double cam_pitch, double cam_yaw){
+    public void detectedTagInfo(int id){
         
         tag_id = id;
         cam_angle_pitch = cam_pitch - cam_pitch_offset;
@@ -32,6 +36,10 @@ public class NewLimelight {
         if (id == 1){   
             tag_height_from_ground = 30;
         }
+
+        System.out.format("Tag ID: " + tag_id);
+        System.out.println("Camera Pitch: " + cam_angle_pitch);
+        System.out.println("Camera Yaw: " + cam_angle_yaw);
     }
 
 

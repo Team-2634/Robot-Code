@@ -99,4 +99,10 @@ public class LimeLight {
         return (distanceToAprilTag() * Math.tan(tx));
     }
 
+ public void printLimelightValues() {
+    System.out.println("Distance to AprilTag: " + distanceToAprilTag());
+    System.out.println("X Distance from Limelight Angle: " + xDistanceFromLimelightAngle());
+    System.out.println("Target Yaw: " + targetYaw());
+ }
+
 }
